@@ -25,9 +25,9 @@ const GroupDetail = () => {
         <img src={emotionImage} alt="Emotion" className="w-full h-80 rounded-lg mb-4 object-contain" />
 
           <div className="flex space-x-2 mb-4">
-            <button className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">운동</button>
-            <button className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">서울</button>
-            <button className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">맴버80</button>
+            <div className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">운동</div>
+            <div className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">서울</div>
+            <div className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">맴버80</div>
           </div>
           <div>
             <p className="text-gray-700 bg-gray-100 p-4 rounded-lg">종로 정겨운 러닝 모임</p>
