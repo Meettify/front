@@ -1,0 +1,35 @@
+.form-container {
+    @apply relative flex flex-col items-center gap-2.5 w-72 mx-auto; /* width: 300px, margin: 0 auto */
+  }
+  
+.form-container > input {
+@apply w-full py-2.5 mb-2.5 box-border p-2;
+}
+
+.password-popup {
+@apply absolute top-60 transform translate-x-2 bg-white border border-gray-300 rounded p-2 shadow-md w-48 text-sm; /* width: 200px, font-size: 0.8em */
+}
+
+.password-popup p {
+@apply m-0 font-bold text-black;
+}
+
+.password-popup ul {
+@apply pl-4 list-none m-0;
+}
+
+.password-popup li {
+@apply text-red-500 text-sm; /* 기본 색상 빨간색 */
+}
+
+.password-popup li.valid {
+@apply text-green-500; /* 조건 만족 시 초록색 */
+}
+
+.error-message {
+@apply text-red-500 text-sm;
+}
+
+.success-message {
+@apply text-green-500 text-sm;
+}
