@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import GroupDetail from "./pages/GroupDetail.jsx";
+import GroupDetail from "./pages/group/GroupDetail.jsx";
 
 function App() {
   return (

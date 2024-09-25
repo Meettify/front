@@ -1,28 +1,18 @@
+import emotionImage from '../../assets/emotion1.png';
 
-import emotionImage from '../assets/emotion1.png';
+import Header from '../../components/header/Header';  // Header 컴포넌트 import
 
 const GroupDetail = () => {
   return (
     <div className="container mx-auto p-4">
-      {/* 상단 검색 바 */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-bold">Meetify</h1>
-        <input
-          type="text"
-          placeholder="모임 이름이나 장소를 입력하세요"
-          className="border rounded-lg px-4 py-2 w-1/2"
-        />
-        <div className="icon flex">
-          {/* 아이콘 예시 */}
-          <i className="fas fa-search"></i>
-        </div>
-      </div>
+      {/* 헤더 추가 */}
+      <Header />
 
       {/* 메인 컨텐츠 */}
       <div className="grid grid-cols-12 gap-4">
         {/* 이미지 및 태그 섹션 */}
         <div className="col-span-8">
-        <img src={emotionImage} alt="Emotion" className="w-full h-80 rounded-lg mb-4 object-contain" />
+          <img src={emotionImage} alt="Emotion" className="w-full h-80 rounded-lg mb-4 object-contain" />
 
           <div className="flex space-x-2 mb-4">
             <div className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">운동</div>
@@ -38,7 +28,7 @@ const GroupDetail = () => {
         <div className="col-span-4">
           <div className="bg-gray-200 h-96 mb-4 rounded-lg">광고</div>
           <button className="bg-gray-100 h-8 w-full rounded-lg text-center flex items-center justify-center">
-          가  입  신  청
+            가  입  신  청
           </button>
         </div>
       </div>
