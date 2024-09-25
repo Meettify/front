@@ -1,5 +1,4 @@
-
-import emotionImage from '../assets/emotion1.png';
+import emotionImage from '../../assets/emotion1.png';
 
 const GroupDetail = () => {
   return (
