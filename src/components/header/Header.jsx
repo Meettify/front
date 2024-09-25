@@ -1,5 +1,20 @@
+import React, { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import LoginModal from '../../components/login/LoginModal';
 
 const Header = () => {
+
+  const { isAuthenticated, logout } = useAuth();
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+
+  const handleLoginClick = () => {
+    setLoginModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setLoginModalOpen(false);
+  };
+
   return (
     <div className="flex items-center space-x-4 p-4 text-gray-700"> 
       {/* flex: 가로로 나열, items-center: 수직 가운데 정렬, space-x-4: 항목 사이의 간격, text-gray-700: 공통 텍스트 색상 */}
@@ -11,6 +26,17 @@ const Header = () => {
       <span>고객센터</span>
       <img alt="search" className="w-6 h-6" />
       <img alt="profile" className="w-6 h-6" />
+      
+      <div>
+        {isAuthenticated ? (
+          <button onClick={logout}>로그아웃</button>
+        ) : (
+          <button onClick={handleLoginClick}>로그인</button>
+        )}
+        <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
+      </div>
+      
+    
     </div>
   );
 }

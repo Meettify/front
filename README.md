@@ -21,3 +21,16 @@ npm install -D tailwindcss postcss autoprefixer
 
 npm install react-router-dom
 
+## react-daum-postcode 설치
+npm install react-daum-postcode
+
+## axios 설치
+npm install axios
+
+## zustand 설치
+npm install zustand
+
+## ESLint 규칙 비활성화 설정
+    eslint.config.js 의 rules 에 추가
+      "no-unused-vars":"off",
+      "react/prop-types":"off",
