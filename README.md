@@ -9,12 +9,15 @@ Currently, two official plugins are available:
 
 ---
 
-## Tailwind CSS 설치 가이드
-
-### 1. Tailwind CSS 및 필수 라이브러리 설치
+## Tailwind CSS 설치
 
 Tailwind CSS와 함께 사용할 PostCSS 및 Autoprefixer를 설치합니다.
 
 ```bash
 npm install -D tailwindcss postcss autoprefixer
 ```
+
+## React Router 설치
+
+npm install react-router-dom
+
