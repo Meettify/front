@@ -1,20 +1,21 @@
-import exercise from '../../assets/exercise.jpg'
+
+import exercise from '../../assets/exercise.jpg';
+
 const Category = () => {
     return (
-       // <!-- component -->
-        <div class="flex justify-around min-h-screen">
-            <div class="space-x-4 max-w-[1000px] flex flex-col items-center jjustify-around ml-12">
-                <div class="block mb-4 border-b border-slate-300 pb-2 w-full justify-around ml-12">
+        <div className="flex justify-around min-h-screen">
+            <div className="space-x-4 max-w-[1000px] flex flex-col items-center justify-around ml-12">
+                <div className="block mb-4 border-b border-slate-300 pb-2 w-full justify-around ml-12">
                     <h2 
-                        class="block w-full px-4 py-2 text-slate-700 transition-all text-left"
+                        className="block w-full px-4 py-2 text-slate-700 transition-all text-left"
                     >
-                       <b>모든 모임.</b> 오늘도, 소통하기 좋은 날.
+                        <b>모든 모임.</b> 오늘도, 소통하기 좋은 날.
                     </h2>
                 </div>
                 <div className='flex flex-wrap justify-around w-full'>
-                    {Array.from({ length: 9 }).map((_, index) => ( // 카드 8개 생성
-                        <div key={index} className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-[30%] h-auto m-2">
-                            <div className="relative mx-auto mt-2 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-34 w-34">
+                    {Array.from({ length: 9 }).map((_, index) => (
+                        <div key={index} className="flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-[30%] h-auto m-2">
+                            <div className="mx-auto mt-2 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-34 w-34">
                                 <img
                                     src={exercise}
                                     alt="card-image" 
@@ -27,7 +28,8 @@ const Category = () => {
                                         Exercise
                                     </p>
                                 </div>
-                                <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 opacity-75">
+                                <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 ">
+
                                     운동에 관한 모임들
                                 </p>
                             </div>
@@ -45,4 +47,6 @@ const Category = () => {
         </div>
     );
 };
+
 export default Category;
+

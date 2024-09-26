@@ -1,4 +1,6 @@
-import running from "../assets/running.jpg"
+
+import running from "../../assets/running.jpg"
+
 const Recomend = () => {
     return(
         <div class="bg-white">
@@ -11,19 +13,22 @@ const Recomend = () => {
             </a>
             </div>
 
-            <div class="relative mt-8">
-            <div class="relative -mb-6 w-full overflow-x-auto pb-6">
+
+            <div class=" mt-8">
+            <div class=" -mb-6 w-full overflow-x-auto pb-6">
                 <ul role="list" class="mx-4 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-x-8 lg:space-x-0">
                 <li class="inline-flex flex-col text-center lg:w-auto">
-                    <div class="group relative w-64">
-                    <div class="relative w-full h-64 overflow-hidden rounded-md bg-gray-200">
+                    <div class="group w-64">
+                    <div class="w-full h-64 overflow-hidden rounded-md bg-gray-200">
                         <img src={running} alt="running" class="h-full w-full object-contain object-center group-hover:opacity-75"/>
                     </div>
                     <div class="mt-6">
                         <p class="text-sm text-gray-500">White</p>
                         <h3 class="mt-1 font-semibold text-gray-900">
                         <a href="#">
-                            <span class="absolute inset-0"></span>
+
+                            <span class="absolute "></span>
+
                             running shoes
                         </a>
                         </h3>
