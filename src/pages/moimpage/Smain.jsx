@@ -1,6 +1,6 @@
 import Header from "../../components/header/Header";
-import Category from "../../components/group/Category";
-import Recomend from "../../components/group/Recomend";
+import Category from "../../components/mComponent/Category";
+import Recomend from "../../components/mComponent/Recomend";
 import Footer from "../../components/footer/Footer";
 const Smain = () => {
     return (
