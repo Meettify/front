@@ -1,4 +1,6 @@
+
 import running from "../../assets/running.jpg"
+
 const Recomend = () => {
     return(
         <div class="bg-white">
@@ -10,6 +12,7 @@ const Recomend = () => {
                 <span aria-hidden="true"> &rarr;</span>
             </a>
             </div>
+
 
             <div class=" mt-8">
             <div class=" -mb-6 w-full overflow-x-auto pb-6">
@@ -23,7 +26,9 @@ const Recomend = () => {
                         <p class="text-sm text-gray-500">White</p>
                         <h3 class="mt-1 font-semibold text-gray-900">
                         <a href="#">
+
                             <span class="absolute "></span>
+
                             running shoes
                         </a>
                         </h3>

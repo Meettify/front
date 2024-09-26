@@ -1,3 +1,4 @@
+
 import exercise from '../../assets/exercise.jpg';
 
 const Category = () => {
@@ -28,6 +29,7 @@ const Category = () => {
                                     </p>
                                 </div>
                                 <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 ">
+
                                     운동에 관한 모임들
                                 </p>
                             </div>
@@ -47,3 +49,4 @@ const Category = () => {
 };
 
 export default Category;
+
