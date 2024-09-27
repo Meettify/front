@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../../components/header/Header';  // Header 컴포넌트 import
 import emotionImage from '../../assets/emotion1.png';  // 이미지 파일 경로
 
-const GroupDetail = () => {
+const MeetingDetail = () => {
   // 상태 관리
   const [image, setImage] = useState(emotionImage);
   const [tags, setTags] = useState(['운동', '서울', '맴버80']);
@@ -52,7 +52,7 @@ const GroupDetail = () => {
 
           {/* 수정 버튼 */}
           <Link
-            to="/groupupdate"
+            to="/meetingupdate"
             className="bg-blue-500 text-white h-8 w-full rounded-lg text-center flex items-center justify-center mt-2"
           >
             수정하기
@@ -82,4 +82,4 @@ const GroupDetail = () => {
   );
 };
 
-export default GroupDetail;
+export default MeetingDetail;

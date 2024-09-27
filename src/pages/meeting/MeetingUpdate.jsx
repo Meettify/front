@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/header/Header.jsx';  // Header 컴포넌트 import
 import emotionImage from '../../assets/emotion1.png';  // 이미지 파일 경로
 
-const GroupUpdate = () => {
+const MeetingUpdate = () => {
   // 상태 관리
   const [image, setImage] = useState('');
   const [tags, setTags] = useState([]);
@@ -24,7 +24,7 @@ const GroupUpdate = () => {
   const handleSave = () => {
     // 저장 로직 (현재는 알림 후 페이지 이동)
     alert('소모임 정보가 저장되었습니다.');
-    navigate('/groupdetail');  // 저장 후 소모임 상세 페이지로 이동
+    navigate('/meetingdetail');  // 저장 후 소모임 상세 페이지로 이동
   };
 
   return (
@@ -86,4 +86,4 @@ const GroupUpdate = () => {
   );
 };
 
-export default GroupUpdate;
+export default MeetingUpdate;
