@@ -7,7 +7,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-96 absolute z-50 ">
+      <div className="bg-white rounded-lg p-6 w-96">
         <h2 className="text-4xl font-bold text-black mb-5">로그인</h2>
         <LoginForm />
         <p className="mt-4 text-black">

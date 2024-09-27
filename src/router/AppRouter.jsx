@@ -4,7 +4,8 @@ import HomePage from '../pages/HomePage';
 import SignupPage from '../pages/signup/SignupPage';
 import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
 import GroupDetail from '../pages/group/GroupDetail';
-import Smain from '../pages/moimpage/Smain';
+import MeetingMain from '../pages/meetingPage/MeetingMain';
+import Meeting from '../pages/meetingPage/Meeting';
 
 const AppRouter = () => (
   <Router>
@@ -13,7 +14,8 @@ const AppRouter = () => (
       <Route path="/signup" element={<SignupPage />} />
       <Route path='/signupsuccess' element={<SignupSuccessPage/>} />
       <Route path='/groupdetail' element={<GroupDetail/>} />
-      <Route path='/moimpage' element={<Smain/>}/>
+      <Route path='/meetingMain' element={<MeetingMain/>}/>
+      <Route path='/meeting' element={<Meeting/>}/>
     </Routes>
   </Router>
 );

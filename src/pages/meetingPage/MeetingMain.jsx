@@ -1,8 +1,8 @@
 import Header from "../../components/header/Header";
-import Category from "../../components/mComponent/Category";
-import Recomend from "../../components/mComponent/Recomend";
+import Category from "../../components/meeting/Category";
+import Recomend from "../../components/meeting/Recomend";
 import Footer from "../../components/footer/Footer";
-const Smain = () => {
+const Moimmain = () => {
     return (
         <div>
             <Header />
@@ -18,4 +18,4 @@ const Smain = () => {
         </div>
     );
 };
-export default Smain;
+export default Moimmain;
