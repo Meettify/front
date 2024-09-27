@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import SignupPage from '../pages/signup/SignupPage';
 import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
-import GroupDetail from '../pages/group/GroupDetail';
+import MeetingDetail from '../pages/meeting/MeetingDetail'
+import MeetingUpdate from '../pages/meeting/MeetingUpdate'
 import Smain from '../pages/moimpage/Smain';
 
 const AppRouter = () => (
@@ -12,7 +13,8 @@ const AppRouter = () => (
       <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path='/signupsuccess' element={<SignupSuccessPage/>} />
-      <Route path='/groupdetail' element={<GroupDetail/>} />
+      <Route path='/meeintgdetail' element={<MeetingDetail/>} />
+      <Route path='/meetingupdate' element={<MeetingUpdate/>} />
       <Route path='/moimpage' element={<Smain/>}/>
     </Routes>
   </Router>
