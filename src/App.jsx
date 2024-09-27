@@ -1,6 +1,7 @@
 import AppRouter from "./router/AppRouter.jsx";
-import Header from "./components/header/Header.jsx";
-import Category from "./components/mComponent/Category.jsx";
+
+import ChatList from "./components/chatting/chatList.jsx";
+import ChatRoom from "./components/chatting/chatRoom.jsx";
 
 function App() {
   return (
