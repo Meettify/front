@@ -14,7 +14,6 @@ const AppRouter = () => (
       <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path='/signupsuccess' element={<SignupSuccessPage/>} />
-      <Route path='/groupdetail' element={<GroupDetail/>} />
       <Route path='/meetingMain' element={<MeetingMain/>}/>
       <Route path='/meeintgdetail' element={<MeetingDetail/>} />
       <Route path='/meetingupdate' element={<MeetingUpdate/>} />
