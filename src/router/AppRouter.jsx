@@ -6,7 +6,7 @@ import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
 import MeetingDetail from '../pages/meeting/MeetingDetail'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
 import MeetingMain from '../pages/meetingPage/MeetingMain';
-import Meeting from '../pages/meetingPage/Meeting';
+
 
 const AppRouter = () => (
   <Router>
