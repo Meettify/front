@@ -22,8 +22,7 @@ const MeetingDetail = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* 상단 헤더 */}
-      <Header />
+      
 
       {/* 메인 컨텐츠 */}
       <div className="grid grid-cols-12 gap-4">

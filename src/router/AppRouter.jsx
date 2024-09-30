@@ -6,7 +6,7 @@ import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
 import MeetingDetail from '../pages/meeting/MeetingDetail'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
 import MeetingMain from '../pages/meeting/MeetingMain';
-
+import Chat from '../pages/meeting/chat';
 
 
 const AppRouter = () => (
@@ -16,8 +16,9 @@ const AppRouter = () => (
       <Route path="/signup" element={<SignupPage />} />
       <Route path='/signupsuccess' element={<SignupSuccessPage/>} />
       <Route path='/meeting/main' element={<MeetingMain/>}/>
-      <Route path='/meeing/detail' element={<MeetingDetail/>} />
+      <Route path='/meeting/detail' element={<MeetingDetail/>} />
       <Route path='/meeting/update' element={<MeetingUpdate/>} />
+      <Route path='/meeting/chat' element={<Chat/>} />
     </Routes>
   </Router>
 );
