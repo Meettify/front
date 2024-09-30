@@ -5,7 +5,7 @@ import SignupPage from '../pages/signup/SignupPage';
 import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
 import MeetingDetail from '../pages/meeting/MeetingDetail'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
-import MeetingMain from '../pages/meetingPage/MeetingMain';
+import MeetingMain from '../pages/meeting/MeetingMain';
 
 
 const AppRouter = () => (
@@ -14,10 +14,9 @@ const AppRouter = () => (
       <Route path="/" element={<HomePage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path='/signupsuccess' element={<SignupSuccessPage/>} />
-      <Route path='/meetingMain' element={<MeetingMain/>}/>
-      <Route path='/meeintgdetail' element={<MeetingDetail/>} />
-      <Route path='/meetingupdate' element={<MeetingUpdate/>} />
-    
+      <Route path='/meeting/main' element={<MeetingMain/>}/>
+      <Route path='/meeing/detail' element={<MeetingDetail/>} />
+      <Route path='/meeting/update' element={<MeetingUpdate/>} />
     </Routes>
   </Router>
 );
