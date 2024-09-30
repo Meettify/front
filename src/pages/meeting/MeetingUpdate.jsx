@@ -28,8 +28,8 @@ const MeetingUpdate = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Header />  {/* Header 컴포넌트 사용 */}
+    <div>
+
       <h1 className="text-xl font-bold mb-4">소모임 정보 수정</h1>
 
       {/* 이미지 수정 섹션 */}
