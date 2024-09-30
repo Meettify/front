@@ -1,16 +1,13 @@
-import AppRouter from "./router/AppRouter.jsx";
 
-import ChatList from "./components/chatting/chatList.jsx";
-import ChatRoom from "./components/chatting/chatRoom.jsx";
+import React from 'react';
+import BasicLayout from "./pages/layout/BasicLayout.jsx";
+
 
 function App() {
   return (
-    
-    <div>
-      <AppRouter/>
-    </div>
-  
-    
+    <React.StrictMode>
+        <BasicLayout/>
+    </React.StrictMode>
   );
 }
 
