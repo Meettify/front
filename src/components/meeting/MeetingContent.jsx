@@ -1,38 +1,26 @@
 import React from 'react';
+import DetailImage from './DetailImage';
+import DetailTag from './DetailTag';
+import DetailDescription from './DetailDescription';  // 새로 생성된 DetailDescription 불러오기
+import DetailBoard from './DetailBoard';  // 수정된 DetailBoard 불러오기
 
-const MeetingContent = ({ image, tags, description, details, children }) => {
+const MeetingContent = ({ image, tags, details, children }) => {
   return (
     <div className="container mx-auto p-4 w-2/3"> {/* 공통 레이아웃 적용 */}
       <div className="grid grid-cols-12 gap-4">
         {/* 왼쪽 2/3: 이미지 및 정보 */}
         <div className="col-span-8">
-          <img src={image} alt="Emotion" className="w-full h-80 rounded-lg mb-4 object-contain" />
+          {/* 이미지 부분 */}
+          <DetailImage image={image} />
 
-          <div className="flex space-x-2 mb-4">
-            {tags.map((tag, index) => (
-              <div key={index} className="bg-gray-200 text-gray-700 rounded-full px-4 py-1">
-                {tag}
-              </div>
-            ))}
-          </div>
+          {/* 태그 부분 */}
+          <DetailTag tags={tags} />
 
-          <div>
-            <p className="text-gray-700 bg-gray-100 p-4 rounded-lg">{description}</p>
-          </div>
+          {/* 모임 설명 부분 */}
+          <DetailDescription details={details} />  {/* 모임 설명 분리 */}
 
-          {/* 설명 및 게시판 */}
-          <div className="bg-gray-100 p-4 rounded-lg mb-4">
-            <h2 className="text-lg font-semibold">러닝모임 설명</h2>
-            <p>{details}</p>
-          </div>
-
-          <div className="bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold">게시판</h2>
-            <ul>
-              <li>공지: 모임 운영 수칙</li>
-              <li>공지: 모임 운영 방침</li>
-            </ul>
-          </div>
+          {/* 게시판 부분 */}
+          <DetailBoard />  {/* 게시판 컴포넌트 */}
         </div>
 
         {/* 오른쪽 1/3 부분: 추가적인 컨텐츠를 렌더링 */}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/header/Header.jsx';  // Header 컴포넌트 import
 import emotionImage from '../../assets/emotion1.png';  // 이미지 파일 경로
 
 const MeetingUpdate = () => {
@@ -24,7 +23,7 @@ const MeetingUpdate = () => {
   const handleSave = () => {
     // 저장 로직 (현재는 알림 후 페이지 이동)
     alert('소모임 정보가 저장되었습니다.');
-    navigate('/meetingdetail');  // 저장 후 소모임 상세 페이지로 이동
+    navigate('/meeting/detail');  // 저장 후 소모임 상세 페이지로 이동
   };
 
   return (
