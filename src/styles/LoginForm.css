@@ -1,13 +1,32 @@
 .form-container {
-    @apply relative flex flex-col items-center gap-2.5 w-72 mx-auto; /* width: 300px, margin: 0 auto */
-  }
-  
+  @apply relative flex flex-col items-center gap-2.5 w-72 mx-auto ;
+}
+
+.form-container > input[readonly]:focus {
+@apply outline-black border-none;
+}
+
 .form-container > input {
-@apply w-full py-2.5 mb-2.5 box-border p-2;
+@apply w-full py-2.5 mb-2.5 box-border p-2 border border-gray-300 rounded outline-none;
+}
+
+/* 포커스 상태에서 초록색 */
+.form-container > input:focus {
+@apply border-green-500 border-2;
+}
+
+/* 유효성 검사 실패 시 빨간색 */
+.form-container > input.invalid {
+@apply border-red-500 border-2;
+}
+
+/* 유효성 검사 성공 시 초록색 */
+.form-container > input.valid {
+@apply border-green-500 border-2;
 }
 
 .password-popup {
-@apply absolute top-60 transform translate-x-2 bg-white border border-gray-300 rounded p-2 shadow-md w-48 text-sm; /* width: 200px, font-size: 0.8em */
+@apply absolute top-60 transform translate-x-2 bg-white border border-gray-300 rounded p-2 shadow-md w-48 text-sm mt-1 text-center;
 }
 
 .password-popup p {

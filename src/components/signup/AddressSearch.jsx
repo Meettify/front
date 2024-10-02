@@ -38,8 +38,10 @@ const AddressSearch = ({ onComplete }) => {
   };
 
   return (
-    <div>
-      <button type="button" onClick={handleClick}>
+    <div className="m-auto">
+      <button 
+        type="button"
+        onClick={handleClick}>
         주소검색
       </button>
     </div>

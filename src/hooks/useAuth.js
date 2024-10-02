@@ -6,7 +6,7 @@ export const useAuth = () => {
 
   // 새로고침 시 세션 스토리지에서 토큰을 확인
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
       // 토큰이 있으면 로그인 상태를 복구
       const userData = { token };
