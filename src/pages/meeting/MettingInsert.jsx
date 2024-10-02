@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DetailImage from '../../components/meeting/DetailImage';  // DetailImage 컴포넌트
-import DetailTag from '../../components/meeting/DetailTag';  // DetailTag 컴포넌트
 
 const MeetingInsert = () => {
   // 상태 관리
   const [image, setImage] = useState('');  // 처음엔 빈 값
-  const [tags, setTags] = useState([]);  // 태그도 처음엔 빈 배열
+  const [tags, setTags] = useState(['']);  // 태그 배열, 첫 번째는 "지역" 입력 필드
   const [description, setDescription] = useState('');  // 모임 설명도 빈 값
   const [details, setDetails] = useState('');  // 모임 세부 설명도 빈 값
 
@@ -35,21 +34,36 @@ const MeetingInsert = () => {
 
       {/* 태그 등록 섹션 */}
       <div className="flex space-x-2 mb-4">
-        {tags.map((tag, index) => (
+        {/* 첫 번째 태그 입력 필드, "지역" placeholder 적용 */}
+        <input
+          value={tags[0]}
+          placeholder="지역"
+          onChange={(e) => {
+            const newTags = [...tags];
+            newTags[0] = e.target.value;
+            setTags(newTags);
+          }}
+          className="bg-gray-200 text-gray-700 rounded-full px-4 py-1"
+        />
+        
+        {/* 나머지 태그 입력 필드들, "태그입력" placeholder 적용 */}
+        {tags.slice(1).map((tag, index) => (
           <input
-            key={index}
+            key={index + 1}
             value={tag}
+            placeholder="태그입력"
             onChange={(e) => {
               const newTags = [...tags];
-              newTags[index] = e.target.value;
+              newTags[index + 1] = e.target.value;  // index + 1을 사용하여 올바른 배열 인덱스를 참조
               setTags(newTags);
             }}
             className="bg-gray-200 text-gray-700 rounded-full px-4 py-1"
           />
         ))}
+
         {/* 태그 추가 버튼 */}
         <button
-          onClick={() => setTags([...tags, ''])}
+          onClick={() => setTags([...tags, ''])}  // 빈 태그 추가
           className="bg-blue-500 text-white px-2 py-1 rounded-full"
         >
           태그 추가
