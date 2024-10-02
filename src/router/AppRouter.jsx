@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import SignupPage from '../pages/signup/SignupPage';
 import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
+
 import MeetingDetail from '../pages/meeting/MeetingDetail'
 import MeetingAccept from '../pages/meeting/MeetingAccept'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
@@ -25,8 +26,10 @@ const AppRouter = () => (
       <Route path='/meeting/post' element={<MeetingPost/>} />
       <Route path='/meeting/chat' element={<MeetingChat/>} />
       <Route path='/meeting/list' element={<MeetingList />} />
+
       <Route path='/meeting/insert' element={<MettingInsert/>} />
       <Route path='/meeting/accept' element={<MeetingAccept/>} />
+
     </Routes>
   </Router>
 );
