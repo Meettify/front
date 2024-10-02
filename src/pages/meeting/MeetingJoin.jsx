@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AgreementForm = () => {
+const AgreementForm = ({ onSubmit }) => {
   // 각 동의 항목에 대한 상태
   const [allChecked, setAllChecked] = useState(false);
   const [personalInfoChecked, setPersonalInfoChecked] = useState(false);
@@ -26,7 +26,10 @@ const AgreementForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (personalInfoChecked && termsChecked) {
-      alert('모임가입 동의가 완료되었습니다.');
+      alert('가입이 신청되었습니다.');
+      if (onSubmit) {
+        onSubmit(); // 부모 컴포넌트의 함수 호출(모달 닫기)
+      }
     }
   };
 

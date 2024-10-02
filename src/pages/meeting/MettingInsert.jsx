@@ -1,40 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import emotionImage from '../../assets/emotion1.png';  // 이미지 파일 경로
 import DetailImage from '../../components/meeting/DetailImage';  // DetailImage 컴포넌트
 import DetailTag from '../../components/meeting/DetailTag';  // DetailTag 컴포넌트
 
-const MeetingUpdate = () => {
+const MeetingInsert = () => {
   // 상태 관리
-  const [image, setImage] = useState('');
-  const [tags, setTags] = useState([]);
-  const [description, setDescription] = useState('');
-  const [details, setDetails] = useState('');
+  const [image, setImage] = useState('');  // 처음엔 빈 값
+  const [tags, setTags] = useState([]);  // 태그도 처음엔 빈 배열
+  const [description, setDescription] = useState('');  // 모임 설명도 빈 값
+  const [details, setDetails] = useState('');  // 모임 세부 설명도 빈 값
 
   const navigate = useNavigate();
 
-  // useEffect로 초기 상태 설정 (백엔드 연결 전까지 고정값 사용)
-  useEffect(() => {
-    // 현재는 고정된 값 사용
-    setImage(emotionImage);
-    setTags(['운동', '서울', '맴버80']);
-    setDescription('종로 정겨운 러닝 모임');
-    setDetails('종로 정겨운 러닝모임은 20시~22시 운동을 목표로 하고 있습니다.');
-  }, []);
-
   const handleSave = () => {
-    // 저장 로직 (현재는 알림 후 페이지 이동)
-    alert('소모임 정보가 저장되었습니다.');
-    navigate('/meeting/detail');  // 저장 후 소모임 상세 페이지로 이동
+    // 소모임 등록 로직 (현재는 알림 후 페이지 이동)
+    alert('소모임 정보가 등록되었습니다.');
+    navigate('/meeting/detail');  // 등록 후 소모임 상세 페이지로 이동
   };
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">소모임 정보 수정</h1>
+      <h1 className="text-xl font-bold mb-4">소모임 정보 등록</h1>
 
-      {/* 이미지 수정 섹션 */}
+      {/* 이미지 등록 섹션 */}
       <div className="mb-4">
-        <DetailImage image={image} />  {/* 이미지 컴포넌트 사용 */}
+        {image ? <DetailImage image={image} /> : <div className="h-80 w-full bg-gray-200 rounded-lg mb-4 flex items-center justify-center">이미지 없음</div>}
         <input 
           type="file" 
           accept="image/*" 
@@ -43,7 +33,7 @@ const MeetingUpdate = () => {
         />
       </div>
 
-      {/* 태그 수정 섹션 */}
+      {/* 태그 등록 섹션 */}
       <div className="flex space-x-2 mb-4">
         {tags.map((tag, index) => (
           <input
@@ -57,22 +47,31 @@ const MeetingUpdate = () => {
             className="bg-gray-200 text-gray-700 rounded-full px-4 py-1"
           />
         ))}
+        {/* 태그 추가 버튼 */}
+        <button
+          onClick={() => setTags([...tags, ''])}
+          className="bg-blue-500 text-white px-2 py-1 rounded-full"
+        >
+          태그 추가
+        </button>
       </div>
 
-      {/* 모임 이름 수정 섹션 */}
+      {/* 모임 이름 등록 섹션 */}
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         className="text-gray-700 bg-gray-100 p-4 rounded-lg w-full mb-4"
         rows="3"
+        placeholder="모임 이름을 입력하세요"
       />
 
-      {/* 세부 설명 수정 섹션 */}
+      {/* 세부 설명 등록 섹션 */}
       <textarea
         value={details}
         onChange={(e) => setDetails(e.target.value)}
         className="text-gray-700 bg-gray-100 p-4 rounded-lg w-full mb-4"
         rows="5"
+        placeholder="모임 세부 설명을 입력하세요"
       />
 
       {/* 저장 버튼 */}
@@ -80,10 +79,10 @@ const MeetingUpdate = () => {
         onClick={handleSave} 
         className="bg-blue-500 text-white h-8 w-full rounded-lg text-center flex items-center justify-center"
       >
-        저장하기
+        등록하기
       </button>
     </div>
   );
 };
 
-export default MeetingUpdate;
+export default MeetingInsert;

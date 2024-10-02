@@ -55,7 +55,7 @@ const MeetingDetail = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
             {/* 모달 내에 AgreementForm 포함 */}
-            <AgreementForm /> {/* 동의 폼 컴포넌트 */}
+            <AgreementForm onSubmit={closeModal} /> {/* closeModal 전달 */}
             
             <div className="flex justify-end mt-4">
               <button 

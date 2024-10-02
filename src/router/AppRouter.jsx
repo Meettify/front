@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage';
 import SignupPage from '../pages/signup/SignupPage';
 import SignupSuccessPage from '../pages/signup/SignupSuccessPage';
 import MeetingDetail from '../pages/meeting/MeetingDetail'
+import MeetingAccept from '../pages/meeting/MeetingAccept'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
 import MeetingMain from '../pages/meeting/MeetingMain';
 import MeetingContent from '../components/meeting/MeetingContent';
@@ -20,6 +21,7 @@ const AppRouter = () => (
       <Route path='/meeting/detail' element={<MeetingDetail/>} />
       <Route path='/meeting/update' element={<MeetingUpdate/>} />
       <Route path='/meeting/content' element={<MeetingContent/>} />
+      <Route path='/meeting/accept' element={<MeetingAccept/>} />
     </Routes>
   </Router>
 );
