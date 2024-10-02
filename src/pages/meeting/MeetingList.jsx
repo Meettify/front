@@ -1,12 +1,12 @@
-import Category from "../../components/meeting/Category";
+import List from "../../components/meeting/List";
 import Recomend from "../../components/meeting/Recomend";
 
-const MeetingMain = () => {
+const MeetingList = () => {
     return (
         <div className="flex justify-between px-4"> {/* Flexbox로 가로로 배치 */}
-            <Category />
+            <List />
             <Recomend />
-        </div>
+        </div>        
     );
 };
-export default MeetingMain;
+export default MeetingList;

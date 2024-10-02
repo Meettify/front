@@ -8,8 +8,9 @@ import MeetingAccept from '../pages/meeting/MeetingAccept'
 import MeetingUpdate from '../pages/meeting/MeetingUpdate'
 import MettingInsert from '../pages/meeting/MettingInsert'
 import MeetingMain from '../pages/meeting/MeetingMain';
-import MeetingContent from '../components/meeting/MeetingContent';
-
+import MeetingPost from '../pages/meeting/MeetingPost';
+import MeetingChat from '../pages/meeting/MeetingChat';
+import MeetingList from '../pages/meeting/MeetingList';
 
 
 const AppRouter = () => (
@@ -21,8 +22,10 @@ const AppRouter = () => (
       <Route path='/meeting/main' element={<MeetingMain/>}/>
       <Route path='/meeting/detail' element={<MeetingDetail/>} />
       <Route path='/meeting/update' element={<MeetingUpdate/>} />
+      <Route path='/meeting/post' element={<MeetingPost/>} />
+      <Route path='/meeting/chat' element={<MeetingChat/>} />
+      <Route path='/meeting/list' element={<MeetingList />} />
       <Route path='/meeting/insert' element={<MettingInsert/>} />
-      <Route path='/meeting/content' element={<MeetingContent/>} />
       <Route path='/meeting/accept' element={<MeetingAccept/>} />
     </Routes>
   </Router>
