@@ -6,7 +6,7 @@ import BasicLayout from "./pages/layout/BasicLayout.jsx";
 function App() {
   return (
     <React.StrictMode>
-        <BasicLayout/>
+      <BasicLayout/>
     </React.StrictMode>
   );
 }

@@ -3,7 +3,7 @@ import running from "../../assets/running.jpg"
 
 const Recomend = () => {
     return(
-        <div classNameName="w-1/3"> {/* Recomend 컴포넌트의 너비를 1/3로 설정 */}
+        <div className="w-1/3"> {/* Recomend 컴포넌트의 너비를 1/3로 설정 */}
             <div className="bg-white">
                 <div className="py-16 sm:py-24 lg:mx-auto lg:max-w-7xl lg:px-8">
                     <div className="flex items-center justify-between px-4 sm:px-6 lg:px-0">
