@@ -1,7 +1,7 @@
 import Header from '../components/header/Header';
 import '../index.css';
 
-const MainPage = () => {
+const HomePage = () => {
   
 
   return (
@@ -13,4 +13,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default HomePage;

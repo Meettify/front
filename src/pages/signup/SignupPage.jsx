@@ -3,7 +3,7 @@ import SignupForm from '../../components/signup/SignupForm';
 
 const SignupPage = () => (
   <div>
-    <h1 className='mb-10'>회원가입</h1>
+    <h1 className='w-full mb-10 text-center mt-20 text-4xl font-bold text-black '>Meettify ID 생성</h1>
     <SignupForm />
   </div>
 );
