@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import emotionImage from '../../assets/images/emotion1.png';  // 이미지 파일 경로
-import AgreementForm from '../../components/meet/MeetJoin';  // MeetingJoin.jsx에서 AgreementForm 불러오기
+import { useParams, Link } from 'react-router-dom';
+import emotionImage from '../../assets/images/emotion1.png';  
+import AgreementForm from '../../components/meet/MeetJoin';  
 import MeetContent from '../../components/meet/MeetContent';  
-import RoundedButton from '../../components/button/RoundedButton';  // 경로 수정: RoundedButton 불러오기
+import RoundedButton from '../../components/button/RoundedButton';  
 
 const MeetDetail = () => {
+  const { meetId } = useParams();  // URL에서 meetId를 가져옴
+  
   // 상태 관리
   const [image, setImage] = useState(emotionImage);
   const [tags, setTags] = useState(['운동', '서울']);
@@ -14,19 +16,24 @@ const MeetDetail = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 회원 상태 및 모임장 상태 관리
-  const [isMember, setIsMember] = useState(true); // 비회원 여부 설정 (false는 비회원)
-  const [isHost, setIsHost] = useState(true); // 모임장 여부 설정 (false는 모임장 아님)
+  const [isMember, setIsMember] = useState(false); // 비회원 여부 설정 (false는 비회원)
+  const [isHost, setIsHost] = useState(false); // 모임장 여부 설정 (false는 모임장 아님)
 
   // 모달 열기/닫기 함수
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    setImage(emotionImage);
-    setTags(['운동', '서울']);
-    setDescription('종로 정겨운 러닝 모임');
-    setDetails('종로 정겨운 러닝모임은 20시~22시 운동을 목표로 하고 있습니다.');
-  }, []);
+    // meetId에 따라 데이터를 동적으로 설정
+    // 실제로는 API 호출 등을 통해 meetId에 맞는 데이터를 가져오면 됩니다
+    if (meetId === "0") {
+      setDescription('첫 번째 모임 상세 정보');
+      setDetails('첫 번째 모임에 대한 상세 설명입니다.');
+    } else {
+      setDescription(`모임 ID ${meetId}의 상세 정보`);
+      setDetails(`모임 ID ${meetId}에 대한 상세 설명입니다.`);
+    }
+  }, [meetId]);
 
   return (
     <div className="flex flex-col">

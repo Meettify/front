@@ -3,7 +3,7 @@ import DetailImage from '../../components/meet/DetailImage';  // 모임 이미�
 import DetailTag from '../../components/meet/DetailTag';  // 모임 태그
 import DetailDescription from '../../components/meet/DetailDescription';  // 모임 이름
 
-const MemberManagement = () => {
+const MemberAccept = () => {
   // 상태 관리
   const [pendingMembers, setPendingMembers] = useState([
     { id: 1, name: '홍길동' },
@@ -85,4 +85,4 @@ const MemberManagement = () => {
   );
 };
 
-export default MemberManagement;
+export default MemberAccept;
