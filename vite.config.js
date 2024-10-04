@@ -9,7 +9,7 @@ export default defineConfig({
     postcss: './postcss.config.js', // PostCSS 설정을 명시적으로 지정
   },
   server: {
-    port: 3000,
+    port: 5173,
     proxy: {
       '/api': {
         target: process.env.REACT_APP_API_BASE_URL,
