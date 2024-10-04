@@ -1,21 +1,20 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
-  css: {
-    postcss: './postcss.config.js', // PostCSS 설정을 명시적으로 지정
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: process.env.REACT_APP_API_BASE_URL,
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // '/api' 경로를 제거하고 프록시
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd());
+
+  return {
+    plugins: [react()],
+    server: {
+      port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8080',  // 백엔드 서버 주소
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),  // '/api' 경로를 제거하고 백엔드로 전달
+        },
       },
     },
-  },
-})
+  };
+});

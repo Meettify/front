@@ -17,8 +17,8 @@ const BasicMenu = () => {
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
         setButtonPosition({
-            top: buttonRect.bottom + window.scrollY, 
-            left: buttonRect.left + window.scrollX-120
+            top: buttonRect.bottom + window.scrollY,
+            left: buttonRect.left + window.scrollX - 120
         });
         openModal('info');
     };
@@ -59,6 +59,7 @@ const BasicMenu = () => {
                         <UserIcon />
                     </button>
                 </li>
+                <li> <Link to={'/membertest'}>Axios test</Link> </li>
             </ul>
             {modals['info'] && (
                 <InfoModal

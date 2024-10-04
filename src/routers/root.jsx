@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import BasicLayout from "../layouts/BasicLayout";
 import shopRouter from "./shopRouter";
 import meetRouter from "./meetRouter";
+import memberRouter from "./memberRouter";
 
 const Loading = () => <div>Page Loading...</div>;
 
@@ -15,6 +16,8 @@ const Support = lazy(() => import("../pages/support/SupportPage"))
 const Chat = lazy(() => import("../pages/chat/ChatPage"))
 const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
 const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
+// axios test
+const MemberTest = lazy(() => import("../pages/member/test/MemberTestPage"))
 
 const root = createBrowserRouter([
     {
@@ -49,8 +52,13 @@ const root = createBrowserRouter([
                 path: "chat",
                 element: <Suspense fallback={<Loading />}><Chat /></Suspense>,
             },
+            {
+                path: "membertest",
+                element: <Suspense fallback={<Loading />}><MemberTest /></Suspense>,
+            },
             ...shopRouter(),
             ...meetRouter(),
+            ...memberRouter(),
         ]
     },
     {
