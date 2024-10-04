@@ -1,16 +1,17 @@
 import React from "react";
 import MeetSideMenu from "../../components/meet/MeetSideMenu";
+import MeetCategory from "../../components/meet/MeetCategory";
 
 const MeetPage = () => {
-    return (
-        <div className="flex h-screen">
-            <main className="bg-gray-100 flex-1 h-full">
-                <div>모임</div>
-            </main>
 
-            <aside className="bg-gray-200 w-1/3 h-full">
+    return (
+        <div className="container mx-auto mt-20 w-full flex">
+            <div className="w-2/3 bg-gray-100 flex flex-wrap justify-center p-2">
+                <MeetCategory/>
+            </div>
+            <div className="w-1/3">
                 <MeetSideMenu />
-            </aside>
+            </div>
         </div>
     );
 };
