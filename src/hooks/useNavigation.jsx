@@ -53,6 +53,10 @@ const useNavigation = () => {
         navigate('/signupsuccess')
     };
 
+    const goToMyInfo = () => {
+        navigate('/myinfo')
+    };
+
     return {
         goToShopList,
         goToHome,
@@ -66,6 +70,7 @@ const useNavigation = () => {
         goToPostList,
         goToSignup,
         goToSignupSuccess,
+        goToMyInfo,
     };
 };
 

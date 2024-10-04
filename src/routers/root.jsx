@@ -18,6 +18,7 @@ const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
 const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
 // axios test
 const MemberTest = lazy(() => import("../pages/member/test/MemberTestPage"))
+const MyInfo = lazy(() => import("../pages/member/info/InfoPage"))
 
 const root = createBrowserRouter([
     {
@@ -51,6 +52,10 @@ const root = createBrowserRouter([
             {
                 path: "chat",
                 element: <Suspense fallback={<Loading />}><Chat /></Suspense>,
+            },
+            {
+                path: "myinfo",
+                element: <Suspense fallback={<Loading />}><MyInfo /></Suspense>,
             },
             {
                 path: "membertest",

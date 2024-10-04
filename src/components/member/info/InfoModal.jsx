@@ -1,11 +1,13 @@
 import React from "react";
 import { useAuth } from '../../../hooks/useAuth';
 import useModalStore from '../../../stores/useModalStore';
+import useNavigation from "../../../hooks/useNavigation";
 
 
 const InfoModal = ({ buttonPosition, onClose }) => {
     const { isAuthenticated, logout } = useAuth();
     const { modals, closeModal, openModal } = useModalStore();
+    const {goToMyInfo} = useNavigation();
 
     const handleLoginClick = () => {
         closeModal('info');
@@ -34,9 +36,13 @@ const InfoModal = ({ buttonPosition, onClose }) => {
             >
                 {isAuthenticated ? (
                     <>
-                        <h2 className="text-xl font-bold text-black mb-5 text-center">환영합니다!</h2>
+                        <h2>{isAuthenticated}</h2>
+                        <h2 className="text-xl font-bold text-black mb-5 mt-8 text-center">환영합니다!</h2>
                         <div className="text-center">
-                            <button className="mb-3 p-2 w-3/4 text-white bg-blue-500 rounded">내 정보</button>
+                            <button 
+                            className="mt-8 mb-3 p-2 w-3/4 text-white bg-blue-500 rounded"
+                            onClick={goToMyInfo}
+                            >내 정보</button>
                             <button 
                                 onClick={logout} 
                                 className="p-2 w-3/4 text-white bg-red-500 rounded"

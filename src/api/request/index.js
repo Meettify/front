@@ -19,11 +19,11 @@ const init = () => {
             ? import.meta.env.VITE_APP_API_BASE_URL
             : 'http://localhost:8080/api/v1',
         headers: {
-            'Authorization': `Bearer ${token}`, // 토큰 추가
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token
+            'Content-Type': 'application/json;charset=UTF-8', // request data type
+            Accept: 'application/json', // response data type
+            // 'Access-Control-Allow-Origin': '*', // CORS 설정 해제
+            Authorization: 'Bearer ' + (window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '')
         },
-        withCredentials: true,
     });
     setInterceptor();
     return axiosInstance;

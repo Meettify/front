@@ -31,8 +31,8 @@ const LoginForm = () => {
     
     const result = await postLogin(formData);
 
-    if (result && result.accessToken) {
-      storeLogin(result); // 상태 관리에 토큰 저장
+    if (result.status===200) {
+      storeLogin(result.data); // 상태 관리에 토큰 저장
       window.location.href = '/';
     } else {
       setErrorMessage('이메일 또는 비밀번호가 틀렸습니다.');
