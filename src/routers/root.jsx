@@ -12,6 +12,7 @@ const Comm = lazy(() => import("../pages/comm/CommPage"))
 const Meet = lazy(() => import("../pages/meet/MeetPage"))
 const Shop = lazy(() => import("../pages/shop/ShopPage"))
 const Support = lazy(() => import("../pages/support/SupportPage"))
+const Chat = lazy(() => import("../pages/chat/ChatPage"))
 
 const root = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ const root = createBrowserRouter([
             {
                 path: "support",
                 element: <Suspense fallback={<Loading />}><Support /></Suspense>,
+            },
+            {
+                path: "chat",
+                element: <Suspense fallback={<Loading />}><Chat /></Suspense>,
             },
 
             ...shopRouter(),
