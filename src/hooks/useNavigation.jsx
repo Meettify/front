@@ -43,7 +43,15 @@ const useNavigation = () => {
 
     const goToPostList = () => {
         navigate('/meet/post'); // 게시판 페이지로 이동하는 함수
-    };    
+    };
+
+    const goToSignup = () => {
+        navigate('/signup')
+    };
+
+    const goToSignupSuccess = () => {
+        navigate('/signupsuccess')
+    };
 
     return {
         goToShopList,
@@ -56,6 +64,8 @@ const useNavigation = () => {
         goToPostWrite,
         goToPostDetail,
         goToPostList,
+        goToSignup,
+        goToSignupSuccess,
     };
 };
 

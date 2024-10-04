@@ -1,10 +1,28 @@
+import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import logo from '../../assets/logo/meettify_logo.png'; // 로고 이미지 경로
 import UserIcon from "../icons/UserIcon";
 import ChatIcon from "../icons/ChatIcon";
 import SearchIcon from "../icons/SearchIcon";
+import useModalStore from '../../stores/useModalStore';
+import InfoModal from '../../components/member/info/InfoModal';
+import LoginModal from '../../components/member/login/LoginModal';
 
 const BasicMenu = () => {
+
+    const { modals, openModal, closeModal } = useModalStore();
+    const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+    const buttonRef = useRef(null);
+
+    const handleInfoClick = () => {
+        const buttonRect = buttonRef.current.getBoundingClientRect();
+        setButtonPosition({
+            top: buttonRect.bottom + window.scrollY, 
+            left: buttonRect.left + window.scrollX-120
+        });
+        openModal('info');
+    };
+
     return (
         <nav id='navbar' className="flex items-center justify-center w-full py-0 px-5">
 
@@ -33,13 +51,28 @@ const BasicMenu = () => {
                     </Link>
                 </li>
                 <li>
-                    {/* <Link to="/login" className="text-black">로그인</Link>  */}
-                    <Link to="/login" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}>
+                    <button
+                        ref={buttonRef}
+                        className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}
+                        onClick={handleInfoClick}
+                    >
                         <UserIcon />
-                    </Link>
+                    </button>
                 </li>
-
             </ul>
+            {modals['info'] && (
+                <InfoModal
+                    isOpen={modals['info']}
+                    onClose={() => closeModal('info')}
+                    buttonPosition={buttonPosition}
+                />
+            )}
+            {modals['login'] && (
+                <LoginModal
+                    isOpen={modals['login']}
+                    onClose={() => closeModal('login')}
+                />
+            )}
         </nav>
     );
 }
