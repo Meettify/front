@@ -9,9 +9,10 @@ export default defineConfig({
     postcss: './postcss.config.js', // PostCSS 설정을 명시적으로 지정
   },
   server: {
+    port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // 백엔드 서버 주소
+        target: process.env.REACT_APP_API_BASE_URL,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // '/api' 경로를 제거하고 프록시
       },
