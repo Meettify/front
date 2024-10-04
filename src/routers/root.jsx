@@ -12,6 +12,8 @@ const Comm = lazy(() => import("../pages/comm/CommPage"))
 const Meet = lazy(() => import("../pages/meet/MeetPage"))
 const Shop = lazy(() => import("../pages/shop/ShopPage"))
 const Support = lazy(() => import("../pages/support/SupportPage"))
+const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
+const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
 
 const root = createBrowserRouter([
     {
@@ -42,11 +44,20 @@ const root = createBrowserRouter([
                 path: "support",
                 element: <Suspense fallback={<Loading />}><Support /></Suspense>,
             },
+            
 
             ...shopRouter(),
             ...meetRouter(),
         ]
-    }
+    },
+    {
+        path: "signup",
+        element: <Suspense fallback={<Loading />}><Signup /></Suspense>,
+    },
+    {
+        path: "signupsuccess",
+        element: <Suspense fallback={<Loading />}><SignupSuccess /></Suspense>,
+    },
 ]);
 
 export default root;

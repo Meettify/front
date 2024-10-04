@@ -12,9 +12,19 @@ const useNavigation = () => {
         navigate('/');
     };
 
+    const goToSignup = () => {
+        navigate('/signup')
+    }
+
+    const goToSignupSuccess = () => {
+        navigate('/signupsuccess')
+    }
+
     return {
         goToShopList,
         goToHome,
+        goToSignup,
+        goToSignupSuccess,
     };
 };
 

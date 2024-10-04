@@ -1,7 +1,8 @@
-import request from './util/request';
+import request from './request';
 
 // @RequestMapping("/api/v1/members")
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+// const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const BASE_URL = 'a';
 
 // 로그인 response : TokenDTO
 export const postLogin = async (data) => {
