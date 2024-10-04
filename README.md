@@ -98,8 +98,14 @@ npm install zustand
       "react/prop-types":"off",
 ```
 
-###
+### proxy middleware
 
 ```bash
 npm install --save-dev http-proxy-middleware
+```
+
+### media query
+
+```bash
+npm install react-responsive
 ```

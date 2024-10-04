@@ -12,13 +12,16 @@ let axiosInstance = null;
 
 // http 통신 default 설정
 const init = () => {
+    const token = window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '';
+
     axiosInstance = axios.create({
-        baseURL: process.env.NODE_ENV === 'production'
-            ? process.env.REACT_APP_API_BASE_URL
+        baseURL: import.meta.env.MODE === 'production'
+            ? import.meta.env.VITE_APP_API_BASE_URL
             : 'http://localhost:8080/api/v1',
         headers: {
+            'Authorization': `Bearer ${token}`, // 토큰 추가
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + (window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '')
+            Authorization: 'Bearer ' + token
         },
         withCredentials: true,
     });
