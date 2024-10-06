@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import emotionImage from '../../assets/images/emotion1.png';  
-import AgreementForm from '../../components/meet/MeetJoin';  
+import MeetJoin from '../../components/meet/MeetJoin';  
 import MeetContent from '../../components/meet/MeetContent';  
 import RoundedButton from '../../components/button/RoundedButton';  
 
@@ -49,7 +49,7 @@ const MeetDetail = () => {
         {/* 비회원일 경우 가입 신청 버튼 */}
         {!isMember && !isHost && (
           <RoundedButton onClick={openModal}>
-            가입 신청
+            가입신청
           </RoundedButton>
         )}
 
@@ -68,7 +68,7 @@ const MeetDetail = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
             {/* 모달 내에 AgreementForm 포함 */}
-            <AgreementForm onSubmit={closeModal} /> {/* closeModal 전달 */}
+            <MeetJoin onSubmit={closeModal} /> {/* closeModal 전달 */}
             
             <div className="flex justify-end mt-4">
               <RoundedButton onClick={closeModal} style={{ backgroundColor: 'red', color: 'white' }}>
