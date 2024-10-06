@@ -109,3 +109,9 @@ npm install --save-dev http-proxy-middleware
 ```bash
 npm install react-responsive
 ```
+
+### tailwind-scrollbar
+
+```bash
+npm install tailwind-scrollbar
+```
