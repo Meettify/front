@@ -76,7 +76,7 @@ const MeetChatRoom = ({ username, messages, onSendMessage }) => {
                                             {msg.text}
                                         </div>
                                     )}
-                                    <div className="text-xs text-gray-500 mt-1 text-right"> {/* 시간 아래로 마진 추가 */}
+                                    <div className="text-xs text-gray-500 mt-1 text-left"> {/* 시간 왼쪽 정렬 */}
                                         {msg.timestamp}
                                     </div>
                                 </div>
