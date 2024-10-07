@@ -109,3 +109,9 @@ npm install --save-dev http-proxy-middleware
 ```bash
 npm install react-responsive
 ```
+
+### slider 라이브러리
+
+```bash
+npm install rc-slider
+```

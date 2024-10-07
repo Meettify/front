@@ -1,5 +1,5 @@
 import React from "react";
-import RoundedButton from "../../components/button/RoundedButton"; // RoundedButton import
+import RoundedButton from "../button/RoundedButton";
 
 const ShopCard = ({ title = "상품명", description = "상품 내용", price = "₩100,000" }) => {
     return (
@@ -15,12 +15,13 @@ const ShopCard = ({ title = "상품명", description = "상품 내용", price = 
                 <h3 className="font-bold text-md mb-1">{title}</h3>
                 <p className="text-gray-500 text-sm mb-2">{description}</p>
                 <p className="font-bold text-sm">{price}</p>
+                <div className="mt-2 space-x-4">
+                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}>
+                        주문하기
+                    </RoundedButton>
+                </div>
             </div>
-            <div className="mt-4 space-x-4">
-                <button className="text-blue-500">
-                    상품 주문하기 &gt;
-                </button>
-            </div>
+
         </div>
     );
 };

@@ -24,7 +24,7 @@ const ShopPage = () => {
                 <div className="flex justify-between items-center mb-6">
                     <div className="text-4xl font-bold text-left">상품 살펴보기.</div>
                     <button onClick={goToShopList} className="text-blue-500">
-                        전체 상품 보기 &gt;
+                        상품 등록 신청하기 &gt;
                     </button>
                 </div>
 
