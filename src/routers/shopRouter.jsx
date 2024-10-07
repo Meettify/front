@@ -7,7 +7,7 @@ const shopRouter = () => {
     return [
         {
             path: "/shop/list",
-            element: <Suspense fallback={Loading}><ShopList /></Suspense>,
+            element: <Suspense fallback={<Loading />}><ShopList /></Suspense>,
         },
     ];
 };

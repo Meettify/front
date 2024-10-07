@@ -121,3 +121,9 @@ npm install react-responsive
 ```bash
 npm install tailwind-scrollbar
 ```
+
+### slider 라이브러리
+
+```bash
+npm install rc-slider
+```

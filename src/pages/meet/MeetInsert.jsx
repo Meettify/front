@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
+// C:\project3\front\src\pages\MeetInsert.js
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import DetailImage from '../../components/meet/DetailImage';  // DetailImage 컴포넌트
+import useMeetStore from '../../stores/useMeetStore';  // Zustand 저장소 import
 
 const MeetInsert = () => {
-  // 상태 관리
-  const [image, setImage] = useState('');  // 처음엔 빈 값
-  const [tags, setTags] = useState(['']);  // 태그 배열, 첫 번째는 "지역" 입력 필드
-  const [description, setDescription] = useState('');  // 모임 설명도 빈 값
-  const [details, setDetails] = useState('');  // 모임 세부 설명도 빈 값
-
+  // Zustand에서 상태와 상태 변경 함수 가져오기
+  const { image, tags, description, details, setImage, setTags, setDescription, setDetails } = useMeetStore();
   const navigate = useNavigate();
 
   const handleSave = () => {
-    // 소모임 등록 로직 (현재는 알림 후 페이지 이동)
     alert('소모임 정보가 등록되었습니다.');
-    navigate('/meet/detail');  // 등록 후 소모임 상세 페이지로 이동
+    navigate('/meet/detail');  // 등록 후 소모임 상세 페이지로 이동 (나중에 meetId 추가 가능)
   };
 
   return (

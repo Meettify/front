@@ -2,6 +2,9 @@ import React from "react";
 import MeetCard from "../../components/meet/MeetCard";
 import ShopCard from "../../components/shop/ShopCard";
 import MainSection from "../../components/main/MainSection";
+import CommLatestPosts from "../../components/comm/CommLatestPosts";
+import SectionText from "../../components/text/SectionText";
+
 
 const MainPage = () => {
     return (
@@ -15,21 +18,23 @@ const MainPage = () => {
             </div>
 
             <MainSection
-                title="최신모임."
-                subtitle="따끈따끈한 모임이야기."
+                title={<SectionText title="최신모임." subtitle="따끈따끈한 모임이야기." />}
                 items={[...Array(5)]}
                 renderItem={() => <MeetCard />}
             />
 
             <MainSection
-                title="편리한 쇼핑."
-                subtitle="언제든, 당신에게 필요한 제품으로."
+                title={<SectionText title="편리한 쇼핑." subtitle="언제든, 당신에게 필요한 제품으로." />}
                 items={[...Array(5)]}
                 renderItem={(item, index) => (
-                    // title={`상품명 ${index + 1}`} description="상품 내용" price={`₩${(index + 1) * 10000}`}
                     <ShopCard />
                 )}
             />
+
+            <div className="my-10">
+                <SectionText title="따뜻한 소통." subtitle="공감하는 순간." />
+                <CommLatestPosts />
+            </div>
         </div>
     );
 };
