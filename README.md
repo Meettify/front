@@ -127,3 +127,8 @@ npm install tailwind-scrollbar
 ```bash
 npm install rc-slider
 ```
+
+### react icon
+```bash
+npm install react-icons
+```
