@@ -1,14 +1,12 @@
 import React from "react";
-import RoundedButton from "../button/RoundedButton";
+import MeetJoin from "./MeetJoin"; // MeetJoin 컴포넌트 임포트
+import useNavigation from "../../hooks/useNavigation";  // useNavigation import
 
-const MeetCard = ({ meetId, onJoinClick, goToMeetDetail }) => {
+const MeetCard = ({ meetId }) => {
+    const { goToMeetDetail } = useNavigation();  // 상세 페이지 이동 훅 사용
+
     const handleTitleClick = () => {
         goToMeetDetail(meetId); // 제목 클릭 시 상세 페이지로 이동
-    };
-
-    const handleJoinClick = (event) => {
-        event.stopPropagation(); // 클릭 이벤트의 전파를 막음
-        onJoinClick(meetId); // 가입 처리
     };
 
     return (
@@ -29,12 +27,8 @@ const MeetCard = ({ meetId, onJoinClick, goToMeetDetail }) => {
                 <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">모임인원 0 / 20</span>
                     <div className="ml-auto">
-                        <RoundedButton 
-                            onClick={handleJoinClick} 
-                            style={{ padding: '7px 15px', fontSize: '12px' }}
-                        >
-                            가입하기
-                        </RoundedButton>
+                        {/* MeetJoin 컴포넌트를 사용하여 가입 신청 처리 */}
+                        <MeetJoin meetId={meetId} onSubmit={() => console.log("가입 신청 완료")} />
                     </div>
                 </div>
             </div>

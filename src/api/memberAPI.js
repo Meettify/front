@@ -5,6 +5,11 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 // 로그인 response : TokenDTO
 export const postLogin = async (data) => {
+    console.log(`DATA : ${data}`);
+    console.log(`DATA.eamil : ${data.email}`);
+    console.log(`DATA.memberPw : ${data.memberPw}`);
+    console.log(`BASE_URL : ${BASE_URL}/members/login`);
+    
     return await request.post({
         url: `${BASE_URL}/members/login`, 
         data
@@ -50,6 +55,15 @@ export const putUpdateMember = async (memberId, updateMemberDTO) => {
 export const deleteMember = async (memberId) => {
     const response = await request.delete({
         url: `${BASE_URL}/members/${memberId}`,
+    });
+
+    return response.data;
+}
+
+// 회원 정보 조회
+export const getMember = async (memberId) => {
+    const response = await request.get({
+        url: `${BASE_URL}/members/${memberId}`
     });
 
     return response.data;

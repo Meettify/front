@@ -31,7 +31,7 @@ const LoginForm = () => {
 
     const result = await postLogin(formData);
 
-    if (result.status === 200) {
+    if (result.status===200) {
       storeLogin(result.data); // 상태 관리에 토큰 저장
       window.location.href = '/';
     } else {
