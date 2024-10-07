@@ -20,11 +20,6 @@ const useNavigation = () => {
         navigate('/meet/insert');
     }
 
-    const onJoinClick = (meetId) => {
-        // 가입 처리 로직을 여기에 추가 (예: API 호출)
-        navigate(`/meet/join/${meetId}`);
-    };
-
     const goToMeetDetail = (meetId) => {
         navigate(`/meet/detail/${meetId}`); // 모임 ID를 사용하여 상세 페이지로 이동
     };
@@ -62,7 +57,6 @@ const useNavigation = () => {
         goToHome,
         goToMeetList,
         goToMeetInsert,
-        onJoinClick,
         goToMeetDetail,
         goToCategoryList,
         goToPostWrite,
