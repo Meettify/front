@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import RangeSlider from "../shop/RangeSlider"; // RangeSlider 컴포넌트 import
+import RangeSlider from "../shop/RangeSlider";
 import { LuList } from "react-icons/lu";
 
 const FilterSection = () => {
