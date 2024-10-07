@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import RangeSlider from "../shop/RangeSlider"; // RangeSlider 컴포넌트 import
+import RangeSlider from "../shop/RangeSlider";
 import { LuList } from "react-icons/lu";
 
 const FilterSection = () => {
@@ -22,7 +22,6 @@ const FilterSection = () => {
             <div className="mb-4 pb-4">
                 <RangeSlider />
             </div>
-
 
             <div className="mb-4 pb-4">
                 <h3 className="text-left text-md font-bold mb-5">카테고리</h3>
