@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import FilterIcon from "../icons/FilterIcon"; // FilterIcon 컴포넌트 import
 import RangeSlider from "../shop/RangeSlider"; // RangeSlider 컴포넌트 import
 import { LuList } from "react-icons/lu";
 
