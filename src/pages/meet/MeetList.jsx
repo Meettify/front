@@ -5,16 +5,11 @@ import MeetSideMenu from "../../components/meet/MeetSideMenu";
 import useNavigation from "../../hooks/useNavigation";  
 
 const MeetList = () => {
-    const { goToMeetCreate, onJoinClick, goToMeetDetail, goToPostList } = useNavigation();
+    const { goToMeetInsert, onJoinClick, goToMeetDetail } = useNavigation();
 
     const handleCreateButtonClick = () => {
-        goToMeetCreate();
+        goToMeetInsert();
     };
-
-    const handlePostButtonClick = () => {
-        goToPostList(); // 게시판 페이지로 이동
-    };
-
     // 예시 데이터
     const meetData = Array.from({ length: 9 });
 
@@ -25,7 +20,6 @@ const MeetList = () => {
                 <div className="flex justify-between items-center mb-4 w-full">
                     <div className="flex space-x-2">
                         <RoundedButton onClick={handleCreateButtonClick}>모임 생성하기</RoundedButton>
-                        <RoundedButton onClick={handlePostButtonClick}>모임 게시판</RoundedButton>
                     </div>
                 </div>
                 {meetData.map((_, index) => (
@@ -39,9 +33,8 @@ const MeetList = () => {
                 ))}
             </div>
 
-            <div className="w-1/3">
+            
                 <MeetSideMenu />
-            </div>
         </div>
     );
 };

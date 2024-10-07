@@ -3,11 +3,12 @@ import running from '../../assets/images/meet/running.jpg'
 
 const MeetSideMenu = () => {
     return (
+        <div className="w-1/3">
         <aside className="bg-gray-200 h-full"> 
             <div className="py-16 sm:py-24 lg:mx-auto lg:max-w-7xl lg:px-8">
                 <div className="flex items-center justify-between px-4 sm:px-6 lg:px-0">
                     <h3 className="text-xl tracking-tight text-gray-900">오늘의 쇼핑. 당신에게 추천하는 제품.</h3>
-                    <a href="#" className="hidden text-sm font-semibold text-blue-600 hover:text-cyan-500 sm:block">
+                    <a href="shop/recomend" className="hidden text-sm font-semibold text-blue-600 hover:text-cyan-500 sm:block">
                         Search more
                         <span aria-hidden="true"> &rarr;</span>
                     </a>
@@ -24,7 +25,7 @@ const MeetSideMenu = () => {
                                     <div className="mt-6">
                                         <p className="text-sm text-gray-500">White</p>
                                         <h3 className="mt-1 font-semibold text-gray-900">
-                                        <a href="#">
+                                        <a href="/shop/recomend">
                                             <span className="absolute "></span>
                                             running shoes
                                         </a>
@@ -37,13 +38,14 @@ const MeetSideMenu = () => {
                     </div>
                 </div>
                 <div className="mt-12 flex px-4 sm:hidden">
-                    <a href="#" className="text-sm font-semibold text-blue-600 hover:text-cyan-500">
+                    <a href="/shop/recomend" className="text-sm font-semibold text-blue-600 hover:text-cyan-500">
                         Search more
                         <span aria-hidden="true"> &rarr;</span>
                     </a>
                 </div>
             </div>
          </aside>
+         </div>
     );
 };
 

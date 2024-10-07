@@ -90,6 +90,12 @@ npm install axios
 npm install zustand
 ```
 
+###  react-responsive 설치 (media query/반응형웹)
+
+```bash
+npm install react-responsive
+```
+
 ### ESLint 규칙 비활성화 설정
 
 ```bash

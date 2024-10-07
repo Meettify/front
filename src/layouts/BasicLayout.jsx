@@ -9,11 +9,9 @@ const BasicLayout = () => {
             <header>
                 <BasicMenu />
             </header>
-            <div>
-                <main>
-                    <Outlet />
-                </main>
-            </div>
+            <main>
+                <Outlet />
+            </main>
             <Footer />
         </>
     );
