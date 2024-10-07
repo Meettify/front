@@ -115,3 +115,8 @@ npm install react-responsive
 ```bash
 npm install rc-slider
 ```
+
+### react icon
+```bash
+npm install react-icons
+```

@@ -1,12 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import logo from '../../assets/logo/meettify_logo.png'; // 로고 이미지 경로
-import UserIcon from "../icons/UserIcon";
-import ChatIcon from "../icons/ChatIcon";
-import SearchIcon from "../icons/SearchIcon";
 import useModalStore from '../../stores/useModalStore';
 import InfoModal from '../../components/member/info/InfoModal';
 import LoginModal from '../../components/member/login/LoginModal';
+import { BsCart3 } from "react-icons/bs";
+import { HiOutlineUserCircle } from "react-icons/hi2";
+import { BsChatSquareText } from "react-icons/bs";
+import { BiSearch } from "react-icons/bi";
+import { FiSearch } from "react-icons/fi";
+import { LuSearch } from "react-icons/lu";
+import { PiBell } from "react-icons/pi";
+
 
 const BasicMenu = () => {
 
@@ -34,32 +39,41 @@ const BasicMenu = () => {
             </div>
 
             {/* 메뉴 */}
-            <ul className="flex space-x-20 text-black m-0"> {/* space-x-메뉴 간격 */}
+            <ul className="flex space-x-16 text-black m-0"> {/* space-x-메뉴 간격 */}
                 <li> <Link to={'/main'}>메인</Link> </li>
                 <li> <Link to={'/meet/'}>모임</Link> </li>
                 <li> <Link to={'/comm/'}>커뮤니티</Link> </li>
                 <li> <Link to={'/shop/'}>쇼핑</Link> </li>
                 <li> <Link to={'/support'}>고객센터</Link> </li>
                 <li>
-                    <Link to="/search" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(0px)' }}>
-                        <SearchIcon />
+                    <Link to="/search" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-2px)' }}>
+                        <LuSearch size={30} />
                     </Link>
                 </li>
                 <li>
-                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}>
-                        <ChatIcon />
+                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(2px)' }}>
+                        <BsChatSquareText size={26} />
+                    </Link>
+                </li>
+                <li>
+                    <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                        <BsCart3 size={27} /> {/* CartIcon 대신 BsCart3 아이콘을 사용 */}
+                    </Link>
+                </li>
+                <li>
+                    <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(1px)' }}>
+                        <PiBell size={29} />
                     </Link>
                 </li>
                 <li>
                     <button
                         ref={buttonRef}
-                        className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}
+                        className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-4px)' }}
                         onClick={handleInfoClick}
                     >
-                        <UserIcon />
+                        <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
-                <li> <Link to={'/membertest'}>Axios test</Link> </li>
             </ul>
             {modals['info'] && (
                 <InfoModal

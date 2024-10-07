@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import FilterIcon from "../icons/FilterIcon"; // FilterIcon 컴포넌트 import
 import RangeSlider from "../shop/RangeSlider"; // RangeSlider 컴포넌트 import
+import { LuList } from "react-icons/lu";
 
 const FilterSection = () => {
     return (
@@ -8,7 +9,7 @@ const FilterSection = () => {
             {/* 상단 필터 아이콘과 드롭다운 */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                    <FilterIcon className="mt-[-5px]" />
+                    <LuList size={19} style={{ transform: 'translateY(-3px)' }} />
                     <span className="text-md font-semibold">필터</span>
                 </div>
 
@@ -66,6 +67,10 @@ const FilterSection = () => {
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
                         <span>사진</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                        <input type="checkbox" className="form-checkbox" />
+                        <span>와인</span>
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
