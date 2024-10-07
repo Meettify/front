@@ -2,6 +2,15 @@ import React from "react";
 import RoundedButton from "../../components/button/RoundedButton";
 
 const CommPage = () => {
+    // 목업 데이터
+    const posts = [
+        { id: 1, title: "첫 번째 글", author: "사용자1", date: "2024. 10. 01", views: 25, replies: 4 },
+        { id: 2, title: "두 번째 글", author: "사용자2", date: "2024. 10. 02", views: 30, replies: 5 },
+        { id: 3, title: "세 번째 글", author: "사용자3", date: "2024. 10. 03", views: 10, replies: 2 },
+        { id: 4, title: "네 번째 글", author: "사용자4", date: "2024. 10. 04", views: 15, replies: 3 },
+        { id: 5, title: "다섯 번째 글", author: "사용자5", date: "2024. 10. 05", views: 20, replies: 1 },
+    ];
+
     return (
         <div className="container mx-auto mt-20">
             <div className="text-4xl font-bold mb-6 text-left">커뮤니티 둘러보기.</div>
@@ -34,14 +43,14 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(7)].map((_, index) => (
-                        <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="p-3 text-center">2</td>
-                            <td className="p-3 text-left">글 제목</td>
-                            <td className="p-3 text-center">작성자</td>
-                            <td className="p-3 text-center">2024. 10. 01</td>
-                            <td className="p-3 text-center">13</td>
-                            <td className="p-3 text-center">3</td>
+                    {posts.map((post) => (
+                        <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="p-3 text-center">{post.id}</td>
+                            <td className="p-3 text-left">{post.title}</td>
+                            <td className="p-3 text-center">{post.author}</td>
+                            <td className="p-3 text-center">{post.date}</td>
+                            <td className="p-3 text-center">{post.views}</td>
+                            <td className="p-3 text-center">{post.replies}</td>
                         </tr>
                     ))}
                 </tbody>
