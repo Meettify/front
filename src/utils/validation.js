@@ -1,6 +1,6 @@
 // 이름 유효성 검사
 export const validateName = (name) => {
-  const isValid = /^[가-힣]{2,}$/.test(name); // 2글자 이상 한글만 포함되어 있는지 확인
+  const isValid = /^[a-zA-Z가-힣]*$/.test(name); // 한글 영문(대소문자)만 포함되어 있는지 확인
   return { isValid };
 };
 
@@ -8,7 +8,7 @@ export const validateName = (name) => {
 // 비밀번호 유효성 검사
 export const validatePassword = (password) => {
   // 길이 검사
-  const lengthValid = password.length >= 6 && password.length <= 15;
+  const lengthValid = password.length >= 8 && password.length <= 20;
 
   // 알파벳 검사
   const hasAlphabet = /[A-Za-z]/.test(password);
@@ -34,13 +34,13 @@ export const validatePassword = (password) => {
 
 // 닉네임 유효성 검사
 export const validateNickname = (nickname) => {
-  const isValid = /^[a-zA-Z0-9가-힣]{5,12}$/.test(nickname); // 한글, 영문(대소문자), 숫자만 포함되어 있는지 확인
+  const isValid = /^[a-zA-Z가-힣]*$/.test(nickname); // 한글, 영문(대소문자)만 포함되어 있는지 확인
   return { isValid };
 };
 
 
 // 이메일 유효성 검사
 export const validateEmail = (email) => {
-  const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email); // 이메일 형식 검증
+  const isValid = /^(?:\w+\.?)*\w+@(?:\w+\.)+\w+$/.test(email);
   return { isValid };
 };
