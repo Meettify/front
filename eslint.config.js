@@ -10,11 +10,18 @@ export default [
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node, // node 글로벌 변수 추가
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
+      },
+      env: {
+        browser: true,
+        node: true, // node 환경 추가
       },
     },
     settings: { react: { version: '18.3' } },
@@ -34,7 +41,7 @@ export default [
         { allowConstantExport: true },
       ],
       "no-unused-vars":"off",
-      "react/prop-types":"off",
+      "react/prop-types":"off", 
     },
   },
 ]

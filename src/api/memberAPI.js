@@ -1,12 +1,17 @@
-import request from './util/request';
+import request from './request';
 
 // @RequestMapping("/api/v1/members")
-const BASE_URL = 'http://3.34.94.116:8080' 
+const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 // 로그인 response : TokenDTO
 export const postLogin = async (data) => {
+    console.log(`DATA : ${data}`);
+    console.log(`DATA.eamil : ${data.email}`);
+    console.log(`DATA.memberPw : ${data.memberPw}`);
+    console.log(`BASE_URL : ${BASE_URL}/members/login`);
+    
     return await request.post({
-        url: `${BASE_URL}/api/v1/members/login`, 
+        url: `${BASE_URL}/members/login`, 
         data
     })
 }
@@ -14,7 +19,7 @@ export const postLogin = async (data) => {
 // 회원가입 response : 200, ResponseMemberDTO
 export const postSignup = async (data) => {
     return await request.post({
-        url: `${BASE_URL}/api/v1/members`,
+        url: `${BASE_URL}/members/login`, 
         data
     })
 }
@@ -22,7 +27,7 @@ export const postSignup = async (data) => {
 // 닉네임 중복 체크
 export const getCheckNickName = async (nickName) => {
     const response = await request.get({
-        url: `${BASE_URL}/api/v1/members/nickName/${nickName}`,
+        url: `${BASE_URL}/members/nickName/${nickName}`,
     });
     return response.data;
 }
@@ -30,7 +35,7 @@ export const getCheckNickName = async (nickName) => {
 // 이메일 중복 체크
 export const getCheckEmail = async (email) => {
     const response = await request.get({
-        url: `${BASE_URL}/api/v1/members/${email}`,
+        url: `${BASE_URL}/members/${email}`,
     });
 
     return response.data;
@@ -39,7 +44,7 @@ export const getCheckEmail = async (email) => {
 // 회원 정보 수정
 export const putUpdateMember = async (memberId, updateMemberDTO) => {
     const response = await request.put({
-        url: `${BASE_URL}/api/v1/members/${memberId}`,
+        url: `${BASE_URL}/members/${memberId}`,
         data: updateMemberDTO,
     });
 
@@ -49,10 +54,17 @@ export const putUpdateMember = async (memberId, updateMemberDTO) => {
 // 회원 탈퇴
 export const deleteMember = async (memberId) => {
     const response = await request.delete({
-        url: `${BASE_URL}/api/v1/members/${memberId}`,
+        url: `${BASE_URL}/members/${memberId}`,
     });
 
     return response.data;
 }
 
+// 회원 정보 조회
+export const getMember = async (memberId) => {
+    const response = await request.get({
+        url: `${BASE_URL}/members/${memberId}`
+    });
 
+    return response.data;
+}

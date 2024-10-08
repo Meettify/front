@@ -1,0 +1,86 @@
+@font-face {
+  font-family: 'GmarketSansLight';
+  src: url('./assets/fonts/GmarketSansTTFLight.ttf') format('truetype');
+  font-weight: 300; 
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GmarketSansMedium';
+  src: url('./assets/fonts/GmarketSansTTFMedium.ttf') format('truetype');
+  font-weight: 500; 
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GmarketSansBold';
+  src: url('./assets/fonts/GmarketSansTTFBold.ttf') format('truetype');
+  font-weight: 700; 
+  font-style: normal;
+}
+
+* {
+  margin: -1px 0 -3px 0px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'GmarketSansMedium', Arial, sans-serif;
+  font-size: 16px;  /* 폰트 크기 */
+  color: #000; /* 폰트 색상 */
+  overflow: auto; /* 스크롤 가능하도록 auto */
+}
+
+/* 스크롤바를 숨기기 */
+body::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+/*
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+} */

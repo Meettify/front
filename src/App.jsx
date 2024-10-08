@@ -1,13 +1,14 @@
-
+import './App.css'
 import React from 'react';
-import BasicLayout from "./pages/layout/BasicLayout.jsx";
-
+import { RouterProvider } from 'react-router-dom'
+import root from './routers/root';
+import MyComponent from './MyComponent';
 
 function App() {
   return (
-    <React.StrictMode>
-      <BasicLayout/>
-    </React.StrictMode>
+    //<MyComponent>
+      <RouterProvider router ={root} />
+    //</MyComponent>
   );
 }
 
