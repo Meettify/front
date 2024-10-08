@@ -122,8 +122,13 @@ npm install react-responsive
 npm install tailwind-scrollbar
 ```
 
+### slider 라이브러리
 
-### react-icons
+```bash
+npm install rc-slider
+```
+
+### react icon
 ```bash
 npm install react-icons
 ```

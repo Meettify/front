@@ -1,20 +1,22 @@
 import React from "react";
 
-const SearchIcon = ({ className }) => (
+const FilterIcon = ({ className }) => (
     <svg
-        className={`w-7 h-7 ${className}`}
+        className={`w-6 h-6 ${className}`}
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
         fill="none"
         viewBox="0 0 24 24"
     >
         <path
             stroke="currentColor"
             strokeLinecap="round"
-            strokeWidth="3"
-            d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+            strokeWidth="2"
+            d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"
         />
     </svg>
 );
 
-export default SearchIcon;
+export default FilterIcon;
