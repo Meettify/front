@@ -49,15 +49,15 @@ const SignupForm = () => {
     const newValidationErrors = {};
 
     if (!nameValidation.isValid) {
-      newValidationErrors.name = '이름은 한글만 입력 가능합니다.';
+      newValidationErrors.name = '이름은 한글과 영문만 입력 가능합니다.';
     }
 
-    if (!nicknameValidation.length || !nicknameValidation.isValid) {
-      newValidationErrors.nickName = '닉네임은 5~12자의 한글, 영문, 숫자만 입력 가능합니다.';
+    if (!nicknameValidation.isValid) {
+      newValidationErrors.nickName = '닉네임은 한글, 영문만 입력 가능합니다.';
     }
 
     if (!passwordValidation.isValid) {
-      newValidationErrors.password = '비밀번호는 6자 이상 15자 이하이어야 하며, 영문, 숫자, 특수 문자를 포함해야 합니다.';
+      newValidationErrors.password = '비밀번호는 8자 이상 20자 이하이어야 하며, 영문, 숫자, 특수 문자를 포함해야 합니다.';
     }
 
     setValidationErrors(newValidationErrors);
@@ -65,10 +65,6 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    validateFields();
-
-    // Validation errors로 인해 제출을 막기 위해 에러가 있으면 리턴
-    if (Object.keys(validationErrors).length > 0) return;
 
     const requestData = {
       memberEmail: formData.email,
@@ -84,8 +80,7 @@ const SignupForm = () => {
 
     const result = await postSignup(requestData);
 
-    if (result === HttpStatusCode.Ok 
-      || result === HttpStatusCode.Created){
+    if (result.status === HttpStatusCode.Ok){
       goToSignupSuccess();
     }else{
       console.error('회원가입 실패:', result);
@@ -116,8 +111,10 @@ const SignupForm = () => {
     if (formData.password) {
       if (formData.password === confirmPassword) {
         setPasswordMatch('비밀번호가 동일합니다.');
+        setValidationErrors(prev => ({ ...prev, confirmPassword: '' }));
       } else {
         setPasswordMatch('비밀번호가 동일하지 않습니다.');
+        setValidationErrors(prev => ({ ...prev, confirmPassword: '비밀번호가 동일하지 않습니다.' }));
       }
     } else {
       setPasswordMatch(''); 
@@ -136,7 +133,13 @@ const SignupForm = () => {
 
     if (field === 'nickName') {
       const nicknameValidation = validateNickname(value);
-      
+      console.log(`에러개수: ${(Object.keys(validationErrors).length)}`);
+      console.log(`에러이름: ${validationErrors.name}`);
+      console.log(`에러닉네임: ${validationErrors.nickName}`);
+      console.log(`에러이메일: ${validationErrors.email}`);
+      console.log(`에러비밀번호: ${validationErrors.password}`);
+      console.log(`에러비밀번호확인: ${validationErrors.confirmPassword}`);
+
       if (nicknameValidation.isValid) {
         getCheckNickName(value).then(check => {
           setValidationErrors(prev => ({
@@ -147,7 +150,7 @@ const SignupForm = () => {
       } else {
         setValidationErrors(prev => ({
           ...prev,
-          nickName: nicknameValidation.isValid ? '' : '닉네임은 5~12자의 한글, 영문, 숫자만 입력 가능합니다.'
+          nickName: nicknameValidation.isValid ? '' : '닉네임은 한글, 영문만 입력 가능합니다.'
         }));
       }
     }
@@ -194,6 +197,9 @@ const SignupForm = () => {
     }
     return '';
   };
+
+  const isFormValid = Object.values(validationErrors).every(error => error === '' || error === undefined) 
+  && Object.values(formData).every(field => field !== '');
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
@@ -243,7 +249,7 @@ const SignupForm = () => {
         <div className="password-popup">
           <p>비밀번호 필수 조건</p>
           <ul>
-            <li className={passwordValid.length ? 'valid' : ''}>6자 ~ 15자</li>
+            <li className={passwordValid.length ? 'valid' : ''}>8자 ~ 20자</li>
             <li className={passwordValid.hasAlphabet ? 'valid' : ''}>알파벳 포함</li>
             <li className={passwordValid.hasNumber ? 'valid' : ''}>숫자 포함</li>
             <li className={passwordValid.hasSpecialChar ? 'valid' : ''}>특수 문자 포함</li>
@@ -271,6 +277,7 @@ const SignupForm = () => {
       </div>
       
       <input type="text" placeholder="주소" value={formData.address} readOnly />
+
       <input 
         type="text" 
         placeholder="상세주소" 
@@ -278,12 +285,12 @@ const SignupForm = () => {
         onChange={e => setFormData({ ...formData, addressDetail: e.target.value })} 
         required 
       />
-      
+
       <button 
         className={`border border-blue-300 text-white w-[144px] h-[44px] rounded mt-5 font-bold text-xl
-          ${!(Object.keys(validationErrors).length > 0) ? 'bg-blue-500' : 'bg-blue-300'}`}
+          ${isFormValid ? 'bg-blue-500' : 'bg-blue-300'}`}
         type="submit" 
-        disabled={(Object.keys(validationErrors).length > 0)} >
+        disabled={!isFormValid} >
         회원가입
       </button>
     </form>

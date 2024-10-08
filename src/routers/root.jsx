@@ -18,7 +18,7 @@ const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
 const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
 // axios test
 const MemberTest = lazy(() => import("../pages/member/test/MemberTestPage"))
-const MyInfo = lazy(() => import("../pages/member/info/InfoPage"))
+const MyInfo = lazy(() => import("../pages/member/info/MyInfoPage"))
 
 const root = createBrowserRouter([
     {

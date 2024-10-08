@@ -5,7 +5,7 @@ import useNavigation from "../../../hooks/useNavigation";
 
 
 const InfoModal = ({ buttonPosition, onClose }) => {
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated, logout, user } = useAuth();
     const { modals, closeModal, openModal } = useModalStore();
     const {goToMyInfo} = useNavigation();
 
@@ -15,6 +15,11 @@ const InfoModal = ({ buttonPosition, onClose }) => {
             openModal('login');
         }, 100);
     };
+
+    const handleMyifoClick = () => {
+        closeModal('info');
+        goToMyInfo();
+    }
 
     const handleModalClick = (e) => {
         e.stopPropagation();
@@ -36,16 +41,20 @@ const InfoModal = ({ buttonPosition, onClose }) => {
             >
                 {isAuthenticated ? (
                     <>
-                        <h2>{isAuthenticated}</h2>
-                        <h2 className="text-xl font-bold text-black mb-5 mt-8 text-center">환영합니다!</h2>
+                        <h2 className="text-xl font-bold text-yellow-400 mb-5 mt-5 text-center">{user.nickName} <p className="text-xl font-bold text-black inline">님</p></h2>
+                        <h2 className="text-xl font-bold text-black text-center">환영합니다!</h2>
                         <div className="text-center">
                             <button 
-                            className="mt-8 mb-3 p-2 w-3/4 text-white bg-blue-500 rounded"
-                            onClick={goToMyInfo}
+                            className="mt-8 mb-3 p-2 w-3/4
+                             border border-blue-400 text-white bg-blue-400 rounded
+                             transition-colors duration-200 hover:bg-blue-500 hover:text-white hover:border-blue-500"
+                            onClick={handleMyifoClick}
                             >내 정보</button>
                             <button 
                                 onClick={logout} 
-                                className="p-2 w-3/4 text-white bg-red-500 rounded"
+                                className="p-2 w-3/4 
+                                border border-red-400 text-white bg-red-400 rounded
+                                transition-colors duration-200 hover:bg-red-500 hover:text-white hover:border-red-500"
                             >
                                 로그아웃
                             </button>

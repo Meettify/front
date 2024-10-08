@@ -16,14 +16,14 @@ const LoginForm = () => {
     memberPw: '',
   });
 
-  const { goToSignup } = useNavigation();
+  const { goToSignup, goToHome } = useNavigation();
   const [errorMessage, setErrorMessage] = useState('');
   const { login: storeLogin } = useAuth();
   const { closeModal } = useModalStore();
 
   const handleSignupClick = () => {
-    closeModal();
-    goToSignup();
+    closeModal('login'); 
+    goToSignup();  
   };
 
   const handleSubmit = async (e) => {
@@ -31,16 +31,25 @@ const LoginForm = () => {
 
     const result = await postLogin(formData);
 
+    console.log(`result.status : ${result.status}`);
+
     if (result.status===200) {
-      storeLogin(result.data); // 상태 관리에 토큰 저장
-      window.location.href = '/';
+      storeLogin(result.data);
+      sessionStorage.setItem('accessToken', result.data.accessToken); // 세션 스토리지에 엑세스 토큰 저장
+      localStorage.setItem('refreshToken', result.data.refreshToken); // 로컬 스토리지에 리프레시 토큰 저장
+      localStorage.setItem('memberId', result.data.memberId);
+      console.log(`result.data.memberId : ${result.data.memberId}`);
+      closeModal('login');
+      goToHome();
     } else {
       setErrorMessage('이메일 또는 비밀번호가 틀렸습니다.');
     }
+    
   };
 
   const handleSocialLogin = (provider) => {
     // provider에 따라 소셜 로그인 처리
+    // redirect URI /oauth2/authorization/google or naver
     console.log(`/oauth2/authorization/${provider}`);
     // API 호출 로직
 

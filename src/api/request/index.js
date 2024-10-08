@@ -14,6 +14,9 @@ let axiosInstance = null;
 const init = () => {
     const token = window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '';
 
+    console.log("index.js init()");
+    console.log(`index.js init() token : ${token}`)
+
     axiosInstance = axios.create({
         baseURL: import.meta.env.MODE === 'production'
             ? import.meta.env.VITE_APP_API_BASE_URL
@@ -45,10 +48,12 @@ const refreshAccessToken = async () => {
 
 // 인터셉터 설정
 const setInterceptor = () => {
+    console.log("index.js setInterceptor");
     getInstance().interceptors.response.use(
         (response) => response,
         async (error) => {
             const originalRequest = error.config;
+            console.log(`error : ${error}`);
 
             // 401 Unauthorized 처리: 토큰 만료
             if (error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
@@ -67,17 +72,6 @@ const setInterceptor = () => {
             return Promise.reject(error);
         }
     );
-
-    // 요청 인터셉터 (요청마다 토큰 적용)
-    getInstance().interceptors.request.use((config) => {
-        const token = sessionStorage.getItem('accessToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
 };
 
 const getInstance = () => {
