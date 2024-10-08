@@ -9,7 +9,7 @@ const MeetUpdate = lazy(() => import("../pages/meet/MeetUpdate"));
 const MeetInsert = lazy(() => import("../pages/meet/MeetInsert"));
 const MeetAccept = lazy(() => import("../pages/meet/MeetAccept"));
 const MeetList = lazy(() => import("../pages/meet/MeetList"));
-const MeetPost = lazy(() => import("../pages/meet/MeetComm"));
+const MeetComm = lazy(() => import("../pages/meet/MeetComm"));
 
 
 const meetRouter = () => {
@@ -20,7 +20,7 @@ const meetRouter = () => {
         },
         {
             path: "/meet/post",
-            element: <Suspense fallback={Loading}><MeetPost /></Suspense>,
+            element: <Suspense fallback={Loading}><MeetComm /></Suspense>,
         },
         {
             path: "/meet/detail/:meetId",

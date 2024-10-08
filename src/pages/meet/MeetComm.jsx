@@ -6,9 +6,7 @@ const MeetComm = () => {
     return (
         <div className="container mx-auto mt-20 w-full flex">
             <MeetPost />
-            <div className="w-1/3">
-                <MeetSideMenu/>
-            </div>
+            <MeetSideMenu/>
         </div>
     );
 };

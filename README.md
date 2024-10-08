@@ -121,3 +121,9 @@ npm install react-responsive
 ```bash
 npm install tailwind-scrollbar
 ```
+
+
+### react-icons
+```bash
+npm install react-icons
+```

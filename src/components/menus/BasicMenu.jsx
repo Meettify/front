@@ -7,12 +7,13 @@ import SearchIcon from "../icons/SearchIcon";
 import useModalStore from '../../stores/useModalStore';
 import InfoModal from '../../components/member/info/InfoModal';
 import LoginModal from '../../components/member/login/LoginModal';
+import { FiMenu } from "react-icons/fi";
 
 const BasicMenu = () => {
-
     const { modals, openModal, closeModal } = useModalStore();
     const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // 사이드 메뉴 상태 추가
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -23,44 +24,90 @@ const BasicMenu = () => {
         openModal('info');
     };
 
-    return (
-        <nav id='navbar' className="flex items-center justify-center w-full py-0 px-5">
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen); // 메뉴 토글
+    };
 
+    return (
+        <nav id='navbar' className="flex items-center justify-between w-full py-0 px-5">
             {/* 로고 */}
-            <div className="flex items-center mr-20" style={{ transform: 'translateY(-4px)' }}> {/* mr-20 오른쪽 마진 */}
+            <div className="flex items-center mr-20">
                 <Link to="/">
-                    <img src={logo} alt="Meettify Logo" className="w-48 h-auto" /> {/* w-로고 크기 */}
+                    <img src={logo} alt="Meettify Logo" className="w-48 h-auto" />
                 </Link>
             </div>
 
-            {/* 메뉴 */}
-            <ul className="flex space-x-20 text-black m-0"> {/* space-x-메뉴 간격 */}
-                <li> <Link to={'/main'}>메인</Link> </li>
-                <li> <Link to={'/meet/'}>모임</Link> </li>
-                <li> <Link to={'/comm/'}>커뮤니티</Link> </li>
-                <li> <Link to={'/shop/'}>쇼핑</Link> </li>
-                <li> <Link to={'/support'}>고객센터</Link> </li>
+            {/* 웹 메뉴 (데스크탑) */}
+            <ul className="hidden md:flex space-x-20 text-black m-0">
+                <li><Link to={'/main'}>메인</Link></li>
+                <li><Link to={'/meet/'}>모임</Link></li>
+                <li><Link to={'/comm/'}>커뮤니티</Link></li>
+                <li><Link to={'/shop/'}>쇼핑</Link></li>
+                <li><Link to={'/support'}>고객센터</Link></li>
                 <li>
-                    <Link to="/search" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                    <Link to="/search" className="mr-1 text-gray-800 flex items-center">
                         <SearchIcon />
                     </Link>
                 </li>
                 <li>
-                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}>
+                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center">
                         <ChatIcon />
                     </Link>
                 </li>
                 <li>
                     <button
                         ref={buttonRef}
-                        className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-5px)' }}
+                        className="mr-1 text-gray-800 flex items-center"
                         onClick={handleInfoClick}
                     >
                         <UserIcon />
                     </button>
                 </li>
-                <li> <Link to={'/membertest'}>Axios test</Link> </li>
+                <li><Link to={'/membertest'}>Axios test</Link></li>
             </ul>
+
+            {/* 모바일 메뉴 아이콘 */}
+            <div className="md:hidden">
+            <button onClick={toggleMenu} className="p-4">
+                <FiMenu size={30} /> {/* 아이콘 크기를 30px로 설정 */}
+            </button>
+            </div>
+
+            {/* 사이드 메뉴 */}
+            {isMenuOpen && (
+                <div className="fixed top-0 left-0 w-1/3 h-full bg-white shadow-md z-50"> {/* 너비를 1/3로 조정 */}
+                    <button onClick={toggleMenu} className="p-4">Close</button>
+                    <ul className="flex flex-col items-center p-4 space-y-4"> {/* 가운데 정렬 */}
+                        <li className="text-center"><Link to={'/main'}>메인</Link></li>
+                        <li className="text-center"><Link to={'/meet/'}>모임</Link></li>
+                        <li className="text-center"><Link to={'/comm/'}>커뮤니티</Link></li>
+                        <li className="text-center"><Link to={'/shop/'}>쇼핑</Link></li>
+                        <li className="text-center"><Link to={'/support'}>고객센터</Link></li>
+                        <li className="text-center">
+                            <Link to="/search" className="flex items-center">
+                                <SearchIcon />
+                            </Link>
+                        </li>
+                        <li className="text-center">
+                            <Link to="/chat" className="flex items-center">
+                                <ChatIcon />
+                            </Link>
+                        </li>
+                        <li className="text-center">
+                            <button
+                                ref={buttonRef}
+                                className="flex items-center"
+                                onClick={handleInfoClick}
+                            >
+                                <UserIcon />
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            )}
+
+
+
             {modals['info'] && (
                 <InfoModal
                     isOpen={modals['info']}

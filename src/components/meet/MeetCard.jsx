@@ -10,11 +10,11 @@ const MeetCard = ({ meetId }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden w-64 mt-4">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mt-4">
             <div className="bg-gray-500 h-36 flex items-center justify-center text-white">
                 커버 이미지
             </div>
-            <div className="p-4 text-left h-47">
+            <div className="p-4 text-left">
                 <h3 className="font-bold text-lg mb-1 cursor-pointer" onClick={handleTitleClick}>
                     모임명
                 </h3>
