@@ -41,7 +41,7 @@ const MeetJoin = ({ meetId, onSubmit }) => {
   return (
     <>
       {/* 가입 신청 버튼 (모달을 열기 위한 트리거) */}
-      <RoundedButton onClick={openModal}>
+      <RoundedButton style={{ padding: '7px 15px', fontSize: '12px' }} onClick={openModal}>
         가입신청
       </RoundedButton>
 
@@ -51,7 +51,7 @@ const MeetJoin = ({ meetId, onSubmit }) => {
           <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
             <form onSubmit={handleSubmit} className="p-6 bg-white shadow-lg rounded-lg max-w-md mx-auto">
               <h2 className="text-2xl font-semibold mb-4">모임가입 동의</h2>
-              
+
               {/* 모두 동의 체크박스 */}
               <div className="flex items-center mb-4">
                 <input
@@ -108,11 +108,10 @@ const MeetJoin = ({ meetId, onSubmit }) => {
               <button
                 type="submit"
                 disabled={!(personalInfoChecked && termsChecked)}
-                className={`w-full py-2 px-4 font-semibold text-white rounded-lg ${
-                  personalInfoChecked && termsChecked
+                className={`w-full py-2 px-4 font-semibold text-white rounded-lg ${personalInfoChecked && termsChecked
                     ? 'bg-blue-500 hover:bg-blue-600'
                     : 'bg-gray-300 cursor-not-allowed'
-                }`}
+                  }`}
               >
                 동의하고 제출
               </button>
