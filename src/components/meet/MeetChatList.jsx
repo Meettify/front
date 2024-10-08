@@ -15,6 +15,7 @@ const MeetChatList = ({ onUserSelect }) => {  // onUserSelect를 props로 받음
     { id: 4, username: 'Javascript Indonesia', message: 'Evan : someone can fix this' },
     { id: 5, username: 'Javascript Indonesia', message: 'Evan : someone can fix this' },
     { id: 6, username: 'Javascript Indonesia', message: 'Evan : someone can fix this' },
+    { id: 7, username: 'Javascript Indonesia', message: 'Evan : someone can fix this' }
   ];
 
   return (
