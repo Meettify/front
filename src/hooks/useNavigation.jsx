@@ -12,10 +12,6 @@ const useNavigation = () => {
         navigate('/');
     };
 
-    const goToMeetList = () => {
-        navigate('/meet/list');
-    }
-
     const goToMeetInsert = () => {
         navigate('/meet/insert');
     }
@@ -24,8 +20,8 @@ const useNavigation = () => {
         navigate(`/meet/detail/${meetId}`); // 모임 ID를 사용하여 상세 페이지로 이동
     };
 
-    const goToCategoryList = (category) => {
-        navigate(`/meet/list/${category}`); // 카테고리 이름을 사용하여 리스트 페이지로 이동
+    const goToCategoryList = (categoryId) => {
+        navigate(`/meet/list/${categoryId}`); // 카테고리 이름을 사용하여 리스트 페이지로 이동
     };
 
     const goToPostWrite = () => {
@@ -55,7 +51,6 @@ const useNavigation = () => {
     return {
         goToShopList,
         goToHome,
-        goToMeetList,
         goToMeetInsert,
         goToMeetDetail,
         goToCategoryList,
