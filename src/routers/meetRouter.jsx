@@ -13,7 +13,7 @@ const MeetPost = lazy(() => import("../pages/meet/MeetComm"));
 const meetRouter = () => {
   return [
     {
-      path: "/meet/list",
+      path: "/meet/list/:categoryId",
       element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
     },
     {
