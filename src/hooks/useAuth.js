@@ -9,8 +9,6 @@ export const useAuth = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     const storedMemberId = localStorage.getItem('memberId');
-    console.log(`useEffect token : ${token}`);
-    console.log(`useEffect storedMemberId : ${storedMemberId}`);
 
     if (token) {
       // 토큰이 있으면 로그인 상태를 복구

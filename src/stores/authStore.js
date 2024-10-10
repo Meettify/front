@@ -1,12 +1,19 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useAuthStore = create((set) => ({
-  user: null,
+const useAuthStore = create(persist((set) => ({
+  user: {
+    memberEmail: '',
+    memberName: '',
+    nickName: '',
+    memberAddr: '',
+    memberAddrDetail: '',
+    memberZipCode: ''
+  },
   isAuthenticated: false,
   memberId: null,
 
   login: (userData) => {
-    console.log(`StoreUserData : ${userData}`);
     set({ user: userData, isAuthenticated: true, memberId: localStorage.getItem('memberId') });
   },
   
@@ -17,6 +24,6 @@ const useAuthStore = create((set) => ({
     set({ user: null, isAuthenticated: false, memberId: null });
     window.location.href = '/';
   },
-}));
+})));
 
 export default useAuthStore;
