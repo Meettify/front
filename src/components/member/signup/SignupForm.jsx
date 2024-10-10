@@ -133,12 +133,6 @@ const SignupForm = () => {
 
     if (field === 'nickName') {
       const nicknameValidation = validateNickname(value);
-      console.log(`에러개수: ${(Object.keys(validationErrors).length)}`);
-      console.log(`에러이름: ${validationErrors.name}`);
-      console.log(`에러닉네임: ${validationErrors.nickName}`);
-      console.log(`에러이메일: ${validationErrors.email}`);
-      console.log(`에러비밀번호: ${validationErrors.password}`);
-      console.log(`에러비밀번호확인: ${validationErrors.confirmPassword}`);
 
       if (nicknameValidation.isValid) {
         getCheckNickName(value).then(check => {

@@ -14,9 +14,6 @@ let axiosInstance = null;
 const init = () => {
     const token = window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '';
 
-    console.log("index.js init()");
-    console.log(`index.js init() token : ${token}`)
-
     axiosInstance = axios.create({
         baseURL: import.meta.env.MODE === 'production'
             ? import.meta.env.VITE_APP_API_BASE_URL
@@ -48,7 +45,6 @@ const refreshAccessToken = async () => {
 
 // 인터셉터 설정
 const setInterceptor = () => {
-    console.log("index.js setInterceptor");
     getInstance().interceptors.response.use(
         (response) => response,
         async (error) => {
