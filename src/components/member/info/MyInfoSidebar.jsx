@@ -16,7 +16,6 @@ const MyInfoSidebar = ({ onChangeForm }) => {
             >
                 회원 탈퇴
             </button>
-            
         </div>
     );
 };
