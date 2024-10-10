@@ -14,7 +14,6 @@ import { PiBell } from "react-icons/pi";
 
 
 const BasicMenu = () => {
-
     const { modals, openModal, closeModal } = useModalStore();
     const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef(null);
@@ -74,6 +73,7 @@ const BasicMenu = () => {
                         <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
+                <li> <Link to={'/mypage'}>마이페이지</Link> </li>
             </ul>
             {modals['info'] && (
                 <InfoModal
