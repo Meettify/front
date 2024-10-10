@@ -1,59 +1,75 @@
-// C:\project3\front\src\pages\MeetDetail.js
-import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import emotionImage from '../../assets/images/emotion1.png';  
 import MeetJoin from '../../components/meet/MeetJoin';  
 import MeetContent from '../../components/meet/MeetContent';  
 import RoundedButton from '../../components/button/RoundedButton';  
-import useMeetStore from '../../stores/useMeetStore';  // 경로 수정
+import { getMeetingById, deleteMeeting } from '../../mocks/mockAPI';
+import MeetSideMenu from '../../components/meet/MeetSideMenu';  // MeetSideMenu 임포트
 
 const MeetDetail = () => {
   const { meetId } = useParams();
-
-  // Zustand에서 상태와 상태 변경 함수 가져오기
-  const { image, tags, description, details, isMember, isHost, setImage, setTags, setDescription, setDetails, setIsMember, setIsHost } = useMeetStore();
+  const navigate = useNavigate();
+  const [meeting, setMeeting] = useState(null);
 
   useEffect(() => {
-    // 초기 상태 설정
-    setImage(emotionImage);
-    setTags(['운동', '서울']);
-    setIsMember(true);  // 임시로 회원 상태 설정
-    setIsHost(true);    // 임시로 모임장 상태 설정
+    // Mock API로 데이터 가져오기
+    const fetchData = async () => {
+      const fetchedMeeting = await getMeetingById(meetId);
+      setMeeting(fetchedMeeting);
+    };
+    fetchData();
+  }, [meetId]);
 
-    // meetId에 따라 동적으로 상태 변경
-    if (meetId === "0") {
-      setDescription('첫 번째 모임 상세 정보');
-      setDetails('첫 번째 모임에 대한 상세 설명입니다.');
-    } else {
-      setDescription(`모임 ID ${meetId}의 상세 정보`);
-      setDetails(`모임 ID ${meetId}에 대한 상세 설명입니다.`);
+  // 삭제하기 버튼 클릭 핸들러
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm('정말로 모임을 삭제하시겠습니까?');
+    if (isConfirmed) {
+      const success = await deleteMeeting(meetId);  // Mock API로 삭제 처리
+      if (success) {
+        alert('모임이 성공적으로 삭제되었습니다.');
+        navigate('/meet/list');
+      } else {
+        alert('삭제 중 오류가 발생했습니다.');
+      }
     }
-  }, [meetId, setImage, setTags, setDescription, setDetails, setIsMember, setIsHost]);
+  };
+
+  if (!meeting) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col">
-      <MeetContent 
-        image={image}
-        tags={tags}
-        description={description}
-        details={details}
-      />
-      
-      {/* 컨텐츠 아래에 위치한 버튼 */}
-      <div className="flex justify-center space-x-4 p-4 mt-4">
-        {/* 비회원일 경우 가입 신청 버튼 */}
-        {!isMember && !isHost && (
-          <MeetJoin meetId={meetId} onSubmit={() => alert('가입 신청이 완료되었습니다. 모임장의 승인을 기다려주세요.')} />
-        )}
+    <div className="bg-gray-100 flex-1 h-full">
+      <div className="container mx-auto mt-20 w-full flex">
+        <div className="w-2/3 bg-gray-100 flex flex-col p-2">
+          <MeetContent 
+            image={emotionImage}
+            tags={meeting.tags}
+            description={meeting.description}
+            details={meeting.details}
+          />
+          
+          <div className="flex justify-center space-x-4 p-4 mt-4">
+            {!meeting.isMember && !meeting.isHost && (
+              <MeetJoin meetId={meetId} onSubmit={() => alert('가입 신청이 완료되었습니다. 모임장의 승인을 기다려주세요.')} />
+            )}
 
-        {/* 모임장일 경우 수정하기 버튼 */}
-        {isHost && (
-          <Link to={`/meet/update/${meetId}`}>
-            <RoundedButton>
-              수정하기
-            </RoundedButton>
-          </Link>
-        )}
+            {(meeting.isHost || meeting.isAdmin) && (
+              <>
+                <Link to={`/meet/update/${meetId}`}>
+                  <RoundedButton>
+                    수정하기
+                  </RoundedButton>
+                </Link>
+
+                <RoundedButton onClick={handleDelete}>
+                  삭제하기
+                </RoundedButton>
+              </>
+            )}
+          </div>
+        </div>
+        {/* MeetSideMenu 추가 */}
+        <MeetSideMenu />
       </div>
     </div>
   );
