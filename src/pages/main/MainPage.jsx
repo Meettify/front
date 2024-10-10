@@ -24,6 +24,7 @@ const MainPage = () => {
             />
 
             <MainSection
+            
                 title={<SectionText title="편리한 쇼핑." subtitle="언제든, 당신에게 필요한 제품으로." />}
                 items={[...Array(5)]}
                 renderItem={(item, index) => (

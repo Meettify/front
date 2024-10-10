@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: 'GmarketSansLight';
   src: url('./assets/fonts/GmarketSansTTFLight.ttf') format('truetype');
   font-weight: 300; 
@@ -17,6 +17,61 @@
   src: url('./assets/fonts/GmarketSansTTFBold.ttf') format('truetype');
   font-weight: 700; 
   font-style: normal;
+} */
+
+/* Freesentation 폰트 추가 */
+@font-face {
+  font-family: 'Freesentation-Thin';
+  src: url('./assets/fonts/Freesentation-1Thin.ttf') format('truetype');
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'Freesentation-ExtraLight';
+  src: url('./assets/fonts/Freesentation-2ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Freesentation-Light';
+  src: url('./assets/fonts/Freesentation-3Light.ttf') format('truetype');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Freesentation-Regular';
+  src: url('./assets/fonts/Freesentation-4Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Freesentation-Medium';
+  src: url('./assets/fonts/Freesentation-5Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Freesentation-SemiBold';
+  src: url('./assets/fonts/Freesentation-6SemiBold.ttf') format('truetype');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Freesentation-Bold';
+  src: url('./assets/fonts/Freesentation-7Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Freesentation-ExtraBold';
+  src: url('./assets/fonts/Freesentation-8ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: 'Freesentation-Black';
+  src: url('./assets/fonts/Freesentation-9Black.ttf') format('truetype');
+  font-weight: 900;
 }
 
 * {
@@ -34,10 +89,11 @@ html, body {
 }
 
 body {
-  font-family: 'GmarketSansMedium', Arial, sans-serif;
-  font-size: 16px;  /* 폰트 크기 */
+  font-family: 'Freesentation-Medium', Arial, sans-serif;
+  font-size: 17px;  /* 폰트 크기 */
   color: #000; /* 폰트 색상 */
   overflow: auto; /* 스크롤 가능하도록 auto */
+  letter-spacing: 0.3px; /* 자간을 0.5px로 설정 */
 }
 
 /* 스크롤바를 숨기기 */

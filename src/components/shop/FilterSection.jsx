@@ -32,6 +32,10 @@ const FilterSection = () => {
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
+                        <span>여행</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                        <input type="checkbox" className="form-checkbox" />
                         <span>음악</span>
                     </label>
                     <label className="flex items-center space-x-2">
@@ -40,39 +44,19 @@ const FilterSection = () => {
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
-                        <span>기술</span>
+                        <span>독서</span>
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
-                        <span>게임</span>
+                        <span>건강</span>
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
-                        <span>여행</span>
+                        <span>패션/뷰티</span>
                     </label>
                     <label className="flex items-center space-x-2">
                         <input type="checkbox" className="form-checkbox" />
-                        <span>맛집</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>피트니스</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>교육</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>사진</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>와인</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>야외 활동</span>
+                        <span>반려동물</span>
                     </label>
                 </div>
             </div>
