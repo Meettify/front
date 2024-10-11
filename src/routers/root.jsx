@@ -4,6 +4,7 @@ import BasicLayout from "../layouts/BasicLayout";
 import shopRouter from "./shopRouter";
 import meetRouter from "./meetRouter";
 import memberRouter from "./memberRouter";
+import commRouter from "./commRouter";
 
 const Loading = () => <div>Page Loading...</div>;
 
@@ -35,7 +36,7 @@ const root = createBrowserRouter([
             },
             {
                 path: "comm",
-                element: <Suspense fallback={<Loading />}><Comm /></Suspense>
+                element: <Suspense fallback={<Loading />}><Comm /></Suspense>,
             },
             {
                 path: "meet",
@@ -64,6 +65,7 @@ const root = createBrowserRouter([
             ...shopRouter(),
             ...meetRouter(),
             ...memberRouter(),
+            ...commRouter(),
         ]
     },
     {
