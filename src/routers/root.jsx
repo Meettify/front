@@ -72,6 +72,7 @@ const root = createBrowserRouter([
             ...shopRouter(),
             ...meetRouter(),
             ...memberRouter(),
+            ...commRouter(),
         ]
     },
     {
