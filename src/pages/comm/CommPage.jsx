@@ -1,15 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom"; // 페이지 이동을 위해 Link 사용
 import RoundedButton from "../../components/button/RoundedButton";
+import useCommStore from "../../stores/useCommStore";
+import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
-    // 목업 데이터
-    const posts = [
-        { id: 1, title: "첫 번째 글", author: "사용자1", date: "2024. 10. 01", views: 25, replies: 4 },
-        { id: 2, title: "두 번째 글", author: "사용자2", date: "2024. 10. 02", views: 30, replies: 5 },
-        { id: 3, title: "세 번째 글", author: "사용자3", date: "2024. 10. 03", views: 10, replies: 2 },
-        { id: 4, title: "네 번째 글", author: "사용자4", date: "2024. 10. 04", views: 15, replies: 3 },
-        { id: 5, title: "다섯 번째 글", author: "사용자5", date: "2024. 10. 05", views: 20, replies: 1 },
-    ];
+    const { posts } = useCommStore();
+    const { goToEditor } = useNavigation(); // goToEditor 함수 사용
 
     return (
         <div className="container mx-auto mt-20">
@@ -27,7 +24,7 @@ const CommPage = () => {
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <div className="flex space-x-2">
-                    <RoundedButton>글쓰기</RoundedButton>
+                    <RoundedButton onClick={goToEditor}>글쓰기</RoundedButton>
                 </div>
             </div>
 
@@ -46,7 +43,11 @@ const CommPage = () => {
                     {posts.map((post) => (
                         <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
                             <td className="p-3 text-center">{post.id}</td>
-                            <td className="p-3 text-left">{post.title}</td>
+                            <td className="p-3 text-left">
+                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline">
+                                    {post.title}
+                                </Link>
+                            </td>
                             <td className="p-3 text-center">{post.author}</td>
                             <td className="p-3 text-center">{post.date}</td>
                             <td className="p-3 text-center">{post.views}</td>
