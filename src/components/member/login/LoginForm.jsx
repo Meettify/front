@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { postLogin } from '../../../api/memberAPI';
 import { useAuth } from '../../../hooks/useAuth';
-import naverLogo from '../../../assets/images/naverLoginImage.png'; // 네이버 로그인 이미지
-import googleLogo from '../../../assets/images/googleLoginImage.png'; // 구글 로그인 이미지
+import naverLogo from '../../../assets/images/login/naverLoginImage.png'; // 네이버 로그인 이미지
+import googleLogo from '../../../assets/images/login/googleLoginImage.png'; // 구글 로그인 이미지
 import '../../../styles/LoginForm.css';
 
 import useNavigation from '../../../hooks/useNavigation';
@@ -56,8 +56,6 @@ const LoginForm = () => {
     window.location.href = `/oauth2/authorization/${provider}`;
   };
 
-
-
   return (
     <form onSubmit={handleSubmit} className='form-container'>
       <input
@@ -98,7 +96,6 @@ const LoginForm = () => {
         </button>
       </p>
 
-      {/* <p className='text-gray-400'>-------- 간편 로그인 --------</p> */}
       <div className="social-login">
         <button
           onClick={() => handleSocialLogin('naver')}>

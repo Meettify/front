@@ -90,7 +90,7 @@ npm install axios
 npm install zustand
 ```
 
-###  react-responsive 설치 (media query/반응형웹)
+### react-responsive 설치 (media query/반응형웹)
 
 ```bash
 npm install react-responsive
@@ -129,6 +129,14 @@ npm install rc-slider
 ```
 
 ### react icon
+
 ```bash
 npm install react-icons
+```
+
+### react editor
+
+```bash
+npm install react-quill
+npm install react-quill@latest
 ```

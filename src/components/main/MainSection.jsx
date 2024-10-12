@@ -1,11 +1,10 @@
 import React from "react";
 
-const MainSection = ({ title, subtitle, items, renderItem }) => {
+const MainSection = ({ title, items, renderItem }) => {
     return (
         <div className="my-16">
-            <h2 className="text-left text-2xl font-bold mb-4">
-                <span className="text-black">{title}</span> <span className="text-gray-500">{subtitle}</span>
-            </h2>
+            {/* title은 이미 SectionText로 넘겨졌으므로, 그대로 사용 */}
+            {title}
             <div className="overflow-x-auto no-scrollbar pb-4">
                 <div className="flex space-x-10">
                     {items.map((item, index) => (
