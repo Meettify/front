@@ -36,7 +36,6 @@ const CommPage = () => {
                         <th className="p-3 text-center font-medium w-2/12">작성자</th>
                         <th className="p-3 text-center font-medium w-2/12">작성일</th>
                         <th className="p-3 text-center font-medium w-1/12">조회수</th>
-                        <th className="p-3 text-center font-medium w-1/12">답글</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,14 +43,13 @@ const CommPage = () => {
                         <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
                             <td className="p-3 text-center">{post.id}</td>
                             <td className="p-3 text-left">
-                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline">
+                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline"> {/* 수정된 부분 */}
                                     {post.title}
                                 </Link>
                             </td>
                             <td className="p-3 text-center">{post.author}</td>
                             <td className="p-3 text-center">{post.date}</td>
                             <td className="p-3 text-center">{post.views}</td>
-                            <td className="p-3 text-center">{post.replies}</td>
                         </tr>
                     ))}
                 </tbody>

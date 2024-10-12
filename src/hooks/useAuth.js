@@ -1,4 +1,4 @@
-import useAuthStore from '../stores/authStore';
+import useAuthStore from '../stores/useAuthStore';
 import { useEffect } from 'react';
 import { getMember } from '../api/memberAPI';
 

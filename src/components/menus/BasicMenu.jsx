@@ -75,6 +75,7 @@ const BasicMenu = () => {
                     </button>
                 </li>
                 <li> <Link to={'/mypage'}>마이페이지</Link> </li>
+                <li> <Link to={'/admin'}>관리자페이지</Link> </li>
             </ul>
 
             {modals['info'] && (
