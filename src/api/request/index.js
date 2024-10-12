@@ -15,18 +15,16 @@ const init = () => {
     const token = window.sessionStorage.getItem('accessToken')?.replaceAll('"', '') ?? '';
 
     axiosInstance = axios.create({
-        baseURL: import.meta.env.MODE === 'production'
-            ? import.meta.env.VITE_APP_API_BASE_URL
-            : 'http://localhost:8080/api/v1',
+        baseURL: import.meta.env.VITE_APP_API_BASE_URL || 'http://localhost:8080/api/v1',
         headers: {
             'Content-Type': 'application/json;charset=UTF-8', // request data type
             Accept: 'application/json', // response data type
-            // 'Access-Control-Allow-Origin': '*', // CORS 설정 해제
             Authorization: 'Bearer ' + token
         },
     });
     setInterceptor();
     return axiosInstance;
+    
 }
 
 // 엑세스 토큰 갱신 함수
