@@ -20,24 +20,19 @@ const MeetDetail = () => {
     fetchData();
   }, [meetId]);
 
+  // 삭제하기 버튼 클릭 핸들러
   const handleDelete = async () => {
     const isConfirmed = window.confirm('정말로 모임을 삭제하시겠습니까?');
     if (isConfirmed) {
-      try {
-        const success = await deleteMeeting(meetId);  // Mock API로 삭제 처리
-        if (success) {
-          alert('모임이 성공적으로 삭제되었습니다.');
-          navigate('/meet/list');  // 경로 확인
-        } else {
-          alert('삭제 중 오류가 발생했습니다.');
-        }
-      } catch (error) {
-        alert('삭제 요청에 실패했습니다.');
-        console.error(error);
+      const success = await deleteMeeting(meetId);  // Mock API로 삭제 처리
+      if (success) {
+        alert('모임이 성공적으로 삭제되었습니다.');
+        navigate(`/meet/list/${meeting.categoryId}`);  // categoryId로 list 경로 이동
+      } else {
+        alert('삭제 중 오류가 발생했습니다.');
       }
     }
   };
-  
 
   if (!meeting) return <div>Loading...</div>;
 
