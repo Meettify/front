@@ -1,11 +1,11 @@
 // /src/mocks/mockAPI.js
-import { mockMeetings } from './mockData';
+import { mockData } from './mockData';
 
 // 모임 리스트 가져오기
 export const getMeetings = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockMeetings);
+      resolve(mockData);
     }, 500);  // 0.5초 후 데이터를 반환 (비동기 처리 시뮬레이션)
   });
 };
@@ -14,7 +14,7 @@ export const getMeetings = async () => {
 export const getMeetingById = async (meetId) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const meeting = mockMeetings.find(meet => meet.id === parseInt(meetId));
+      const meeting = mockData.find(meet => meet.id === parseInt(meetId));
       resolve(meeting);
     }, 500);  // 0.5초 후 데이터를 반환
   });
@@ -24,9 +24,9 @@ export const getMeetingById = async (meetId) => {
 export const deleteMeeting = async (meetId) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const index = mockMeetings.findIndex(meet => meet.id === parseInt(meetId));
+      const index = mockData.findIndex(meet => meet.id === parseInt(meetId));
       if (index > -1) {
-        mockMeetings.splice(index, 1);  // 해당 모임 삭제
+        mockData.splice(index, 1);  // 해당 모임 삭제
         resolve(true);
       } else {
         resolve(false);
@@ -39,7 +39,7 @@ export const deleteMeeting = async (meetId) => {
 export const approveMember = async (meetId, memberId) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const meeting = mockMeetings.find(meet => meet.id === parseInt(meetId));
+      const meeting = mockData.find(meet => meet.id === parseInt(meetId));
       if (meeting) {
         const member = meeting.members.find(m => m.id === parseInt(memberId));
         if (member) {

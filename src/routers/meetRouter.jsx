@@ -21,11 +21,11 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetPost /></Suspense>,
     },
     {
-      path: "/meet/detail/:meetId",  // MeetDetail로 meetId 전달
+      path: "/meet/detail/:meetId", 
       element: <Suspense fallback={<Loading />}><MeetDetail /></Suspense>,
     },
     {
-      path: "/meet/update/:meetId",  // MeetUpdate로 meetId 전달
+      path: "/meet/update/:meetId",  
       element: <Suspense fallback={<Loading />}><MeetUpdate /></Suspense>,
     },
     {
@@ -33,7 +33,7 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetInsert /></Suspense>,
     },
     {
-      path: "/meet/accept",
+      path: "/meet/:meetId/accept", 
       element: <Suspense fallback={<Loading />}><MeetAccept /></Suspense>,
     },
   ];

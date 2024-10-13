@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import emotionImage from '../../assets/images/emotion1.png';  
 import MeetJoin from '../../components/meet/MeetJoin';  
 import MeetContent from '../../components/meet/MeetContent';  
 import RoundedButton from '../../components/button/RoundedButton';  
@@ -28,7 +27,7 @@ const MeetDetail = () => {
       const success = await deleteMeeting(meetId);  // Mock API로 삭제 처리
       if (success) {
         alert('모임이 성공적으로 삭제되었습니다.');
-        navigate('/meet/list');
+        navigate(`/meet/list/${meeting.categoryId}`);  // categoryId로 list 경로 이동
       } else {
         alert('삭제 중 오류가 발생했습니다.');
       }
@@ -42,7 +41,7 @@ const MeetDetail = () => {
       <div className="container mx-auto mt-20 w-full flex">
         <div className="w-2/3 bg-gray-100 flex flex-col p-2">
           <MeetContent 
-            image={emotionImage}
+            image={meeting.image} 
             tags={meeting.tags}
             description={meeting.description}
             details={meeting.details}
@@ -63,6 +62,11 @@ const MeetDetail = () => {
 
                 <RoundedButton onClick={handleDelete}>
                   삭제하기
+                </RoundedButton>
+
+                {/* "회원조회" 버튼 추가 */}
+                <RoundedButton onClick={() => navigate(`/meet/${meetId}/accept`)}>
+                  회원조회
                 </RoundedButton>
               </>
             )}
