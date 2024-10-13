@@ -4,6 +4,8 @@ import BasicLayout from "../layouts/BasicLayout";
 import shopRouter from "./shopRouter";
 import meetRouter from "./meetRouter";
 import memberRouter from "./memberRouter";
+import commRouter from "./commRouter";
+import adminRouter from "./adminRouter";
 
 const Loading = () => <div>Page Loading...</div>;
 
@@ -13,11 +15,12 @@ const Comm = lazy(() => import("../pages/comm/CommPage"))
 const Meet = lazy(() => import("../pages/meet/MeetPage"))
 const Shop = lazy(() => import("../pages/shop/ShopPage"))
 const Support = lazy(() => import("../pages/support/SupportPage"))
+const Search = lazy(() => import("../pages/search/SearchPage"))
 const Chat = lazy(() => import("../pages/chat/ChatPage"))
+const Admin = lazy(() => import("../pages/admin/AdminPage"))
 const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
 const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
 // axios test
-const MemberTest = lazy(() => import("../pages/member/test/MemberTestPage"))
 const MyInfo = lazy(() => import("../pages/member/info/MyInfoPage"))
 
 const root = createBrowserRouter([
@@ -50,6 +53,10 @@ const root = createBrowserRouter([
                 element: <Suspense fallback={<Loading />}><Support /></Suspense>
             },
             {
+                path: "search",
+                element: <Suspense fallback={<Loading />}><Search /></Suspense>
+            },
+            {
                 path: "chat",
                 element: <Suspense fallback={<Loading />}><Chat /></Suspense>
             },
@@ -58,12 +65,14 @@ const root = createBrowserRouter([
                 element: <Suspense fallback={<Loading />}><MyInfo /></Suspense>,
             },
             {
-                path: "membertest",
-                element: <Suspense fallback={<Loading />}><MemberTest /></Suspense>,
+                path: "admin",
+                element: <Suspense fallback={<Loading />}><Admin /></Suspense>,
+                children: adminRouter(),
             },
             ...shopRouter(),
             ...meetRouter(),
             ...memberRouter(),
+            ...commRouter(),
         ]
     },
     {

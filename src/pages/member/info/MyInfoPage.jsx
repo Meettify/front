@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import EditProfileForm from '../../../components/member/info/EditProfileForm';
 import MyInfoSidebar from "../../../components/member/info/MyInfoSidebar";
+import DeleteMemberForm from "../../../components/member/info/DeleteMemberForm";
 
 const MyInfoPage = () => {
 
@@ -13,9 +14,9 @@ const MyInfoPage = () => {
     const renderForm = () => {
         switch (currentForm) {
             case 'editProfile':
-                return <EditProfileForm />;
-            case 'deleteAccount':
-                return <div>회원 탈퇴 폼</div>; // 추후 구현할 폼
+                return <EditProfileForm />
+            case 'deleteMember':
+                return <DeleteMemberForm />
             default:
                 return (
                     <EditProfileForm />
@@ -24,17 +25,22 @@ const MyInfoPage = () => {
     };
 
     return (
-        <div className="flex mt-5">
-            <div className="w-[300px] h-[800px] bg-gray-100 p-5">
-                <MyInfoSidebar 
-                    onChangeForm={handleFormChange} 
-                />
-            </div>
+        <>
+            <br />
+            <hr />
+            <div className="flex mt-5">
+                <div className="w-[250px] h-[800px] bg-gray-100 p-5 ml-2 rounded">
+                    <MyInfoSidebar 
+                        onChangeForm={handleFormChange} 
+                    />
+                </div>
 
-            <div className="flex-1 p-6">
-                {renderForm()}
+                <div className="flex-1 p-6">
+                    {renderForm()}
+                </div>
             </div>
-        </div>
+        </>
+        
     );
 };
 

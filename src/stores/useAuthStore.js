@@ -1,12 +1,18 @@
 import { create } from 'zustand';
 
 const useAuthStore = create((set) => ({
-  user: null,
+  user: {
+    memberEmail: '',
+    memberName: '',
+    nickName: '',
+    memberAddr: '',
+    memberAddrDetail: '',
+    memberZipCode: ''
+  },
   isAuthenticated: false,
   memberId: null,
 
   login: (userData) => {
-    console.log(`StoreUserData : ${userData}`);
     set({ user: userData, isAuthenticated: true, memberId: localStorage.getItem('memberId') });
   },
   
