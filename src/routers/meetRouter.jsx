@@ -21,7 +21,7 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetPost /></Suspense>,
     },
     {
-      path: "/meet/detail",
+      path: "/meet/detail/:meetId",  // 경로 통일
       element: <Suspense fallback={<Loading />}><MeetDetail /></Suspense>,
     },
     {

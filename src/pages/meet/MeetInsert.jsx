@@ -6,51 +6,52 @@ import { postMeetInsert } from '../../api/meetAPI';
 import MeetSideMenu from '../../components/meet/MeetSideMenu';  // MeetSideMenu 임포트
 
 const MeetInsert = () => {
-  const { image, tags, description, details, setImage, setTags, setDescription, setDetails } = useMeetStore();
+  const { image, tags, description, setImage, setTags, setDescription } = useMeetStore();
   const navigate = useNavigate();
   const [meetName, setMeetName] = useState('');
   const [maxMembers, setMaxMembers] = useState(30);
   const [imageFile, setImageFile] = useState([]);
 
-  const handleSave = async () => {
-    if (imageFile.length === 0) {
-      alert('이미지를 선택하세요.');
-      return;
-    }
+ // MeetInsert.js
+const handleSave = async () => {
+  if (imageFile.length === 0) {
+    alert('이미지를 선택하세요.');
+    return;
+  }
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    const meetData = {
-      meetName: meetName,
-      meetDescription: description,
-      meetMaximum: maxMembers,
-      meetLocation: tags[0],  
-      category: tags[1] || 'SPORTS',
-    };
-
-    formData.append('meet', new Blob([JSON.stringify(meetData)], { type: 'application/json' }));
-    if (imageFile && imageFile.length > 0) {
-      imageFile.forEach(image => {
-        formData.append('images', image);
-      });
-    }
-
-    try {
-      const response = await postMeetInsert(formData);
-      
-      // 응답에서 새로운 소모임의 ID를 가져와서 상세 페이지로 이동
-      if (response.status === 200 || response.status === 201) {
-        alert('성공적으로 등록되었습니다.');
-        const newMeetId = response.data.meetId; // 새로 생성된 소모임의 ID
-        navigate(`/meet/${newMeetId}`);  // 생성된 소모임의 상세 페이지로 이동
-      } else {
-        alert('등록에 실패하였습니다. 상태 코드: ' + response.status);
-      }
-    } catch (error) {
-      console.error('Error during the request:', error);
-      alert('서버 오류');
-    }
+  const meetData = {
+    meetName: meetName,
+    meetDescription: description,
+    meetMaximum: maxMembers,
+    meetLocation: tags[0],  
+    category: tags[1] || 'SPORTS',
   };
+
+  formData.append('meet', new Blob([JSON.stringify(meetData)], { type: 'application/json' }));
+  if (imageFile && imageFile.length > 0) {
+    imageFile.forEach(image => {
+      formData.append('images', image);
+    });
+  }
+
+  try {
+    const response = await postMeetInsert(formData);
+    
+    // 응답에서 새로운 소모임의 ID를 가져와서 상세 페이지로 이동
+    if (response.status === 200 || response.status === 201) {
+      alert('성공적으로 등록되었습니다.');
+      const newMeetId = response.data.meetId; // 새로 생성된 소모임의 ID
+      navigate(`/meet/detail/${newMeetId}`);  // 생성된 소모임의 상세 페이지로 이동
+    } else {
+      alert('등록에 실패하였습니다. 상태 코드: ' + response.status);
+    }
+  } catch (error) {
+    console.error('Error during the request:', error);
+    alert('서버 오류');
+  }
+};
 
   return (
     <div className="bg-gray-100 flex-1 h-full">
@@ -122,14 +123,6 @@ const MeetInsert = () => {
             className="text-gray-700 bg-gray-100 p-4 rounded-lg w-full mb-4"
             rows="3"
             placeholder="모임 설명을 입력하세요"
-          />
-
-          <textarea
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            className="text-gray-700 bg-gray-100 p-4 rounded-lg w-full mb-4"
-            rows="5"
-            placeholder="모임 세부 설명을 입력하세요"
           />
 
           <input
