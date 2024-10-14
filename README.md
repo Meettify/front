@@ -142,3 +142,9 @@ npm install @stomp/stompjs
 npm install ws
 
 ```
+
+### scroll 라이브러리
+
+```bash
+npm install react-infinite-scroll-component
+```

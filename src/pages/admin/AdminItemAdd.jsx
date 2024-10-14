@@ -20,39 +20,42 @@ const AdminItemAdd = () => {
             {error && <p className="text-red-500 mb-4">오류: {error}</p>}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block mb-2">상품명</label>
+                    {/* <label className="block mb-2">상품명</label> */}
                     <input
                         type="text"
                         name="itemName"
                         value={productData.itemName}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="상품명을 입력하세요"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block mb-2">가격</label>
+                    {/* <label className="block mb-2">가격</label> */}
                     <input
                         type="number"
                         name="itemPrice"
                         value={productData.itemPrice}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="가격을 입력하세요"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block mb-2">상품 설명</label>
+                    {/* <label className="block mb-2">상품 설명</label> */}
                     <textarea
                         name="itemDetails"
                         value={productData.itemDetails}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="상품 설명을 입력하세요"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block mb-2">상품 상태</label>
+                    {/* <label className="block mb-2">상품 상태</label> */}
                     <select
                         name="itemStatus"
                         value={productData.itemStatus}
@@ -71,20 +74,27 @@ const AdminItemAdd = () => {
                         value={productData.itemCount}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="재고 수량을 입력하세요"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block mb-2">카테고리</label>
+                    <label className="block mb-2">카테고리 선택</label>
                     <select
                         name="itemCategory"
                         value={productData.itemCategory}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
                     >
+                        <option value="">카테고리를 선택하세요</option>
                         <option value="SPORTS">스포츠</option>
-                        <option value="ELECTRONICS">전자기기</option>
-                        <option value="FASHION">패션</option>
+                        <option value="TRAVEL">여행</option>
+                        <option value="MUSIC">음악</option>
+                        <option value="ART">예술</option>
+                        <option value="READING">독서</option>
+                        <option value="HEALTH">건강</option>
+                        <option value="FASHION_BEAUTY">패션/뷰티</option>
+                        <option value="PETS">반려동물</option>
                     </select>
                 </div>
                 <button

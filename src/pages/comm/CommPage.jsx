@@ -5,7 +5,7 @@ import useCommStore from "../../stores/useCommStore";
 import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
-    const { posts } = useCommStore();
+    const { posts } = useCommStore();  // Zustand 상태에서 posts 가져오기
     const { goToEditor } = useNavigation(); // goToEditor 함수 사용
 
     return (
@@ -24,7 +24,7 @@ const CommPage = () => {
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <div className="flex space-x-2">
-                    <RoundedButton onClick={goToEditor}>글쓰기</RoundedButton>
+                    <RoundedButton onClick={() => goToEditor("/comm/edit")}>글쓰기</RoundedButton>
                 </div>
             </div>
 
@@ -39,16 +39,16 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {posts.map((post) => (
+                    {posts.map((post, index) => (
                         <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="p-3 text-center">{post.id}</td>
+                            <td className="p-3 text-center">{index + 1}</td>
                             <td className="p-3 text-left">
-                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline"> {/* 수정된 부분 */}
+                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline">
                                     {post.title}
                                 </Link>
                             </td>
-                            <td className="p-3 text-center">{post.author}</td>
-                            <td className="p-3 text-center">{post.date}</td>
+                            <td className="p-3 text-center">{post.nickName}</td>
+                            <td className="p-3 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
                             <td className="p-3 text-center">{post.views}</td>
                         </tr>
                     ))}
