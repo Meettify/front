@@ -26,10 +26,10 @@ const AdminPage = () => {
                     <h2 className="font-bold mb-2 text-left text-2xl">상품 관리</h2>
                     <ul className="space-y-2 text-left">
                         <li>
-                            <Link to="itemlist">상품 조회</Link> {/* 상품 조회 메뉴 */}
+                            <Link to="itemList">상품 조회</Link> {/* 상품 조회 메뉴 */}
                         </li>
                         <li>
-                            <Link to="itemadd">상품 등록</Link> {/* 상품 등록 메뉴 */}
+                            <Link to="itemAdd">상품 등록</Link> {/* 상품 등록 메뉴 */}
                         </li>
                     </ul>
                 </section>

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToItemList = () => {
+        navigate('/admin/itemlist');
+    };
+
     const goToComm = () => {
         navigate('/comm');
     };
@@ -79,6 +83,7 @@ const useNavigation = () => {
         goToDetail,
         goToEditor,
         goToComm,
+        goToItemList,
     };
 };
 
