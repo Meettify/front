@@ -7,12 +7,12 @@ import RoundedButton from '../../components/button/RoundedButton';
 
 const CommDetail = () => {
     const { id } = useParams();  // URL에서 id 값을 가져옴
-    const { selectPost, selectedPost, addComment } = useCommStore();  // Zustand에서 데이터 불러오기
+    const { fetchPost, selectedPost, addComment } = useCommStore();  // Zustand에서 데이터 불러오기
     const [comment, setComment] = useState('');  // 댓글 상태
 
     useEffect(() => {
-        selectPost(parseInt(id));  // 게시글 선택
-    }, [id, selectPost]);
+        fetchPost(parseInt(id));  // 게시글 선택
+    }, [id, fetchPost]);
 
     const handleCommentChange = (e) => {
         setComment(e.target.value);  // 댓글 입력 상태 업데이트
@@ -22,7 +22,7 @@ const CommDetail = () => {
         if (comment.trim()) {
             const newComment = {
                 content: comment,
-                nickName: nickName,  // 예시로 익명 닉네임 사용
+                nickName: "익명",  // 익명 닉네임 사용
                 regTime: new Date().toLocaleString(),
             };
             addComment(parseInt(id), newComment);  // Zustand로 댓글 추가
@@ -52,14 +52,12 @@ const CommDetail = () => {
             </p>
 
             {/* 댓글 입력 구간 */}
-            <div className="border-t border-gray-200 pt-0 relative">  {/* 라인 추가 */}
-                <div className="absolute top-0 left-0 w-full h-px bg-gray-300"></div>  {/* 얇은 라인 */}
-                <div className="flex items-center mb-2 bg-gray-100 p-2 border-t-0">  {/* 라인과 밀착 */}
-                    <div className="mr-2 text-gray-300">
-                        <TfiCommentAlt className="text-xl" />  {/* 댓글 아이콘 */}
-                    </div>
+            <div className="border-t border-gray-200 pt-0 relative">
+                <div className="absolute top-0 left-0 w-full h-px bg-gray-300"></div>
+                <div className="flex items-center mb-2 bg-gray-100 p-2 border-t-0">
+                    <TfiCommentAlt className="mr-2 text-gray-300 text-xl" />
                 </div>
-                <div className="flex justify-between items-center border rounded-none p-2 bg-white">  {/* 라운드 제거 */}
+                <div className="flex justify-between items-center border rounded-none p-2 bg-white">
                     <input
                         type="text"
                         className="flex-grow p-2 text-sm text-black bg-transparent outline-none"
@@ -67,7 +65,8 @@ const CommDetail = () => {
                         value={comment}
                         onChange={handleCommentChange}
                     />
-                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}
+                    <RoundedButton
+                        style={{ padding: '6px 14px', fontSize: '12px' }}
                         onClick={handleCommentSubmit}
                         disabled={!comment.trim()}
                     >
@@ -91,7 +90,6 @@ const CommDetail = () => {
                     <p className="text-gray-500">댓글이 없습니다.</p>
                 )}
             </div>
-
         </div>
     );
 };

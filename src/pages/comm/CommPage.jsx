@@ -1,26 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom"; // 페이지 이동을 위해 Link 사용
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
 import useCommStore from "../../stores/useCommStore";
 import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
-    const { posts } = useCommStore();  // Zustand 상태에서 posts 가져오기
-    const { goToEditor } = useNavigation(); // goToEditor 함수 사용
+    const { posts, fetchPosts } = useCommStore();
+    const { goToEditor } = useNavigation();
+
+    useEffect(() => {
+        fetchPosts(); // 컴포넌트 마운트 시 게시글 목록 불러오기
+    }, [fetchPosts]);
 
     return (
         <div className="container mx-auto mt-20">
             <div className="text-4xl font-bold mb-6 text-left">커뮤니티 둘러보기.</div>
-            <div className="bg-gray-100 p-6 rounded-md mb-6 text-left max-w-7xl">
-                <p className="text-lg mb-2">
-                    유용한 답변을 다른 사람들과도 공유하고 싶으신가요? 그렇다면 추천 기능을 이용해 보세요!
-                </p>
-                <p className="text-sm text-gray-700">
-                    회원님이 문제를 해결할 수 있도록 도움을 주신 분이 있으신가요? 아니면 다른 사람의 답변이 도움이 되었다면 추천해 주세요.
-                    <a href="#" className="text-blue-500 ml-1"> 모임 더 알아보기 - Meettify 커뮤니티</a>
-                </p>
-            </div>
 
+            {/* 글쓰기 버튼 */}
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <div className="flex space-x-2">
@@ -28,6 +24,7 @@ const CommPage = () => {
                 </div>
             </div>
 
+            {/* 글 목록 테이블 */}
             <table className="w-full table-fixed border-t border-gray-300">
                 <thead className="bg-gray-100">
                     <tr>
@@ -54,12 +51,6 @@ const CommPage = () => {
                     ))}
                 </tbody>
             </table>
-
-            <div className="flex justify-center mt-6">
-                <nav className="flex space-x-1">
-                    <button className="px-3 py-1 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100">1</button>
-                </nav>
-            </div>
         </div>
     );
 };
