@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import logo from '../../assets/logo/meettify_logo.png';
 import useModalStore from '../../stores/useModalStore';
-import InfoModal from '../../components/member/info/InfoModal';
+import InfoModal from '../member/mypage/InfoModal';
 import LoginModal from '../../components/member/login/LoginModal';
 import { BsCart3 } from "react-icons/bs";
 import { HiOutlineUserCircle } from "react-icons/hi2";
