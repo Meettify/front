@@ -67,3 +67,57 @@ export const deleteMeet = async (meetId) => {z
         }
     }
 };
+
+export const getMeetJoinList = async () => {
+    const response = {
+        data: [
+          {
+            meetId: 1,
+            meetName: "테스트제목",
+            meetLocation: "서울 종로구",
+            category: "SPORTS",
+            meetMaximum: 20,
+            images: "이미지경로1",
+            meetRole : "ADMIN",
+          },
+          {
+            meetId: 2,
+            meetName: "테스트제목2",
+            meetLocation: "서울 강남구",
+            category: "MUSIC",
+            meetMaximum: 15,
+            images: "이미지경로2",
+            meetRole : "MEMBER",
+          },
+          {
+            meetId: 3,
+            meetName: "테스트제목3",
+            meetLocation: "부산 해운대구",
+            category: "ART",
+            meetMaximum: 10,
+            images: "이미지경로3",
+            meetRole : "WAITING",
+          },
+          {
+            meetId: 4, 
+            meetName: "테스트제목4", 
+            meetLocation: "경기 수원시 팔달구", 
+            category: "MOVIE", 
+            meetMaximum: 5,
+            images: "이미지경로4", 
+            meetRole : "DORMANT", 
+          },
+          {
+            meetId: 5, 
+            meetName: "테스트제목5", 
+            meetLocation: "강원 춘천시", 
+            category: "PET", 
+            meetMaximum: 10,
+            images: "이미지경로5", 
+            meetRole : "EXPEL", 
+          },
+        ],
+      };
+
+      return response;
+}

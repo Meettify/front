@@ -163,120 +163,123 @@ const EditProfileForm = () => {
     && Object.values(formData).every(field => field !== '');
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h2 className="text-3xl mb-8">회원정보 수정</h2>
+        <>
+            <form onSubmit={handleSubmit} className="form-container">
+                <h2 className="text-3xl mb-8">회원정보 수정</h2>
 
-            <input
-                type="text"
-                value={user.memberName}
-                placeholder="이름"
-                disabled
-                readOnly
-            />
-
-            <input
-                type="email"
-                value={user.memberEmail}
-                placeholder="이메일"
-                disabled
-                readOnly
-            />
-
-            <input
-                type="text"
-                name="nickname"
-                value={formData.nickname}
-                onChange={handleInputChange}
-                placeholder="닉네임"
-                className={getValidationClass('nickname')}
-            />
-            {validationErrors.nickname && <p className="error-message">{validationErrors.nickname}</p>}
-
-            <input
-                type="password"
-                name="originalMemberPw"
-                value={formData.originalMemberPw}
-                onChange={handleInputChange}
-                placeholder="현재 비밀번호"
-                className={getValidationClass('originalMemberPw')}
-                required
-            />
-
-            <input
-                type="password"
-                name="updateMemberPw"
-                value={formData.updateMemberPw}
-                onFocus={() => setPasswordFocused(true)}
-                onBlur={() => setPasswordFocused(false)}
-                onChange={handleInputChange}
-                placeholder="새 비밀번호"
-                className={getValidationClass('updateMemberPw')}
-                required
-            />
-            {validationErrors.updateMemberPw && <p className="error-message">{validationErrors.updateMemberPw}</p>}
-
-            {passwordFocused && (
-            <div className="password-popup top-[390px]">
-                <p>비밀번호 필수 조건</p>
-                    <ul>
-                        <li className={passwordValid.length ? 'valid' : ''}>8자 ~ 20자</li>
-                        <li className={passwordValid.hasAlphabet ? 'valid' : ''}>알파벳 포함</li>
-                        <li className={passwordValid.hasNumber ? 'valid' : ''}>숫자 포함</li>
-                        <li className={passwordValid.hasSpecialChar ? 'valid' : ''}>특수 문자 포함</li>
-                    </ul>
-                </div>
-            )}
-
-            <input
-                type="password"
-                name="confirmUpdatePw"
-                value={formData.confirmUpdatePw}
-                onChange={handleInputChange}
-                placeholder="새 비밀번호 확인"
-                className={getValidationClass('confirmUpdatePw')}
-                required
-            />
-            {passwordMatch && (
-                <p className={passwordMatch.includes('동일하지') ? 'error-message' : 'success-message'}>
-                    {passwordMatch}
-                </p>
-            )}
-
-            <div className="flex w-72 gap-5 border border-gray-200 rounded mb-4">
                 <input
-                    className="w-40 p-2 rounded"
                     type="text"
-                    placeholder="우편번호"
-                    value={formData.postalCode}
+                    value={user.memberName}
+                    placeholder="이름"
+                    disabled
                     readOnly
                 />
-                <AddressSearch onComplete={handlePostcodeComplete} />
-            </div>
 
-            <input
-                type="text"
-                value={formData.address}
-                placeholder="주소"
-                readOnly
-            />
+                <input
+                    type="email"
+                    value={user.memberEmail}
+                    placeholder="이메일"
+                    disabled
+                    readOnly
+                />
 
-            <input
-                type="text"
-                name="addressDetail"
-                value={formData.addressDetail}
-                onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
-                placeholder="상세주소"
-                required
-            />
+                <input
+                    type="text"
+                    name="nickname"
+                    value={formData.nickname}
+                    onChange={handleInputChange}
+                    placeholder="닉네임"
+                    className={getValidationClass('nickname')}
+                />
+                {validationErrors.nickname && <p className="error-message">{validationErrors.nickname}</p>}
 
-            <button
-                type="submit"
-                className={`p-2 mt-5 w-[288px] rounded text-white ${isButtonDisabled ? 'bg-blue-500' : 'bg-blue-300'}`}
-                disabled={!isButtonDisabled}
-            >
-                변경하기
-            </button>
-        </form>
+                <input
+                    type="password"
+                    name="originalMemberPw"
+                    value={formData.originalMemberPw}
+                    onChange={handleInputChange}
+                    placeholder="현재 비밀번호"
+                    className={getValidationClass('originalMemberPw')}
+                    required
+                />
+
+                <input
+                    type="password"
+                    name="updateMemberPw"
+                    value={formData.updateMemberPw}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                    onChange={handleInputChange}
+                    placeholder="새 비밀번호"
+                    className={getValidationClass('updateMemberPw')}
+                    required
+                />
+                {validationErrors.updateMemberPw && <p className="error-message">{validationErrors.updateMemberPw}</p>}
+
+                {passwordFocused && (
+                <div className="password-popup top-[390px]">
+                    <p>비밀번호 필수 조건</p>
+                        <ul>
+                            <li className={passwordValid.length ? 'valid' : ''}>8자 ~ 20자</li>
+                            <li className={passwordValid.hasAlphabet ? 'valid' : ''}>알파벳 포함</li>
+                            <li className={passwordValid.hasNumber ? 'valid' : ''}>숫자 포함</li>
+                            <li className={passwordValid.hasSpecialChar ? 'valid' : ''}>특수 문자 포함</li>
+                        </ul>
+                    </div>
+                )}
+
+                <input
+                    type="password"
+                    name="confirmUpdatePw"
+                    value={formData.confirmUpdatePw}
+                    onChange={handleInputChange}
+                    placeholder="새 비밀번호 확인"
+                    className={getValidationClass('confirmUpdatePw')}
+                    required
+                />
+                {passwordMatch && (
+                    <p className={passwordMatch.includes('동일하지') ? 'error-message' : 'success-message'}>
+                        {passwordMatch}
+                    </p>
+                )}
+
+                <div className="flex w-72 gap-5 border border-gray-200 rounded mb-4">
+                    <input
+                        className="w-40 p-2 rounded"
+                        type="text"
+                        placeholder="우편번호"
+                        value={formData.postalCode}
+                        readOnly
+                    />
+                    <AddressSearch onComplete={handlePostcodeComplete} />
+                </div>
+
+                <input
+                    type="text"
+                    value={formData.address}
+                    placeholder="주소"
+                    readOnly
+                />
+
+                <input
+                    type="text"
+                    name="addressDetail"
+                    value={formData.addressDetail}
+                    onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
+                    placeholder="상세주소"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    className={`p-2 mt-5 w-[288px] rounded text-white ${isButtonDisabled ? 'bg-blue-500' : 'bg-blue-300'}`}
+                    disabled={!isButtonDisabled}
+                >
+                    변경하기
+                </button>
+            </form>
+        </>
+        
     );
 };
 
