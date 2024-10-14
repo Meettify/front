@@ -27,7 +27,7 @@ const CommEditor = () => {
     // FormData를 이용한 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             // FormData 객체 생성
             const formData = new FormData();
@@ -51,7 +51,6 @@ const CommEditor = () => {
             console.error('Error:', error.response ? error.response.data : error.message);
         }
     };
-
 
     // 취소 버튼 핸들러
     const handleCancel = () => {

@@ -20,7 +20,7 @@ const CommPage = () => {
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <div className="flex space-x-2">
-                    <RoundedButton onClick={goToEditor}>글쓰기</RoundedButton>
+                    <RoundedButton onClick={() => goToEditor("/comm/edit")}>글쓰기</RoundedButton>
                 </div>
             </div>
 
@@ -36,9 +36,9 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {posts.map((post) => (
+                    {posts.map((post, index) => (
                         <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="p-3 text-center">{post.id}</td>
+                            <td className="p-3 text-center">{index + 1}</td>
                             <td className="p-3 text-left">
                                 <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline">
                                     {post.title}

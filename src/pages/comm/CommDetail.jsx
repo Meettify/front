@@ -90,7 +90,6 @@ const CommDetail = () => {
                     <p className="text-gray-500">댓글이 없습니다.</p>
                 )}
             </div>
-
         </div>
     );
 };

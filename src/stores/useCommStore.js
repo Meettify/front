@@ -8,7 +8,7 @@ import {
   getAllCommunityPosts, // 전체 게시글 가져오기 함수 추가
 } from '../api/commAPI'; 
 
-const useCommStore = create((set) => ({
+const useCommStore = create((set, get) => ({
   posts: [],
   selectedPost: null,
 
@@ -17,10 +17,7 @@ const useCommStore = create((set) => ({
     try {
       await createCommunityPost(title, content, files);
       // 게시글 작성 후 목록 다시 불러오기
-      set((state) => ({
-        posts: [...state.posts], // 기존 상태 유지
-      }));
-      await set().fetchPosts(); // 게시글 작성 후 목록 다시 불러오기
+      await get().fetchPosts(); // get()을 사용하여 상태의 fetchPosts 호출
     } catch (error) {
       console.error('커뮤니티 게시글 등록 실패:', error);
     }

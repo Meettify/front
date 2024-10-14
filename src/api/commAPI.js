@@ -1,51 +1,23 @@
-import request from './request';
+import request from './request'; // Axios 인스턴스 가져오기
 
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 // 커뮤니티 게시글 생성 (POST)
-// export const createCommunityPost = async (title, content, files = []) => {
-//     try {
-//         const requestBody = new FormData();
-
-//         // Blob을 사용하지 않고 JSON 데이터를 직접 추가
-//         requestBody.append('community', JSON.stringify({ title, content }));
-
-//         // 파일을 추가
-//         files.forEach(file => {
-//             requestBody.append('files', file);
-//         });
-
-//         const response = await axios.post(`${BASE_URL}/community`, requestBody, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data', // 반드시 multipart로 지정
-//             },
-//         });
-
-//         return response.data;
-//     } catch (error) {
-//         console.error('글 생성 중 오류 발생:', error);
-//         throw error;
-//     }
-// };
-// commAPI.js
 export const createCommunityPost = async (title, content, files = []) => {
     try {
-        const formData = new FormData();
-        const community = {
-            title: title,
-            content: content,
-        };
-        // JSON 데이터를 Blob으로 변환하여 FormData에 추가
-        formData.append('community', new Blob([JSON.stringify(community)], { type: 'application/json' }));
+        const requestBody = new FormData();
 
-        // 선택된 파일들을 FormData에 추가
-        files.forEach((file) => {
-            formData.append('files', file);
+        // Blob을 사용하지 않고 JSON 데이터를 직접 추가
+        requestBody.append('community', JSON.stringify({ title, content }));
+
+        // 파일을 추가
+        files.forEach(file => {
+            requestBody.append('files', file);
         });
 
-        const response = await axios.post(`${BASE_URL}/community`, formData, {
+        const response = await request.post(`${BASE_URL}/community`, requestBody, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'multipart/form-data', // 반드시 multipart로 지정
             },
         });
 
@@ -88,7 +60,7 @@ export const deleteCommunityPost = async (communityId) => {
     }
 };
 
-// 커뮤니티 게시글 전체 목록 조회 (페이지네이션 없이 모든 게시글 가져오기)
+// 커뮤니티 게시글 전체 목록 조회 (GET)
 export const getAllCommunityPosts = async () => {
     try {
         const response = await request.get(`${BASE_URL}/community`, {
