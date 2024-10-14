@@ -67,3 +67,53 @@ export const deleteMeet = async (meetId) => {z
         }
     }
 };
+
+export const getMeetList = async (page, size, sort, name, category) => {
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/meets`,
+            params: {
+                page,
+                size,
+                sort,
+                name,
+                category // 카테고리를 문자열로 전달
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('소모임 리스트 조회 오류:', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
+
+// 소모임 상세 조회 API
+export const getMeetingDetail = async (meetId) => {
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/meets/${meetId}`,
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('소모임 상세 조회 오류:', error);
+
+        if (error.response) {
+            return error.response.data;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};

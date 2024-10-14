@@ -1,33 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import MeetCard from "../../components/meet/MeetCard";
 import RoundedButton from "../../components/button/RoundedButton";
 import MeetSideMenu from "../../components/meet/MeetSideMenu";
 import useNavigation from "../../hooks/useNavigation";  
 import SectionText from "../../components/text/SectionText";
-import MeetListData from "../../components/meet/MeetListData";
 import MeetListSearch from "../../components/meet/MeetListSearch";
+import { getMeetList } from '../../api/meetAPI'; // API 호출 함수 임포트
 
 const MeetList = () => {
     const { goToMeetInsert, onJoinClick, goToMeetDetail } = useNavigation();
     const { categoryId } = useParams(); 
 
     const numericCategoryId = parseInt(categoryId, 10);
+    const [meetData, setMeetData] = useState([]); // 소모임 리스트 데이터 상태 (초기값은 빈 배열)
+    const [loading, setLoading] = useState(true); // 로딩 상태
     const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태 추가
 
-    const getMeetingsByCategoryId = (categoryId) => {
-        if (!isNaN(categoryId)) {
-            return MeetListData.filter(meet => meet.categoryId === categoryId);
+    // 소모임 리스트를 API에서 가져오는 함수
+    const fetchMeetList = async () => {
+        setLoading(true); // 데이터 로딩 시작
+        try {
+            const response = await getMeetList(0, 10, 'name,asc', searchTerm, numericCategoryId);
+            if (response && response.data && response.data.content) {
+                setMeetData(response.data.content); // 가져온 데이터를 상태에 저장
+            } else {
+                setMeetData([]); // 데이터가 없을 경우 빈 배열 설정
+            }
+        } catch (error) {
+            console.error('API 요청 오류:', error);
+            setMeetData([]); // 에러 발생 시 빈 배열 설정
+        } finally {
+            setLoading(false); // 데이터 로딩 끝
         }
-        return [];
     };
 
-    const meetData = getMeetingsByCategoryId(numericCategoryId);
-
-    // 검색어와 제목의 공백을 제거하고 필터링된 모임 데이터
-    const filteredMeetData = meetData.filter(meet =>
-        meet.title.replace(/\s+/g, '').toLowerCase().includes(searchTerm.replace(/\s+/g, '').toLowerCase()) // 공백 제거 후 비교
-    );
+    // 컴포넌트가 마운트될 때 및 검색어가 변경될 때 API 호출
+    useEffect(() => {
+        fetchMeetList();
+    }, [searchTerm, numericCategoryId]);
 
     const handleCreateButtonClick = () => {
         goToMeetInsert();
@@ -49,8 +60,10 @@ const MeetList = () => {
                     </div>
                 </div>
                 <div className="flex flex-wrap justify-start mt-2">
-                    {filteredMeetData.length > 0 ? (
-                        filteredMeetData.map((meet) => (
+                    {loading ? (
+                        <div>로딩 중...</div> // 로딩 중일 때 표시할 UI
+                    ) : meetData && meetData.length > 0 ? (
+                        meetData.map((meet) => (
                             <div className="w-1/4 p-2" key={meet.id}>
                                 <MeetCard 
                                     meetId={meet.id} 

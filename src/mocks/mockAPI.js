@@ -20,21 +20,6 @@ export const getMeetingById = async (meetId) => {
   });
 };
 
-// 모임 삭제하기
-export const deleteMeeting = async (meetId) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const index = mockData.findIndex(meet => meet.id === parseInt(meetId));
-      if (index > -1) {
-        mockData.splice(index, 1);  // 해당 모임 삭제
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    }, 500);
-  });
-};
-
 // 모임 가입 승인
 export const approveMember = async (meetId, memberId) => {
   return new Promise((resolve) => {
