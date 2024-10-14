@@ -5,12 +5,15 @@ import useCommStore from "../../stores/useCommStore";
 import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
-    const { posts, fetchPosts } = useCommStore();
+    const { posts, fetchPosts, loading, error } = useCommStore();  // Zustand에서 데이터 불러오기
     const { goToEditor } = useNavigation();
 
     useEffect(() => {
-        fetchPosts(); // 컴포넌트 마운트 시 게시글 목록 불러오기
+        fetchPosts();  // 컴포넌트 마운트 시 게시글 목록 불러오기
     }, [fetchPosts]);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
     return (
         <div className="container mx-auto mt-20">
@@ -37,16 +40,16 @@ const CommPage = () => {
                 </thead>
                 <tbody>
                     {posts.map((post, index) => (
-                        <tr key={post.id} className="border-b border-gray-200 hover:bg-gray-50">
+                        <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-50">
                             <td className="p-3 text-center">{index + 1}</td>
                             <td className="p-3 text-left">
-                                <Link to={`/comm/detail/${post.id}`} className="text-blue-500 hover:underline">
+                                <Link to={`/comm/detail/${post.boardId}`} className="text-blue-500 hover:underline">
                                     {post.title}
                                 </Link>
                             </td>
                             <td className="p-3 text-center">{post.nickName}</td>
                             <td className="p-3 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                            <td className="p-3 text-center">{post.views}</td>
+                            <td className="p-3 text-center">{post.views || 0}</td>
                         </tr>
                     ))}
                 </tbody>

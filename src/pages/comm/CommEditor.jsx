@@ -7,10 +7,10 @@ import useCommStore from '../../stores/useCommStore';
 import { useNavigate } from 'react-router-dom';
 
 const CommEditor = () => {
-    const [title, setTitle] = useState(''); // 제목 상태
-    const [content, setContent] = useState(''); // 내용 상태
-    const [files, setFiles] = useState([]); // 파일 상태
-    const { createPost } = useCommStore(); // Zustand에서 createPost 함수 불러오기
+    const [title, setTitle] = useState('');  // 제목 상태
+    const [content, setContent] = useState('');  // 내용 상태
+    const [files, setFiles] = useState([]);  // 파일 상태
+    const { createPost } = useCommStore();  // Zustand에서 createPost 함수 불러오기
     const navigate = useNavigate();
 
     // 제목 변경 핸들러
@@ -27,10 +27,8 @@ const CommEditor = () => {
     // 게시글 작성 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            // Zustand의 createPost 호출
-            await createPost(title, content, files);
+            await createPost(title, content, files);  // Zustand의 createPost 호출
             navigate('/comm');  // 성공 시 커뮤니티 페이지로 이동
         } catch (error) {
             console.error('게시글 작성 중 오류:', error);
@@ -39,9 +37,9 @@ const CommEditor = () => {
 
     // 취소 버튼 핸들러
     const handleCancel = () => {
-        setTitle(''); // 제목 초기화
-        setContent(''); // 내용 초기화
-        setFiles([]); // 파일 초기화
+        setTitle('');  // 제목 초기화
+        setContent('');  // 내용 초기화
+        setFiles([]);  // 파일 초기화
         navigate('/comm');  // 취소 시 커뮤니티 페이지로 이동
     };
 

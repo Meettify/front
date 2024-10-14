@@ -7,12 +7,12 @@ import RoundedButton from '../../components/button/RoundedButton';
 
 const CommDetail = () => {
     const { id } = useParams();  // URL에서 id 값을 가져옴
-    const { fetchPost, selectedPost, addComment } = useCommStore();  // Zustand에서 데이터 불러오기
+    const { fetchPostDetail, postDetail, addComment } = useCommStore();  // Zustand에서 데이터 불러오기
     const [comment, setComment] = useState('');  // 댓글 상태
 
     useEffect(() => {
-        fetchPost(parseInt(id));  // 게시글 선택
-    }, [id, fetchPost]);
+        fetchPostDetail(parseInt(id));  // 게시글 선택
+    }, [id, fetchPostDetail]);
 
     const handleCommentChange = (e) => {
         setComment(e.target.value);  // 댓글 입력 상태 업데이트
@@ -30,26 +30,27 @@ const CommDetail = () => {
         }
     };
 
-    if (!selectedPost) {
+    if (!postDetail) {
         return <div>게시글을 불러오는 중입니다...</div>;
     }
 
     return (
         <div className="max-w-2xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-2 text-left">{selectedPost.title}</h1>
+            <h1 className="text-2xl font-bold mb-2 text-left">{postDetail.title}</h1>
             <div className="flex justify-between items-center mb-4">
                 <div className="text-gray-500 text-left">
-                    <span className="block">{selectedPost.nickName}</span> {/* 작성자 */}
-                    <span className="block text-sm">작성일 {new Date(selectedPost.regTime).toLocaleDateString()}</span> {/* 작성일 */}
+                    <span className="block">{postDetail.nickName}</span>  {/* 작성자 */}
+                    <span className="block text-sm">작성일 {new Date(postDetail.regTime).toLocaleDateString()}</span>  {/* 작성일 */}
                 </div>
                 <div className="flex items-center text-right">
                     <CiRead className="mr-1" />
-                    <span>{selectedPost.views}</span> {/* 조회수 */}
+                    <span>{postDetail.views}</span>  {/* 조회수 */}
                 </div>
             </div>
             <p className="text-gray-700 leading-relaxed text-left mb-6">
-                {selectedPost.content} {/* 게시글 내용 */}
+                <div dangerouslySetInnerHTML={{ __html: postDetail.content }}></div>
             </p>
+
 
             {/* 댓글 입력 구간 */}
             <div className="border-t border-gray-200 pt-0 relative">
@@ -76,13 +77,13 @@ const CommDetail = () => {
             </div>
 
             <div className="text-left mt-5">
-                {selectedPost.comments && selectedPost.comments.length > 0 ? (
+                {postDetail.comments && postDetail.comments.length > 0 ? (
                     <ul className="space-y-2">
-                        {selectedPost.comments.map((comment, index) => (
+                        {postDetail.comments.map((comment, index) => (
                             <li key={index} className="border-b pb-2">
-                                <div className="text-md text-gray-700">{comment.nickName}</div> {/* 댓글 작성자 */}
-                                <div className="text-gray-900">{comment.content}</div> {/* 댓글 내용 */}
-                                <div className="text-sm text-gray-400">{new Date(comment.regTime).toLocaleString()}</div> {/* 댓글 작성 시간 */}
+                                <div className="text-md text-gray-700">{comment.nickName}</div>  {/* 댓글 작성자 */}
+                                <div className="text-gray-900">{comment.content}</div>  {/* 댓글 내용 */}
+                                <div className="text-sm text-gray-400">{new Date(comment.regTime).toLocaleString()}</div>  {/* 댓글 작성 시간 */}
                             </li>
                         ))}
                     </ul>

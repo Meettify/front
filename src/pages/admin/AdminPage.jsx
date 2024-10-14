@@ -25,8 +25,12 @@ const AdminPage = () => {
                 <section className="mb-8">
                     <h2 className="font-bold mb-2 text-left text-2xl">상품 관리</h2>
                     <ul className="space-y-2 text-left">
-                        <li><Link to="itemlist">상품 조회</Link></li> {/* 상품 조회 메뉴 */}
-                        <li><Link to="itemadd">상품 등록</Link></li>
+                        <li>
+                            <Link to="itemlist">상품 조회</Link> {/* 상품 조회 메뉴 */}
+                        </li>
+                        <li>
+                            <Link to="itemadd">상품 등록</Link> {/* 상품 등록 메뉴 */}
+                        </li>
                     </ul>
                 </section>
 
@@ -40,9 +44,7 @@ const AdminPage = () => {
 
             {/* 오른쪽 콘텐츠 영역 */}
             <main className="w-3/4 p-10">
-                <p>관리자 페이지 메인</p>
-                <br />
-                <Outlet />
+                <Outlet /> {/* 여기서 ItemList나 다른 컴포넌트가 렌더링됨 */}
             </main>
         </div>
     );

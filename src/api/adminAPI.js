@@ -1,60 +1,71 @@
-// adminAPI.js
-
-import request from './request/index';
+import request from './request';
 
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-// 상품 조회 (GET)
-export const getProduct = async (itemId) => {
-    try {
-        const url = itemId ? `${BASE_URL}/items/${itemId}` : `${BASE_URL}/items`; // 전체 목록일 때는 itemId 없이 호출
-        const response = await request.get({
-            url
-        });
-        return response.data;
-    } catch (error) {
-        console.error('상품 조회 중 오류 발생:', error);
-        throw error;
-    }
+const createItem = async (itemData) => {
+  const response = await request.post({
+    url: `${BASE_URL}/items`,
+    data: itemData,
+  });
+  return response.data;
 };
 
+// 상품 목록을 1번부터 10번까지 개별적으로 가져오기
+const getAllItems = async () => {
+  try {
+    const itemPromises = []; // 1번부터 10번까지의 상품을 가져오는 Promise 배열
 
-// 나머지 API 요청 함수는 동일
-export const createProduct = async (productData) => {
-    try {
-        const response = await request.post({
-            url: `${BASE_URL}/items`,
-            data: productData
-        });
-        return response.data;
-    } catch (error) {
-        console.error('상품 등록 중 오류 발생:', error);
-        throw error;
+    for (let itemId = 1; itemId <= 10; itemId++) {
+      itemPromises.push(request.get({
+        url: `${BASE_URL}/items/${itemId}`,
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }));
     }
+
+    // 모든 상품 정보를 한꺼번에 가져옴
+    const responses = await Promise.all(itemPromises);
+    const items = responses.map(response => response.data); // 각 응답에서 data 추출
+    return items; // 모든 상품 목록 반환
+  } catch (error) {
+    console.error('상품 목록 조회 오류:', error);
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+    } else if (error.request) {
+      console.error("No response from server:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+  }
 };
 
-export const updateProduct = async (itemId, productData) => {
-    try {
-        const response = await request.put({
-            url: `${BASE_URL}/items/${itemId}`,
-            data: productData
-        });
-        return response.data;
-    } catch (error) {
-        console.error('상품 수정 중 오류 발생:', error);
-        throw error;
-    }
+const getItemDetail = async (itemId) => {
+  const response = await request.get({
+    url: `${BASE_URL}/items/${itemId}`,
+  });
+  return response.data;
 };
 
-export const deleteProduct = async (itemId) => {
-    try {
-        const response = await request.delete({
-            url: `${BASE_URL}/items/${itemId}`
-        });
-        return response.data;
-    } catch (error) {
-        console.error('상품 삭제 중 오류 발생:', error);
-        throw error;
-    }
+const updateItem = async (itemId, updatedData) => {
+  const response = await request.put({
+    url: `${BASE_URL}/items/${itemId}`,
+    data: updatedData,
+  });
+  return response.data;
 };
 
+const deleteItem = async (itemId) => {
+  const response = await request.del({
+    url: `${BASE_URL}/items/${itemId}`,
+  });
+  return response.data;
+};
+
+export default {
+  createItem,
+  getAllItems, // 1번부터 10번까지 상품 목록 조회 함수
+  getItemDetail,
+  updateItem,
+  deleteItem,
+};
