@@ -128,7 +128,7 @@ const SignupForm = () => {
     // 유효성 검사를 위해 필드별로 검사 수행
     if (field === 'name') {
       const nameValidation = validateName(value);
-      setValidationErrors(prev => ({ ...prev, name: nameValidation.isValid ? '' : '이름은 한글만 입력 가능합니다.' }));
+      setValidationErrors(prev => ({ ...prev, name: nameValidation.isValid ? '' : '이름은 한글과 영문만 입력 가능합니다.' }));
     }
 
     if (field === 'nickName') {
@@ -151,7 +151,9 @@ const SignupForm = () => {
 
     if (field === 'email') {
       const emailValidation = validateEmail(value);
-      if (emailValidation.isValid) {
+      if (!value) {
+        setValidationErrors(prev => ({ ...prev, email: '' }));
+      } else if (emailValidation.isValid) {
         getCheckEmail(value).then(check => {
           setValidationErrors(prev => ({ 
             ...prev, 
@@ -161,7 +163,7 @@ const SignupForm = () => {
       } else {
         setValidationErrors(prev => ({ 
           ...prev, 
-          email: emailValidation.isValid ? '' : '올바른 이메일 형식이 아닙니다.' 
+          email: '올바른 이메일 형식이 아닙니다.' 
         }));
       }
     }
