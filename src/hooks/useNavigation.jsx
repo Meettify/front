@@ -12,11 +12,11 @@ const useNavigation = () => {
         navigate('/comm');
     };
 
-    const goToEditor = () => {
-        navigate('/comm/editor');
+    const goToCommAdd = () => {
+        navigate('/comm/add');
     };
 
-    const goToDetail = (id) => {
+    const goToCommDetail = (id) => {
         navigate(`/comm/detail/${id}`);
     };
     const goToShopList = () => {
@@ -80,8 +80,8 @@ const useNavigation = () => {
         goToSignup,
         goToSignupSuccess,
         goToMyPage,
-        goToDetail,
-        goToEditor,
+        goToCommDetail,
+        goToCommAdd,
         goToComm,
         goToItemList,
     };

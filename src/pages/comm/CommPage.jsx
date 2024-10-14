@@ -6,7 +6,7 @@ import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
     const { posts, fetchPosts, loading, error } = useCommStore();  // Zustand에서 데이터 불러오기
-    const { goToEditor } = useNavigation();
+    const { goToCommAdd } = useNavigation();
 
     useEffect(() => {
         fetchPosts();  // 컴포넌트 마운트 시 게시글 목록 불러오기
@@ -23,7 +23,7 @@ const CommPage = () => {
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <div className="flex space-x-2">
-                    <RoundedButton onClick={() => goToEditor("/comm/edit")}>글쓰기</RoundedButton>
+                    <RoundedButton onClick={() => goToCommAdd("/comm/add")}>글쓰기</RoundedButton>
                 </div>
             </div>
 

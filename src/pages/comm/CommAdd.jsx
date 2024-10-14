@@ -6,7 +6,7 @@ import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useCommStore from '../../stores/useCommStore';
 import { useNavigate } from 'react-router-dom';
 
-const CommEditor = () => {
+const CommAdd = () => {
     const [title, setTitle] = useState('');  // 제목 상태
     const [content, setContent] = useState('');  // 내용 상태
     const [files, setFiles] = useState([]);  // 파일 상태
@@ -75,4 +75,4 @@ const CommEditor = () => {
     );
 };
 
-export default CommEditor;
+export default CommAdd;
