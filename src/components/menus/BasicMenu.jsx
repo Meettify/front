@@ -9,8 +9,8 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
-
 import SearchBar from '../../components/menus/SearchBar'; // SearchBar import
+import useAuthStore from '../../stores/useAuthStore';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -19,6 +19,7 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
+    const { user = {} } = useAuthStore(); // user가 없을 경우 기본값 {} 설정
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -92,7 +93,10 @@ const BasicMenu = () => {
                     </button>
                 </li>
                 <li> <Link to={'/mypage'}>마이페이지</Link> </li>
-                <li> <Link to={'/admin'}>관리자페이지</Link> </li>
+                {/* 관리자 role이 "ADMIN"일 경우에만 관리자 페이지 링크 보이기 */}
+                {user.role === 'ADMIN' && (
+                    <li> <Link to={'/admin'}>관리자페이지</Link> </li>
+                )}
             </ul>
 
             {modals['info'] && (
