@@ -34,30 +34,41 @@ export const createCommunityPost = async (title, content, files = []) => {
     }
 };
 
-
-
 // 커뮤니티 게시물 수정 (PUT)
 export const updateCommunityPost = async (communityId, title, content, remainImgId = [], files = []) => {
     try {
         const requestBody = new FormData();
         requestBody.append('community', new Blob([JSON.stringify({ title, content, remainImgId })], { type: 'application/json' }));
-        files.forEach(file => {
-            requestBody.append('files', file);
-        });
+        
+        if (files.length > 0) {
+            // 새 파일이 있을 때만 파일을 FormData에 추가
+            files.forEach(file => requestBody.append('files', file));
+        } else {
+            // 파일을 수정하지 않는다면 remainImgId로 기존 파일 정보만 전달
+            requestBody.append('remainImgId', JSON.stringify(remainImgId)); 
+        }
+
+        const accessToken = sessionStorage.getItem('accessToken');
+        console.log('Access Token:', accessToken);
 
         const response = await request.put({
-            url: `${BASE_URL}/${communityId}`,
+            url: `${BASE_URL}/community/${communityId}`,
             data: requestBody,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+
         return response.data;
+        
     } catch (error) {
         console.error('커뮤니티 게시글 수정 중 오류 발생:', error);
+        console.log(`${DEL_URL}/community/${communityId}`);
+        console.log('Access Token:', accessToken);
         throw error;
     }
 };
+
 
 export const deleteCommunityPost = async (communityId) => {
     console.log("삭제 요청 커뮤니티 ID:", communityId);  // ID 값 확인

@@ -16,6 +16,10 @@ const useNavigation = () => {
         navigate('/comm/add');
     };
 
+    const goToCommEdit = () => {
+        navigate(`/comm/edit/${id}`);
+    };
+
     const goToCommDetail = (id) => {
         navigate(`/comm/detail/${id}`);
     };
@@ -84,6 +88,7 @@ const useNavigation = () => {
         goToCommAdd,
         goToComm,
         goToItemList,
+        goToCommEdit,
     };
 };
 
