@@ -140,3 +140,9 @@ npm install react-icons
 npm install react-quill
 npm install react-quill@latest
 ```
+
+### scroll 라이브러리
+
+```bash
+npm install react-infinite-scroll-component
+```

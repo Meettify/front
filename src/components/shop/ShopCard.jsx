@@ -1,12 +1,12 @@
 import React from "react";
 import RoundedButton from "../button/RoundedButton";
 
-const ShopCard = ({ title = "상품명", description = "상품 내용", price = "₩100,000" }) => {
+const ShopCard = ({ title = "상품명", description = "상품 내용", price = "₩100,000", imageUrl = "https://via.placeholder.com/150" }) => {
     return (
         <div className="bg-white overflow-hidden w-64 py-5 text-center">
             <div className="bg-gray-200 h-44 flex items-center justify-center rounded-lg shadow-md">
                 <img
-                    src="https://via.placeholder.com/150" // 임시 이미지
+                    src={imageUrl} // 동적으로 전달된 이미지 URL
                     alt={title}
                     className="object-cover h-full w-full rounded-lg"
                 />
