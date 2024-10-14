@@ -10,40 +10,47 @@ const MeetInsert = () => {
   const navigate = useNavigate();
   const [meetName, setMeetName] = useState('');
   const [maxMembers, setMaxMembers] = useState(30);
-  const [imageFile, setImageFile] = useState(null)
+  const [imageFile, setImageFile] = useState([]);
 
-  const handleSave = async() => {
+  const handleSave = async () => {
+    if (imageFile.length === 0) {
+      alert('이미지를 선택하세요.');
+      return;
+    }
+
+    const formData = new FormData();
 
     const meetData = {
-      meetName,
+      meetName: meetName,
       meetDescription: description,
       meetMaximum: maxMembers,
       meetLocation: tags[0],  
-      images: 'main.jpg',  
-      category: tags[1] || 'SPORTS' 
+      category: tags[1] || 'SPORTS',
+    };
+
+    formData.append('meet', new Blob([JSON.stringify(meetData)], { type: 'application/json' }));
+    if (imageFile && imageFile.length > 0) {
+      imageFile.forEach(image => {
+        formData.append('images', image);
+      });
     }
 
     try {
-      const formData = new FormData();
-
-      formData.append('meetName', '테스트');
-      formData.append('meetDescription', '테스트');
-      formData.append('meetMaximum', 30);
-      formData.append('meetLocation', '테스트');
-      formData.append('images', imageFile);
-      formData.append('category', 'SPORTS');
-
-      const response = await postMeetInsert(formData)
-      if (response.status === 201) {
-        alert('성공적으로 등록되었습니다.')
-        navigate(`/meet/detail/${response.data.meetId}`)  // 백틱 수정
-      }else{
-        alert('등록에 실패하였습니다.')
+      const response = await postMeetInsert(formData);
+      
+      // 응답에서 새로운 소모임의 ID를 가져와서 상세 페이지로 이동
+      if (response.status === 200 || response.status === 201) {
+        alert('성공적으로 등록되었습니다.');
+        const newMeetId = response.data.meetId; // 새로 생성된 소모임의 ID
+        navigate(`/meet/${newMeetId}`);  // 생성된 소모임의 상세 페이지로 이동
+      } else {
+        alert('등록에 실패하였습니다. 상태 코드: ' + response.status);
       }
     } catch (error) {
-        alert('서버 오류')
+      console.error('Error during the request:', error);
+      alert('서버 오류');
     }
-  }
+  };
 
   return (
     <div className="bg-gray-100 flex-1 h-full">
@@ -56,10 +63,16 @@ const MeetInsert = () => {
             <input 
               type="file" 
               accept="image/*" 
+              multiple // 여러 파일 선택을 허용
               onChange={(e) => {
-                setImage(URL.createObjectURL(e.target.files[0]))
-                setImageFile(e.target.files[0])
-              }} 
+                const files = Array.from(e.target.files);
+                if (files.length > 0) {
+                  setImage(URL.createObjectURL(files[0])); // 첫 번째 파일 미리보기
+                } else {
+                  setImage(null); // 파일이 없을 경우 이미지 상태를 null로 설정
+                }
+                setImageFile(prevFiles => [...prevFiles, ...files]);
+              }}
               className="mt-2"
             />
           </div>
@@ -73,7 +86,7 @@ const MeetInsert = () => {
 
           <div className="flex space-x-2 mb-4">
             <input
-              value={tags[0]}
+              value={tags[0] || '' }
               placeholder="지역"
               onChange={(e) => {
                 const newTags = [...tags];
@@ -85,7 +98,7 @@ const MeetInsert = () => {
             {tags.slice(1).map((tag, index) => (
               <input
                 key={index + 1}
-                value={tag}
+                value={tag || ''}
                 placeholder="태그입력"
                 onChange={(e) => {
                   const newTags = [...tags];
@@ -122,7 +135,7 @@ const MeetInsert = () => {
           <input
             type='number'
             value={maxMembers}
-            onChange={(e)=> setMaxMembers(e.target.value)}
+            onChange={(e) => setMaxMembers(e.target.value)}
             className="text-gray-700 bg-gray-100 p-4 rounded-lg w-full mb-4"
             placeholder="최대 인원"
           />

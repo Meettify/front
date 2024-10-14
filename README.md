@@ -90,12 +90,6 @@ npm install axios
 npm install zustand
 ```
 
-### react-responsive 설치 (media query/반응형웹)
-
-```bash
-npm install react-responsive
-```
-
 ### ESLint 규칙 비활성화 설정
 
 ```bash
@@ -139,6 +133,14 @@ npm install react-icons
 ```bash
 npm install react-quill
 npm install react-quill@latest
+```
+
+### websocket 라이브러리
+
+```bash
+npm install @stomp/stompjs
+npm install ws
+
 ```
 
 ### scroll 라이브러리

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create(persist((set) => ({
   user: {
     memberEmail: '',
     memberName: '',
@@ -21,8 +22,9 @@ const useAuthStore = create((set) => ({
     localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
     localStorage.removeItem('memberId');
     set({ user: null, isAuthenticated: false, memberId: null });
+    localStorage.removeItem('undefined');
     window.location.href = '/';
   },
-}));
+})));
 
 export default useAuthStore;
