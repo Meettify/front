@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Link } from "react-router-dom";
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from "react-router-dom"; // useLocation import
 import logo from '../../assets/logo/meettify_logo.png';
 import useModalStore from '../../stores/useModalStore';
 import InfoModal from '../../components/member/info/InfoModal';
@@ -17,6 +17,8 @@ const BasicMenu = () => {
     const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
+    const location = useLocation(); // 현재 위치 확인
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -31,6 +33,21 @@ const BasicMenu = () => {
         setIsSearchOpen(prev => !prev); // SearchBar 토글
     };
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            if (searchTerm && location.pathname !== '/chat') { // 검색어가 있을 때만 토글
+                toggleSearchBar();
+            }
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [searchTerm, location.pathname]); // 검색어와 pathname 변경 시 이벤트 리스너 업데이트
+
     return (
         <nav id='navbar' className="flex items-center justify-center w-full py-0 px-5 relative">
             <div className="flex items-center mr-20">
@@ -41,7 +58,7 @@ const BasicMenu = () => {
 
             <ul className="flex space-x-16 text-black m-0">
                 <li> <Link to={'/main'}>메인</Link> </li>
-                <li> <Link to={'/meet/'}>모임</Link> </li>
+                <li> <Link to={'/meet'}>모임</Link> </li>
                 <li> <Link to={'/comm/'}>커뮤니티</Link> </li>
                 <li> <Link to={'/shop/'}>쇼핑</Link> </li>
                 <li> <Link to={'/support'}>고객센터</Link> </li>
@@ -94,7 +111,7 @@ const BasicMenu = () => {
 
             {/* SearchBar 드롭다운 */}
             <div className={`absolute top-full left-0 w-full transition-all duration-300 ${isSearchOpen ? 'block' : 'hidden'}`}>
-                <SearchBar />
+                <SearchBar setSearchTerm={setSearchTerm} />
             </div>
         </nav>
     );

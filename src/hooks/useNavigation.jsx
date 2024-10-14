@@ -27,12 +27,16 @@ const useNavigation = () => {
         navigate('/meet/insert');
     }
 
-    const goToMeetDetail = (meetId) => {
-        navigate(`/meet/detail/${meetId}`); // 모임 ID를 사용하여 상세 페이지로 이동
-    };
+    const goToMeetDetail = (meetId, categoryId) => {
+        navigate(`/meet/detail?categoryId=${categoryId}&meetId=${meetId}`); // 쿼리 문자열 전달
+    };            
 
     const goToCategoryList = (categoryId) => {
-        navigate(`/meet/list/${categoryId}`); // 카테고리 이름을 사용하여 리스트 페이지로 이동
+        navigate(`/meet/list?categoryId=${categoryId}`);
+    };      
+
+    const handleNavigateToCategory = (categoryId) => {
+        goToCategoryList(categoryId); // goToCategoryList를 호출
     };
 
     const goToPostWrite = () => {
@@ -65,6 +69,7 @@ const useNavigation = () => {
         goToMeetInsert,
         goToMeetDetail,
         goToCategoryList,
+        handleNavigateToCategory,
         goToPostWrite,
         goToPostDetail,
         goToPostList,
