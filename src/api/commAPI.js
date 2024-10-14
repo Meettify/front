@@ -1,8 +1,9 @@
 import request from './request'; // Axios 인스턴스 가져오기
+import axios from 'axios';
 
 const BASE_URL = '/community'; // 공통 경로
+const DEL_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-// 커뮤니티 게시물 생성 (POST)
 // 커뮤니티 게시물 생성 (POST)
 export const createCommunityPost = async (title, content, files = []) => {
     try {
@@ -58,18 +59,21 @@ export const updateCommunityPost = async (communityId, title, content, remainImg
     }
 };
 
-// 커뮤니티 게시물 삭제 (DELETE)
 export const deleteCommunityPost = async (communityId) => {
+    console.log("삭제 요청 커뮤니티 ID:", communityId);  // ID 값 확인
     try {
-        const response = await request.del({
-            url: `${BASE_URL}/${communityId}`,
+        const response = await axios.delete(`${DEL_URL}/community/${communityId}`, {
+            params: {
+                communityId: communityId,  // query 파라미터로 전달
+            }
         });
         return response.data;
     } catch (error) {
-        console.error('커뮤니티 게시글 삭제 중 오류 발생:', error);
+        console.error('커뮤니티 게시글 삭제 중 오류 발생:', error.response ? error.response.data : error.message);
         throw error;
     }
 };
+
 
 // 커뮤니티 게시물 조회 (GET)
 export const getCommunityPost = async (communityId) => {

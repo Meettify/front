@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useCommStore from '../../stores/useCommStore';
+import useAuthStore from '../../stores/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
 const CommAdd = () => {
@@ -11,7 +12,18 @@ const CommAdd = () => {
     const [content, setContent] = useState('');  // 내용 상태
     const [files, setFiles] = useState([]);  // 파일 상태
     const { createPost } = useCommStore();  // Zustand에서 createPost 함수 불러오기
+    const { user } = useAuthStore(); // 현재 사용자 정보 가져오기
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user || !user.memberEmail) {
+            // 사용자가 로그인하지 않았거나 이메일이 없는 경우 홈으로 이동
+            navigate('/');
+        }
+    }, [user, navigate]);
+
+
+
 
     // 제목 변경 핸들러
     const handleTitleChange = (e) => setTitle(e.target.value);

@@ -1,21 +1,52 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { CiRead } from "react-icons/ci";
 import { TfiCommentAlt } from "react-icons/tfi";
 import useCommStore from '../../stores/useCommStore';
+import useAuthStore from '../../stores/useAuthStore';
 import RoundedButton from '../../components/button/RoundedButton';
+import RoundedCancelButton from '../../components/button/RoundedCancelButton';
+import RoundedDeleteButton from '../../components/button/RoundedDeleteButton';
 
 const CommDetail = () => {
     const { id } = useParams();  // URL에서 id 값을 가져옴
-    const { fetchPostDetail, postDetail, addComment } = useCommStore();  // Zustand에서 데이터 불러오기
+    const { fetchPostDetail, postDetail, addComment, deletePost } = useCommStore();  // Zustand에서 데이터 불러오기
     const [comment, setComment] = useState('');  // 댓글 상태
+    const { user } = useAuthStore();  // 로그인한 사용자 정보
+    const navigate = useNavigate();  // useNavigate 사용
 
     useEffect(() => {
-        fetchPostDetail(parseInt(id));  // 게시글 선택
-    }, [id, fetchPostDetail]);
+        fetchPostDetail(parseInt(id));  // 게시글 선택 후 가져오기
+        console.log("현재 로그인한 사용자:", user); // 사용자 정보 확인
+    }, [id, fetchPostDetail, user]);
+
+    useEffect(() => {
+        // postDetail이 업데이트될 때마다 게시글 데이터 콘솔에서 확인
+        console.log("게시글 데이터:", postDetail);
+        console.log("게시글 작성자 닉네임:", postDetail?.nickName);
+        console.log("로그인한 사용자 닉네임:", user?.nickName);
+    }, [postDetail, user]);
+
+    const handleDelete = async () => {
+        console.log("삭제하려는 게시글 ID:", id); // id 값 확인
+        try {
+            await deletePost(id);  // id를 전달
+            console.log("삭제 성공");
+            navigate('/comm');  // 삭제 후 커뮤니티 목록으로 이동
+        } catch (error) {
+            console.error('게시물 삭제 중 오류 발생:', error);
+            // navigate는 에러가 발생하지 않았을 때만 실행
+            return;
+        }
+    };
+
 
     const handleCommentChange = (e) => {
         setComment(e.target.value);  // 댓글 입력 상태 업데이트
+    };
+
+    const handleEdit = () => {
+        navigate(`/comm/edit/${id}`);  // 수정 페이지로 이동
     };
 
     const handleCommentSubmit = () => {
@@ -30,9 +61,12 @@ const CommDetail = () => {
         }
     };
 
-    if (!postDetail) {
+    if (!postDetail || !user) {
         return <div>게시글을 불러오는 중입니다...</div>;
     }
+
+    // nickName을 이용한 비교로 수정
+    const isAuthor = postDetail.nickName === user.nickName;
 
     return (
         <div className="max-w-2xl mx-auto p-4">
@@ -51,6 +85,14 @@ const CommDetail = () => {
                 <div dangerouslySetInnerHTML={{ __html: postDetail.content }}></div>
             </p>
 
+            <div className="flex justify-end mb-5">
+                {isAuthor && (
+                    <div className="flex space-x-4">
+                        <RoundedButton onClick={() => navigate(`/comm/edit/${id}`)}>수정</RoundedButton>
+                        <RoundedDeleteButton onClick={handleDelete}>삭제</RoundedDeleteButton>
+                    </div>
+                )}
+            </div>
 
             {/* 댓글 입력 구간 */}
             <div className="border-t border-gray-200 pt-0 relative">

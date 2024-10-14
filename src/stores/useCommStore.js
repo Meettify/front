@@ -23,6 +23,7 @@ const useCommStore = create((set) => ({
     set({ loading: true });
     try {
       const data = await getCommunityPost(communityId);
+      console.log("게시글 데이터:", data); // 서버 응답 확인
       set({ postDetail: data, loading: false });
     } catch (error) {
       set({ error, loading: false });

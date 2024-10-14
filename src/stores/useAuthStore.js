@@ -9,7 +9,7 @@ const useAuthStore = create(persist((set) => ({
     memberAddr: '',
     memberAddrDetail: '',
     memberZipCode: '',
-    role: '',
+    memberRole: '',
   },
   isAuthenticated: false,
   memberId: null,
@@ -18,7 +18,7 @@ const useAuthStore = create(persist((set) => ({
     set({
       user: { 
         ...userData, 
-        role: userData.memberRole || 'USER' // memberRole이 없을 경우 기본값을 USER로 설정
+        memberRole: userData.memberRole || 'USER' // memberRole이 없을 경우 기본값을 USER로 설정
       },
       isAuthenticated: true, 
       memberId: userData.memberId || localStorage.getItem('memberId') // userData에서 memberId를 가져오되, 없으면 localStorage에서 가져옴
