@@ -22,6 +22,7 @@ const useAuthStore = create(persist((set) => ({
     localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
     localStorage.removeItem('memberId');
     set({ user: null, isAuthenticated: false, memberId: null });
+    localStorage.removeItem('undefined');
     window.location.href = '/';
   },
 })));
