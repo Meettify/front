@@ -97,8 +97,15 @@ const get = async (payload) => {
 }
 
 const post = async (payload) => {
+    payload.headers = payload.headers || {};
+    
+    if (payload.data instanceof FormData) {
+        payload.headers['Content-Type'] = 'multipart/form-data';
+    }
+
     return await apiRequest({ ...payload, method: METHOD.POST });
 }
+
 
 const put = async (payload) => {
     return await apiRequest({ ...payload, method: METHOD.PUT });

@@ -4,21 +4,18 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 // 소모임 등록 API
 export const postMeetInsert = async (data) => {
-    try {
-        const response = await request.post({
-            url: `${BASE_URL}/meets`,
-            data,
-            headers: {
-                "Content-Type": "multipart/form-data",
-            }
-        });
-        return response.data;
+  try {
+    const response = await request.post({
+      url: `${BASE_URL}/meets`,
+      data,
+    });
+    return response.data;
     } catch (error) {
         console.error('소모임 등록 오류:', error);
         if (error.response) {
-            return error.response;
+        return error.response;
         } else {
-            return { status: 500, message: '서버에 연결할 수 없습니다.' };
+        return { status: 500, message: '서버에 연결할 수 없습니다.' };
         }
     }
 };
@@ -69,3 +66,57 @@ export const deleteMeet = async (meetId) => {
         }
     }
 };
+
+export const getMeetJoinList = async () => {
+    const response = {
+        data: [
+          {
+            meetId: 1,
+            meetName: "테스트제목",
+            meetLocation: "서울 종로구",
+            category: "SPORTS",
+            meetMaximum: 20,
+            images: "이미지경로1",
+            meetRole : "ADMIN",
+          },
+          {
+            meetId: 2,
+            meetName: "테스트제목2",
+            meetLocation: "서울 강남구",
+            category: "MUSIC",
+            meetMaximum: 15,
+            images: "이미지경로2",
+            meetRole : "MEMBER",
+          },
+          {
+            meetId: 3,
+            meetName: "테스트제목3",
+            meetLocation: "부산 해운대구",
+            category: "ART",
+            meetMaximum: 10,
+            images: "이미지경로3",
+            meetRole : "WAITING",
+          },
+          {
+            meetId: 4, 
+            meetName: "테스트제목4", 
+            meetLocation: "경기 수원시 팔달구", 
+            category: "MOVIE", 
+            meetMaximum: 5,
+            images: "이미지경로4", 
+            meetRole : "DORMANT", 
+          },
+          {
+            meetId: 5, 
+            meetName: "테스트제목5", 
+            meetLocation: "강원 춘천시", 
+            category: "PET", 
+            meetMaximum: 10,
+            images: "이미지경로5", 
+            meetRole : "EXPEL", 
+          },
+        ],
+      };
+
+      return response;
+}
