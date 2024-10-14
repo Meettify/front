@@ -7,10 +7,10 @@ import useCommStore from '../../stores/useCommStore';
 import { useNavigate } from 'react-router-dom';
 
 const CommEditor = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [files, setFiles] = useState([]);
-    const { createPost } = useCommStore();
+    const [title, setTitle] = useState(''); // 제목 상태
+    const [content, setContent] = useState(''); // 내용 상태
+    const [files, setFiles] = useState([]); // 파일 상태
+    const { createPost } = useCommStore(); // Zustand에서 createPost 함수 불러오기
     const navigate = useNavigate();
 
     // 제목 변경 핸들러
@@ -24,39 +24,24 @@ const CommEditor = () => {
         setFiles(Array.from(e.target.files));  // 파일 배열로 변환하여 상태에 저장
     };
 
-    // FormData를 이용한 제출 핸들러
+    // 게시글 작성 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            // FormData 객체 생성
-            const formData = new FormData();
-
-            // JSON 데이터를 FormData에 추가
-            const community = {
-                title: title,
-                content: content,
-            };
-            formData.append('community', new Blob([JSON.stringify(community)], { type: 'application/json' }));
-
-            // 선택된 파일들을 FormData에 추가
-            for (let i = 0; i < files.length; i++) {
-                formData.append('files', files[i]);
-            }
-
-            // 요청 보내기 (Axios 사용)
-            await createPost(title, content, files); // Zustand 사용
-            navigate('/comm');  // 성공 시 페이지 이동
+            // Zustand의 createPost 호출
+            await createPost(title, content, files);
+            navigate('/comm');  // 성공 시 커뮤니티 페이지로 이동
         } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message);
+            console.error('게시글 작성 중 오류:', error);
         }
     };
 
     // 취소 버튼 핸들러
     const handleCancel = () => {
-        setTitle('');
-        setContent('');
-        setFiles([]);
+        setTitle(''); // 제목 초기화
+        setContent(''); // 내용 초기화
+        setFiles([]); // 파일 초기화
         navigate('/comm');  // 취소 시 커뮤니티 페이지로 이동
     };
 

@@ -6,18 +6,16 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 export const createCommunityPost = async (title, content, files = []) => {
     try {
         const requestBody = new FormData();
-
-        // Blob을 사용하지 않고 JSON 데이터를 직접 추가
         requestBody.append('community', JSON.stringify({ title, content }));
-
-        // 파일을 추가
         files.forEach(file => {
             requestBody.append('files', file);
         });
 
-        const response = await request.post(`${BASE_URL}/community`, requestBody, {
+        const response = await request.post({
+            url: `${BASE_URL}/community`,
+            data: requestBody,
             headers: {
-                'Content-Type': 'multipart/form-data', // 반드시 multipart로 지정
+                'Content-Type': 'multipart/form-data',
             },
         });
 
@@ -37,7 +35,9 @@ export const updateCommunityPost = async (communityId, title, content, files = [
             requestBody.append('files', file);
         });
 
-        const response = await request.put(`${BASE_URL}/community/${communityId}`, requestBody, {
+        const response = await request.put({
+            url: `${BASE_URL}/community/${communityId}`,
+            data: requestBody,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -66,15 +66,15 @@ export const getAllCommunityPosts = async () => {
         const response = await request.get(`${BASE_URL}/community`, {
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
             },
         });
-        return response.data;  // 서버에서 모든 게시글 데이터를 반환
+        return response.data;
     } catch (error) {
         console.error('커뮤니티 게시글 전체 목록을 불러오는 중 오류가 발생했습니다:', error);
         throw error;
     }
 };
+
 
 // 커뮤니티 게시글 조회 (GET)
 export const getCommunityPost = async (communityId) => {

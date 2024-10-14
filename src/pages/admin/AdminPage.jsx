@@ -1,6 +1,14 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, Navigate } from 'react-router-dom';
+import useAuthStore from '../../stores/useAuthStore';
 
 const AdminPage = () => {
+    const { user } = useAuthStore(); // user 정보를 가져옴
+
+    // user.role이 "ADMIN"이 아니면 리디렉션
+    if (user.role !== 'ADMIN') {
+        return <Navigate to="/" replace />;
+    }
+
     return (
         <div className="flex justify-center items-center w-full h-screen">
             {/* 왼쪽 메뉴 영역 */}
@@ -22,7 +30,6 @@ const AdminPage = () => {
                     </ul>
                 </section>
 
-
                 <section>
                     <h2 className="font-bold mb-2 text-left text-2xl">고객센터 관리</h2>
                     <ul className="space-y-2 text-left">
@@ -31,7 +38,7 @@ const AdminPage = () => {
                 </section>
             </aside>
 
-            {/* 오른쪽 콘텐츠 영역 (Outlet 내용 표시) */}
+            {/* 오른쪽 콘텐츠 영역 */}
             <main className="w-3/4 p-10">
                 <p>관리자 페이지 메인</p>
                 <br />
