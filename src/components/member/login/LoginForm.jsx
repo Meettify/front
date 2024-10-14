@@ -41,6 +41,8 @@ const LoginForm = () => {
       console.log(`result.data.memberId : ${result.data.memberId}`);
       closeModal('login');
       goToHome();
+      window.location.reload();
+      
     } else {
       setErrorMessage('이메일 또는 비밀번호가 틀렸습니다.');
     }
