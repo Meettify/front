@@ -13,7 +13,7 @@ const MeetPost = lazy(() => import("../pages/meet/MeetComm"));
 const meetRouter = () => {
   return [
     {
-      path: "/meet/list/:categoryId",
+      path: "/meet/list",
       element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
     },
     {
@@ -21,11 +21,11 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetPost /></Suspense>,
     },
     {
-      path: "/meet/detail/:meetId", 
+      path: "/meet/detail",
       element: <Suspense fallback={<Loading />}><MeetDetail /></Suspense>,
     },
     {
-      path: "/meet/update/:meetId",  
+      path: "/meet/update:meetId",
       element: <Suspense fallback={<Loading />}><MeetUpdate /></Suspense>,
     },
     {
@@ -35,6 +35,10 @@ const meetRouter = () => {
     {
       path: "/meet/:meetId/accept", 
       element: <Suspense fallback={<Loading />}><MeetAccept /></Suspense>,
+    },
+    {
+      path: "/meet/list/:categoryId",  // 카테고리 ID를 포함한 경로
+      element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
     },
   ];
 };
