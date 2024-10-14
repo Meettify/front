@@ -67,7 +67,11 @@ const MeetDetail = () => {
                                 <RoundedButton onClick={handleDelete}>
                                     삭제하기
                                 </RoundedButton>
-                            </>
+                                {/* "회원조회" 버튼 추가 */}
+                                <RoundedButton onClick={() => navigate(`/meet/${meetId}/accept`)}>
+                                  회원조회
+                                </RoundedButton>
+                              </>
                         )}
                     </div>
                 </div>

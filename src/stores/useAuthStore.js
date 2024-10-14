@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create(persist((set) => ({
   user: {
     memberEmail: '',
     memberName: '',
@@ -23,6 +24,6 @@ const useAuthStore = create((set) => ({
     set({ user: null, isAuthenticated: false, memberId: null });
     window.location.href = '/';
   },
-}));
+})));
 
 export default useAuthStore;
