@@ -21,6 +21,7 @@ const BasicMenu = () => {
     const location = useLocation(); // 현재 위치 확인
     const { user = {} } = useAuthStore(); // user가 없을 경우 기본값 {} 설정
 
+
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
         setButtonPosition({
