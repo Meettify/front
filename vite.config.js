@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   base: '/',
@@ -11,9 +12,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://meettify.store:8080/api/v1', // 올바른 API 경로 설정
+        target: process.env.VITE_APP_API_BASE_URL,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // '/api' 경로 제거
+        rewrite: (path) => path.replace(/^\/api/, ''), // '/api' 경로를 제거하고 프록시
       },
     },
   },

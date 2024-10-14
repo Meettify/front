@@ -29,11 +29,11 @@ const useNavigation = () => {
 
     const goToMeetDetail = (meetId, categoryId) => {
         navigate(`/meet/detail?categoryId=${categoryId}&meetId=${meetId}`); // 쿼리 문자열 전달
-    };            
+    };
 
     const goToCategoryList = (categoryId) => {
         navigate(`/meet/list?categoryId=${categoryId}`);
-    };      
+    };
 
     const handleNavigateToCategory = (categoryId) => {
         goToCategoryList(categoryId); // goToCategoryList를 호출
@@ -76,6 +76,9 @@ const useNavigation = () => {
         goToSignup,
         goToSignupSuccess,
         goToMyPage,
+        goToDetail,
+        goToEditor,
+        goToComm,
     };
 };
 
