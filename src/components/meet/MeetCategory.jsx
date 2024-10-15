@@ -4,7 +4,7 @@ import MeetSideMenu from './MeetSideMenu';
 import MeetCard from './MeetCard';
 import SectionText from '../../components/text/SectionText';
 import MeetCategoryData from './MeetCategoryData';
-import MeetListData from './MeetListData'; // 추가: MeetListData 임포트
+import MeetListData from './MeetListData';
 import MeetListSearch from './MeetListSearch';
 
 const MeetCategory = () => {
@@ -14,16 +14,14 @@ const MeetCategory = () => {
     const handleButtonClick = (id, isCategory) => {
         console.log(`Navigating to ${isCategory ? 'categoryId' : 'meetId'}: ${id}`);
         if (isCategory) {
-            goToCategoryList(id); // 카테고리 ID를 URL에 전달
+            goToCategoryList(id);
         } else {
-            // 모임에 대한 네비게이션 처리 (필요시 구현)
             console.log(`Navigating to meet with ID: ${id}`);
         }
     };
 
-    // 문자열을 정규화하여 검색을 위한 함수
     const normalizeString = (str) => {
-        return str.toLowerCase().replace(/\s+/g, ''); // 소문자로 변환하고 공백 제거
+        return str.toLowerCase().replace(/\s+/g, ''); // 소문자 변환 및 공백 제거
     };
 
     // 카테고리 및 모임 데이터 필터링
@@ -35,11 +33,10 @@ const MeetCategory = () => {
         normalizeString(meet.title).includes(normalizeString(searchTerm))
     );
 
-    // 전체 필터링 결과 통합
-    const combinedResults = [
-        ...filteredCategoryData.map(meet => ({ ...meet, isCategory: true })),
-        ...filteredMeetListData.map(meet => ({ ...meet, isCategory: false }))
-    ];
+    // 검색어가 없을 때는 카테고리만 보이도록
+    const combinedResults = searchTerm === ""
+        ? filteredCategoryData.map(meet => ({ ...meet, isCategory: true })) // 카테고리만 표시
+        : filteredMeetListData.map(meet => ({ ...meet, isCategory: false })); // 제목에 맞는 모임 표시
 
     return (
         <div className="bg-gray-100 flex-1 h-full">
@@ -50,7 +47,7 @@ const MeetCategory = () => {
                 />
             </div>
             <div className="container mx-auto w-full flex">
-                <div className="w-5/6 bg-gray-100 flex flex-wrap justify-center p-2">
+                <div className="w-5/6 bg-gray-100 flex flex-wrap p-2">
                     <div className="w-full justify-start">
                         <MeetListSearch 
                             onChange={(value) => setSearchTerm(value)} 
@@ -58,7 +55,7 @@ const MeetCategory = () => {
                             className="w-full"
                         />
                     </div>
-                    <div className='flex flex-wrap justify-between w-full mt-4'>
+                    <div className='flex flex-wrap justify-start w-full mt-4'>
                         {combinedResults.length > 0 ? (
                             combinedResults.map((meet) => ( 
                                 <div 
