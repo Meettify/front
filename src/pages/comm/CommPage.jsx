@@ -18,6 +18,15 @@ const CommPage = () => {
     return (
         <div className="container mx-auto mt-20">
             <div className="text-4xl font-bold mb-6 text-left">커뮤니티 둘러보기.</div>
+            <div className="bg-gray-100 p-6 rounded-md mb-6 text-left max-w-7xl">
+                <p className="text-lg mb-2">
+                    유용한 답변을 다른 사람들과도 공유하고 싶으신가요? 그렇다면 추천 기능을 이용해 보세요!
+                </p>
+                <p className="text-sm text-gray-700">
+                    회원님이 문제를 해결할 수 있도록 도움을 주신 분이 있으신가요? 아니면 다른 사람의 답변이 도움이 되었다면 추천해 주세요.
+                    <a href="#" className="text-blue-500 ml-1"> 모임 더 알아보기 - Meettify 커뮤니티</a>
+                </p>
+            </div>
 
             {/* 글쓰기 버튼 */}
             <div className="flex justify-between items-center mb-4">
