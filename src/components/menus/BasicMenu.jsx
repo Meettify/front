@@ -21,6 +21,7 @@ const BasicMenu = () => {
     const location = useLocation(); // 현재 위치 확인
     const { user = {} } = useAuthStore(); // user가 없을 경우 기본값 {} 설정
 
+
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
         setButtonPosition({
@@ -68,16 +69,7 @@ const BasicMenu = () => {
                         <LuSearch size={30} />
                     </button>
                 </li>
-                <li>
-                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(2px)' }}>
-                        <BsChatSquareText size={26} />
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(0px)' }}>
-                        <BsCart3 size={27} />
-                    </Link>
-                </li>
+
                 <li>
                     <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(1px)' }}>
                         <PiBell size={29} />
@@ -92,7 +84,6 @@ const BasicMenu = () => {
                         <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
-                <li> <Link to={'/mypage'}>마이페이지</Link> </li>
                 {/* 관리자 role이 "ADMIN"일 경우에만 관리자 페이지 링크 보이기 */}
                 {user.role === 'ADMIN' && (
                     <li> <Link to={'/admin'}>관리자페이지</Link> </li>

@@ -4,15 +4,23 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToItemList = () => {
+        navigate('/admin/itemlist');
+    };
+
     const goToComm = () => {
         navigate('/comm');
     };
 
-    const goToEditor = () => {
-        navigate('/comm/editor');
+    const goToCommAdd = () => {
+        navigate('/comm/add');
     };
 
-    const goToDetail = (id) => {
+    const goToCommEdit = () => {
+        navigate(`/comm/edit/${id}`);
+    };
+
+    const goToCommDetail = (id) => {
         navigate(`/comm/detail/${id}`);
     };
     const goToShopList = () => {
@@ -76,9 +84,11 @@ const useNavigation = () => {
         goToSignup,
         goToSignupSuccess,
         goToMyPage,
-        goToDetail,
-        goToEditor,
+        goToCommDetail,
+        goToCommAdd,
         goToComm,
+        goToItemList,
+        goToCommEdit,
     };
 };
 

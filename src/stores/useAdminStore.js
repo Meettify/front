@@ -1,84 +1,57 @@
 import { create } from 'zustand';
-import { getProduct, createProduct, updateProduct, deleteProduct } from '../api/adminAPI';
+import { createItem, getAllItems, getItemDetail } from '../api/adminAPI';
 
-const useAdminStore = create((set, get) => ({
-    products: [], // 상품 목록 상태
-    selectedProduct: null,
+const useAdminStore = create((set) => ({
+    itemList: [],  // 상품 목록 상태
     loading: false,
     error: null,
-    productData: {
-        itemName: '',
-        itemPrice: '',
-        itemDetails: '',
-        itemStatus: 'SELL', 
-        itemCount: 1,
-        itemCategory: 'SPORTS',
-    },
 
-    // 상태 업데이트
-    setProductData: (name, value) => set((state) => ({
-        productData: {
-            ...state.productData,
-            [name]: value,
-        }
-    })),
+    // 전체 상품 조회 함수
+    fetchAllItemsWithDetails: async () => {
+      set({ loading: true }); // 로딩 상태 설정
+      try {
+          const response = await getAllItems(); // 모든 상품 조회 API 호출
+          console.log('Fetched items:', response); // API 응답 확인
+          set({ itemList: response.items, loading: false }); // 상품 목록 업데이트
+      } catch (error) {
+          set({ error: error.message, loading: false }); // 에러 처리
+          console.error('상품 목록 조회 중 오류:', error);
+      }
+  },  
 
-    // 상품 목록 조회
-    fetchProduct: async () => {
+    // 상품 상세 조회
+    fetchItemDetail: async (itemId) => {
         set({ loading: true });
         try {
-            const response = await getProduct();
-            set((state) => ({
-                products: [...response], // 상품 목록으로 업데이트
-                loading: false,
-            }));
+            const item = await getItemDetail(itemId);
+            return item;
         } catch (error) {
-            console.error('상품 조회 중 오류 발생:', error);
-            set({ error: '상품 조회 중 오류 발생', loading: false });
+            set({ error: error.message, loading: false });
         }
     },
 
-    // 상품 등록
-    createProduct: async () => {
-        set({ loading: true, error: null });
+    // 상품 추가 함수
+    addItem: async (itemData, files) => {
+        set({ loading: true }); // 로딩 상태 설정
         try {
-            const { productData } = get();
-            const newProduct = await createProduct(productData);
-
-            // 상품 등록 후 products 상태에 새로 등록한 상품 추가
+            const newItem = await createItem(itemData, files); // API 호출
             set((state) => ({
-                products: [...state.products, newProduct],
-                loading: false,
+                itemList: [...state.itemList, newItem], // 새 상품 추가
+                loading: false, // 로딩 완료
             }));
         } catch (error) {
-            set({ error: '상품 등록 실패', loading: false });
-        }
-    },
-
-    // 상품 수정
-    updateProduct: async (itemId, productData) => {
-        set({ loading: true, error: null });
-        try {
-            await updateProduct(itemId, productData);
-            set({ loading: false });
-        } catch (error) {
-            set({ error: '상품 수정 실패', loading: false });
+            set({ error: error.message, loading: false }); // 에러 처리
+            console.error('상품 추가 중 오류:', error);
         }
     },
 
     // 상품 삭제
-    deleteProduct: async (itemId) => {
-        set({ loading: true, error: null });
-        try {
-            await deleteProduct(itemId);
-            set((state) => ({
-                products: state.products.filter((product) => product.itemId !== itemId), // 삭제한 상품 제외
-                loading: false,
-            }));
-        } catch (error) {
-            set({ error: '상품 삭제 실패', loading: false });
-        }
-    }
+    deleteItem: async (itemId) => {
+        await deleteItem(itemId);
+        set((state) => ({
+            itemList: state.itemList.filter(item => item.itemId !== itemId),
+        }));
+    },
 }));
 
 export default useAdminStore;

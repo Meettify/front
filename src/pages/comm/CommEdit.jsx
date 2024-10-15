@@ -1,0 +1,109 @@
+import React, { useEffect, useState } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import RoundedButton from '../../components/button/RoundedButton';
+import RoundedCancelButton from '../../components/button/RoundedCancelButton';
+import useCommStore from '../../stores/useCommStore';
+import useAuthStore from '../../stores/useAuthStore';
+import { useNavigate, useParams } from 'react-router-dom';
+
+const CommEdit = () => {
+    const { id } = useParams(); // URL에서 게시글 ID를 가져옴
+    const [title, setTitle] = useState('');  // 제목 상태
+    const [content, setContent] = useState('');  // 내용 상태
+    const [files, setFiles] = useState([]);  // 파일 상태
+    const { fetchPostDetail, updatePost, postDetail } = useCommStore();  // 게시물 불러오기 및 수정 함수
+    const { user } = useAuthStore(); // 현재 사용자 정보 가져오기
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user || !user.memberEmail) {
+            // 사용자가 로그인하지 않았거나 이메일이 없는 경우 홈으로 이동
+            navigate('/');
+        } else {
+            // 기존 게시물 데이터 불러오기
+            fetchPostDetail(parseInt(id));
+        }
+    }, [id, user, navigate, fetchPostDetail]);
+
+    useEffect(() => {
+        if (postDetail) {
+            // 게시물 데이터가 업데이트되면 상태를 초기화
+            setTitle(postDetail.title);
+            setContent(postDetail.content);
+        }
+    }, [postDetail]);
+
+    // 제목 변경 핸들러
+    const handleTitleChange = (e) => setTitle(e.target.value);
+
+    // 내용 변경 핸들러
+    const handleContentChange = (value) => setContent(value);
+
+    // 파일 선택 핸들러
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));  // 파일 배열로 변환하여 상태에 저장
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const accessToken = sessionStorage.getItem('accessToken');
+        if (!accessToken) {
+            console.error('Access Token이 없습니다. 다시 로그인해주세요.');
+            return;
+        }
+
+        try {
+            await updatePost(id, title, content, [], files);
+            navigate('/comm');  // 성공 시 커뮤니티 페이지로 이동
+        } catch (error) {
+            console.error('게시글 수정 중 오류:', error);
+        }
+    };
+
+
+    // 취소 버튼 핸들러
+    const handleCancel = () => {
+        setTitle('');  // 제목 초기화
+        setContent('');  // 내용 초기화
+        setFiles([]);  // 파일 초기화
+        navigate('/comm');  // 취소 시 커뮤니티 페이지로 이동
+    };
+
+    if (!postDetail) {
+        return <div>게시글을 불러오는 중입니다...</div>;
+    }
+
+    return (
+        <div className="max-w-3xl mx-auto p-4">
+            {/* 제목 입력 */}
+            <input
+                type="text"
+                className="w-full p-2 mb-4 border rounded-md text-sm"
+                placeholder="제목을 입력하세요"
+                value={title}
+                onChange={handleTitleChange}
+            />
+
+            {/* 내용 입력 (ReactQuill 사용) */}
+            <ReactQuill
+                value={content}
+                onChange={handleContentChange}
+                placeholder="내용을 입력하세요."
+                className="mb-4"
+                theme="snow"
+            />
+
+            {/* 파일 선택 입력 */}
+            <input type="file" multiple onChange={handleFileChange} />
+
+            {/* 글 수정 및 취소 버튼 */}
+            <div className="flex space-x-4">
+                <RoundedButton onClick={handleSubmit}>수정하기</RoundedButton>
+                <RoundedCancelButton onClick={handleCancel}>취소</RoundedCancelButton>
+            </div>
+        </div>
+    );
+};
+
+export default CommEdit;
