@@ -39,20 +39,23 @@ export const updateCommunityPost = async (communityId, title, content, remainImg
     try {
         const requestBody = new FormData();
         requestBody.append('community', new Blob([JSON.stringify({ title, content, remainImgId })], { type: 'application/json' }));
-        
+
+        // 파일이 있을 경우 추가
         if (files.length > 0) {
-            // 새 파일이 있을 때만 파일을 FormData에 추가
             files.forEach(file => requestBody.append('files', file));
         } else {
-            // 파일을 수정하지 않는다면 remainImgId로 기존 파일 정보만 전달
-            requestBody.append('remainImgId', JSON.stringify(remainImgId)); 
+            // 비어 있는 files 배열을 추가
+            requestBody.append('files', new Blob()); // 빈 Blob 추가
         }
+
+        // remainImgId가 비어 있어도 포함
+        requestBody.append('remainImgId', JSON.stringify(remainImgId));
 
         const accessToken = sessionStorage.getItem('accessToken');
         console.log('Access Token:', accessToken);
 
         const response = await request.put({
-            url: `${BASE_URL}/community/${communityId}`,
+            url: `${BASE_URL}/${communityId}`,
             data: requestBody,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -60,11 +63,9 @@ export const updateCommunityPost = async (communityId, title, content, remainImg
         });
 
         return response.data;
-        
+
     } catch (error) {
         console.error('커뮤니티 게시글 수정 중 오류 발생:', error);
-        console.log(`${DEL_URL}/community/${communityId}`);
-        console.log('Access Token:', accessToken);
         throw error;
     }
 };
