@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-//버튼 클릭, 폼 제출 등 이벤트 기반 동작
 const useNavigation = () => {
     const navigate = useNavigate();
 
@@ -23,6 +22,7 @@ const useNavigation = () => {
     const goToCommDetail = (id) => {
         navigate(`/comm/detail/${id}`);
     };
+
     const goToShopList = () => {
         navigate('/shop/list');
     };
@@ -36,39 +36,43 @@ const useNavigation = () => {
     }
 
     const goToMeetDetail = (meetId, categoryId) => {
-        navigate(`/meet/detail?categoryId=${categoryId}&meetId=${meetId}`); // 쿼리 문자열 전달
-    };
+        navigate(`/meet/detail?categoryId=${categoryId}&meetId=${meetId}`); 
+    };            
 
     const goToCategoryList = (categoryId) => {
         navigate(`/meet/list?categoryId=${categoryId}`);
+    };     
+
+    const goToSearchList = (categoryId, query) => {
+        navigate(`/meet/list?categoryId=${categoryId}&query=${query}`);
     };
 
     const handleNavigateToCategory = (categoryId) => {
-        goToCategoryList(categoryId); // goToCategoryList를 호출
+        goToCategoryList(categoryId);
     };
 
     const goToPostWrite = () => {
-        navigate('/meet/post/write');//글쓰기 페이지로 이동
+        navigate('/meet/post/write');
     };
 
     const goToPostDetail = (pageId) => {
-        navigate(`/meet/post/detail/${pageId}`);//페이지 아이디를 받아 디테일 이동
-    }
+        navigate(`/meet/post/detail/${pageId}`);
+    };
 
     const goToPostList = () => {
-        navigate('/meet/post'); // 게시판 페이지로 이동하는 함수
+        navigate('/meet/post');
     };
 
     const goToSignup = () => {
-        navigate('/signup')
+        navigate('/signup');
     };
 
     const goToSignupSuccess = () => {
-        navigate('/signupsuccess')
+        navigate('/signupsuccess');
     };
 
     const goToMyPage = () => {
-        navigate('/mypage')
+        navigate('/mypage');
     };
 
     return {
@@ -77,6 +81,10 @@ const useNavigation = () => {
         goToMeetInsert,
         goToMeetDetail,
         goToCategoryList,
+        goToSearchList,
+        goToDetail,
+        goToEditor,
+        goToComm,
         handleNavigateToCategory,
         goToPostWrite,
         goToPostDetail,

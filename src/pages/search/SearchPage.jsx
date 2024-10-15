@@ -4,13 +4,15 @@ import MeetCard from "../../components/meet/MeetCard";
 import MainSection from "../../components/main/MainSection";
 import CommLatestPosts from "../../components/comm/CommLatestPosts";
 import SectionText from "../../components/text/SectionText";
-import MeetListData from "../../components/meet/MeetListData"; // 데이터 임포트
+import MeetListData from "../../components/meet/MeetListData";
+import useNavigation from "../../hooks/useNavigation";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query") || "";
+    const categoryId = searchParams.get("categoryId") || ""; // 카테고리 ID를 가져옴
+    const { goToSearchList } = useNavigation();
 
-    // 검색어에 맞는 데이터 필터링
     const filteredMeets = MeetListData.filter(meet =>
         meet.title.toLowerCase().includes(query.toLowerCase())
     );
@@ -42,7 +44,7 @@ const SearchPage = () => {
             {filteredMeets.length > 5 && (
                 <div className="text-center my-5">
                     <Link 
-                        to={`/meet/list/yourCategoryId?query=${query}`} 
+                        to={`/meet/list?categoryId=${categoryId}&query=${query}`} // categoryId와 query 유지
                         className="text-blue-500 hover:underline"
                     >
                         더보기
