@@ -15,6 +15,7 @@ const useAuthStore = create(persist((set) => ({
   memberId: null,
 
   login: (userData) => {
+    console.log('Logging in with userData:', userData);  // 데이터 확인
     set({
       user: { 
         ...userData, 

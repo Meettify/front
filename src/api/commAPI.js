@@ -8,16 +8,22 @@ const DEL_URL = import.meta.env.VITE_APP_API_BASE_URL;
 export const createCommunityPost = async (title, content, files = []) => {
     try {
         const requestBody = new FormData();
-        requestBody.append('community', new Blob([JSON.stringify({ title, content })], { type: 'application/json' }));
 
-        // 파일이 없을 경우에도 빈 파일 필드를 전송
-        if (files && files.length > 0) {
+        // JSON 데이터를 Blob으로 추가 (커뮤니티 정보)
+        const communityData = JSON.stringify({ title, content });
+        requestBody.append('community', new Blob([communityData], { type: 'application/json' }));
+
+        // 파일이 있는 경우 파일 추가
+        if (files.length > 0) {
             files.forEach(file => {
-                requestBody.append('files', file); // 파일 추가
+                requestBody.append('files', file);
             });
         } else {
-            requestBody.append('files', new Blob()); // 빈 Blob 추가
+            // 서버에서 비어 있는 배열을 처리할 수 있도록 빈 Blob 추가
+            requestBody.append('files', new Blob([]));
         }
+
+        console.log('FormData 내용:', Array.from(requestBody.entries())); // 디버깅용 로그
 
         const response = await request.post({
             url: `/community`,

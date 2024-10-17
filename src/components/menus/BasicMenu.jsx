@@ -19,7 +19,12 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
-    const { user = {} } = useAuthStore(); // user가 없을 경우 기본값 {} 설정
+    const { user = { role: '' } } = useAuthStore(); // 기본값 설정
+
+    useEffect(() => {
+        console.log('User Role Updated:', user.memberRole); // 상태 변화 확인
+    }, [user]);
+
 
 
     const handleInfoClick = () => {
@@ -84,10 +89,11 @@ const BasicMenu = () => {
                         <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
-                {/* 관리자 role이 "ADMIN"일 경우에만 관리자 페이지 링크 보이기 */}
-                {user.role === 'ADMIN' && (
+                {user.memberRole === 'ADMIN' && (
                     <li> <Link to={'/admin'}>관리자페이지</Link> </li>
                 )}
+
+
             </ul>
 
             {modals['info'] && (

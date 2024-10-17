@@ -78,7 +78,7 @@ const CommDetail = () => {
                 </div>
                 <div className="flex items-center text-right">
                     <CiRead className="mr-1" />
-                    <span>{postDetail.views}</span>  {/* 조회수 */}
+                    <span>{postDetail.views}  1</span>  {/* 조회수 */}
                 </div>
             </div>
             <p className="text-gray-700 leading-relaxed text-left mb-6">
