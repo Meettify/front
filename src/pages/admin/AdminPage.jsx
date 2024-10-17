@@ -5,9 +5,10 @@ const AdminPage = () => {
     const { user } = useAuthStore(); // user 정보를 가져옴
 
     // user.role이 "ADMIN"이 아니면 리디렉션
-    if (user.role !== 'ADMIN') {
+    if (user.memberRole !== 'ADMIN') {
         return <Navigate to="/" replace />;
     }
+
 
     return (
         <div className="flex justify-center items-center w-full h-screen">
