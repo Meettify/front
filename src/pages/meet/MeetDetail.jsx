@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DetailImage from '../../components/meet/DetailImage';
 import { getMeetingDetail, deleteMeet } from '../../api/meetAPI';
 import MeetSideMenu from '../../components/meet/MeetSideMenu';
-import RoundedButton from '../../components/button/RoundedButton'; 
+import RoundedButton from '../../components/button/RoundedButton';
 
 const MeetDetail = () => {
   const { meetId } = useParams();
@@ -39,9 +39,13 @@ const MeetDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('정말로 이 모임을 삭제하시겠습니까?')) {
       try {
-        await deleteMeet(meetId);
-        alert('모임이 성공적으로 삭제되었습니다.');
-        navigate('/meet/list');
+        const response = await deleteMeet(meetId);
+        if (response.status === 200) {  // 상태 코드가 200일 때 성공
+          alert('모임이 성공적으로 삭제되었습니다.');
+          navigate('/meet/list');
+        } else {
+          alert('모임 삭제에 실패했습니다. 다시 시도해 주세요.');
+        }
       } catch (error) {
         console.error('모임 삭제 오류:', error);
         alert('모임 삭제에 실패했습니다.');
@@ -84,13 +88,13 @@ const MeetDetail = () => {
           {/* 수정하기와 삭제하기 버튼을 양옆으로 배치 */}
           <div className="flex space-x-4"> {/* 버튼들을 가로로 배치 */}
             {meetPermissionDTO.canEdit && (
-              <RoundedButton onClick={handleEdit} style={{ padding: '6px 14px', fontSize: '12px', width: '20%' }}>
+              <RoundedButton onClick={handleEdit} className="w-1/3">
                 수정하기
               </RoundedButton>
             )}
             
             {meetPermissionDTO.canDelete && (
-              <RoundedButton onClick={handleDelete} style={{ padding: '6px 14px', fontSize: '12px', width: '20%' }}>
+              <RoundedButton onClick={handleDelete} className="w-1/3 bg-gray-500 hover:bg-gray-600">
                 삭제하기
               </RoundedButton>
             )}

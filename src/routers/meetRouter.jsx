@@ -25,7 +25,7 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetDetail /></Suspense>,
     },
     {
-      path: "/meet/update:meetId",
+      path: "/meet/update/:meetId",
       element: <Suspense fallback={<Loading />}><MeetUpdate /></Suspense>,
     },
     {

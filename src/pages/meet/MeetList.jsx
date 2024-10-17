@@ -59,7 +59,7 @@ const MeetList = () => {
                                     title={meet.title} 
                                     description={meet.description} 
                                     tags={meet.tags}
-                                    onTitleClick={() => handleTitleClick(meet.id)} // 제목 클릭 시 상세 페이지로 이동
+                                    onTitleClick={() => goToMeetDetail(meet.id)} // 제목 클릭 시 상세 페이지로 이동
                                 />
                             </div>
                         ))
