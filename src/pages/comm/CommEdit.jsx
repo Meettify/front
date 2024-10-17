@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { GoFileMedia } from "react-icons/go";  // 파일 아이콘 불러오기
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useCommStore from '../../stores/useCommStore';
 import useAuthStore from '../../stores/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
+
+// Custom Toolbar 컴포넌트 정의 (CommAdd와 동일)
+const CommToolbar = ({ handleFileInputClick }) => (
+    <div id="toolbar">
+        {/* 기본적인 툴바 옵션들 */}
+        <select className="ql-header" defaultValue="">
+            <option value="1"></option>
+            <option value="2"></option>
+            <option value=""></option>
+        </select>
+        <button className="ql-bold"></button>
+        <button className="ql-italic"></button>
+        <button className="ql-underline"></button>
+
+        {/* 파일 선택 아이콘 버튼 */}
+        <button className="ql-file" onClick={handleFileInputClick}>
+            <GoFileMedia size={20} />
+        </button>
+    </div>
+);
 
 const CommEdit = () => {
     const { id } = useParams(); // URL에서 게시글 ID를 가져옴
@@ -45,6 +66,7 @@ const CommEdit = () => {
         setFiles(Array.from(e.target.files));  // 파일 배열로 변환하여 상태에 저장
     };
 
+    // 게시글 수정 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
         const accessToken = sessionStorage.getItem('accessToken');
@@ -61,13 +83,17 @@ const CommEdit = () => {
         }
     };
 
-
     // 취소 버튼 핸들러
     const handleCancel = () => {
         setTitle('');  // 제목 초기화
         setContent('');  // 내용 초기화
         setFiles([]);  // 파일 초기화
         navigate('/comm');  // 취소 시 커뮤니티 페이지로 이동
+    };
+
+    // 파일 선택 버튼 클릭 시 파일 입력창 열기
+    const handleFileInputClick = () => {
+        document.getElementById('file-input').click();
     };
 
     if (!postDetail) {
@@ -85,6 +111,9 @@ const CommEdit = () => {
                 onChange={handleTitleChange}
             />
 
+            {/* 커스텀 툴바 적용 (CommAdd와 동일한 툴바 사용) */}
+            <CommToolbar handleFileInputClick={handleFileInputClick} />
+
             {/* 내용 입력 (ReactQuill 사용) */}
             <ReactQuill
                 value={content}
@@ -92,10 +121,16 @@ const CommEdit = () => {
                 placeholder="내용을 입력하세요."
                 className="mb-4"
                 theme="snow"
+                modules={{
+                    toolbar: {
+                        container: "#toolbar",  // 커스텀 툴바 설정
+                    }
+                }}
+                style={{ height: '500px' }}
             />
 
-            {/* 파일 선택 입력 */}
-            <input type="file" multiple onChange={handleFileChange} />
+            {/* 파일 선택 입력 (숨김 상태) */}
+            <input type="file" id="file-input" multiple onChange={handleFileChange} style={{ display: 'none' }} />
 
             {/* 글 수정 및 취소 버튼 */}
             <div className="flex space-x-4">
