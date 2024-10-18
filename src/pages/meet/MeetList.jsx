@@ -10,32 +10,34 @@ import RoundedButton from "../../components/button/RoundedButton";
 
 const MeetList = () => {
     const [searchParams] = useSearchParams();
-    const categoryId = searchParams.get("categoryId");
+    const categoryTitle = searchParams.get("categoryTitle") || ""; 
     const query = searchParams.get("query") || "";
     const { goToMeetDetail, goToMeetInsert } = useNavigation();
-    const [filteredMeetData, setFilteredMeetData] = useState([]); 
-    const [loading, setLoading] = useState(true); 
-    const [searchTerm, setSearchTerm] = useState(query.trim()); // 초기값으로 쿼리 사용
+    const [filteredMeetData, setFilteredMeetData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(query.trim());
 
     useEffect(() => {
-        const numericCategoryId = parseInt(categoryId, 10);
-        
-        // 검색어 정규화: 소문자 변환 및 공백 제거
         const normalizedSearchTerm = searchTerm.toLowerCase().replace(/\s+/g, '');
-
+    
         const filteredData = MeetListData.filter(meet => {
             const meetTitle = meet.title.toLowerCase().replace(/\s+/g, '');
             const meetDescription = meet.description.toLowerCase().replace(/\s+/g, '');
-
+    
             return (
-                (isNaN(numericCategoryId) || meet.categoryId === numericCategoryId) &&
+                (meet.categoryTitle === categoryTitle) &&
                 (meetTitle.includes(normalizedSearchTerm) || meetDescription.includes(normalizedSearchTerm))
             );
         });
-        
+    
+        console.log("Category Title:", categoryTitle); // 현재 카테고리 타이틀
+        console.log("Search Term:", searchTerm); // 현재 검색어
+        console.log("Filtered Data:", filteredData); // 필터링된 데이터
+    
         setFilteredMeetData(filteredData);
         setLoading(false);
-    }, [categoryId, searchTerm]); // categoryId와 searchTerm에 따라 다시 필터링
+    }, [categoryTitle, searchTerm]);
+    
 
     return (
         <div className="container mx-auto mt-20 w-full flex">
@@ -48,7 +50,7 @@ const MeetList = () => {
                 </div>
                 <MeetListSearch 
                     onChange={(value) => setSearchTerm(value)} 
-                    value={searchTerm} // 현재 입력값 유지
+                    value={searchTerm} 
                 />
                 <div className="flex flex-wrap justify-start mt-2">
                     {loading ? (
@@ -62,8 +64,8 @@ const MeetList = () => {
                                     title={meet.title} 
                                     description={meet.description} 
                                     tags={meet.tags} 
-                                    isMeetPage={true} // 여기서 true로 설정
-                                    onTitleClick={() => goToMeetDetail(meet.id, categoryId)}
+                                    isMeetPage={false}
+                                    onTitleClick={() => goToMeetDetail(meet.id, categoryTitle)}
                                 />
                             </div>
                         ))
