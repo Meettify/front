@@ -19,11 +19,12 @@ const useAuthStore = create(persist((set) => ({
     set({
       user: { 
         ...userData, 
-        memberRole: userData.memberRole || 'USER' // memberRole이 없을 경우 기본값을 USER로 설정
+        memberRole: userData.memberRole || 'USER'
       },
       isAuthenticated: true, 
-      memberId: userData.memberId || localStorage.getItem('memberId') // userData에서 memberId를 가져오되, 없으면 localStorage에서 가져옴
+      memberId: userData.memberId || localStorage.getItem('memberId')
     });
+    localStorage.removeItem('undefined');
   },
   
   logout: () => {
