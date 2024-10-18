@@ -28,21 +28,24 @@ const init = () => {
 }
 
 // 엑세스 토큰 갱신 함수
-const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
+const refreshAccessToken = async (refreshToken) => {
     if (!refreshToken) {
         console.warn('Refresh token not found'); // 리프레시 토큰이 없을 경우 로그
         return null;
     }
 
     try {
-        const response = await axiosInstance.post(`/refresh-token`, { token: refreshToken });
-        return response.data.token;
+        const response = await request.get({
+            url :`${import.meta.env.VITE_APP_API_BASE_URL}/token`,
+            refreshToken,
+        });
+        return response.data;
     } catch (error) {
         console.error('Token refresh failed:', error);
         return null;
     }
 };
+
 // 인터셉터 설정
 const setInterceptor = () => {
     getInstance().interceptors.response.use(
@@ -54,7 +57,7 @@ const setInterceptor = () => {
             // 401 Unauthorized 처리: 토큰 만료
             if (error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
                 originalRequest._retry = true; // 무한 루프 방지
-                const token = await refreshAccessToken(); // 새로운 엑세스 토큰 요청
+                const token = await refreshAccessToken(localStorage.getItem('refreshToken')); // 새로운 엑세스 토큰 요청
 
                 if (token) {
                     sessionStorage.setItem('accessToken', token);

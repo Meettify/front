@@ -7,18 +7,31 @@ import MeetCategoryData from './MeetCategoryData';
 import MeetListSearch from './MeetListSearch';
 
 const MeetCategory = () => {
-    const { goToCategoryList } = useNavigation(); // useNavigation 훅 사용
-    const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태 추가
+    const { goToCategoryList, goToMeetDetail } = useNavigation();   
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const handleButtonClick = (categoryId) => {
-        console.log(`Navigating to categoryId: ${categoryId}`);
-        goToCategoryList(categoryId); // 쿼리 문자열로 전달
+    const handleButtonClick = (id, isCategory, categoryTitle) => {
+        console.log(`Navigating to ${isCategory ? 'categoryTitle' : 'meetId'}: ${id}`);
+        console.log(`Category Title: ${categoryTitle}`); // 확인
+        if (isCategory && categoryTitle) {
+            goToCategoryList(categoryTitle);
+        } else {
+            console.log(`Navigating to meet with ID: ${id}`);
+            goToMeetDetail(id, categoryTitle);
+        }
     };
 
-    // 검색어에 따라 필터링된 카테고리 데이터
+    const normalizeString = (str) => {
+        return str.toLowerCase().replace(/\s+/g, '');
+    };
+
     const filteredCategoryData = MeetCategoryData.filter(meet =>
-        meet.title.toLowerCase().includes(searchTerm.toLowerCase().replace(/\s+/g, '')) // 공백 제거 및 대소문자 무시
+        normalizeString(meet.title).includes(normalizeString(searchTerm))
     );
+
+    const combinedResults = searchTerm === ""
+        ? filteredCategoryData.map(meet => ({ ...meet, isCategory: true, categoryTitle: meet.categoryTitle }))
+        : filteredCategoryData.map(meet => ({ ...meet, categoryTitle: meet.categoryTitle }));
 
     return (
         <div className="bg-gray-100 flex-1 h-full">
@@ -29,29 +42,42 @@ const MeetCategory = () => {
                 />
             </div>
             <div className="container mx-auto w-full flex">
-                <div className="w-5/6 bg-gray-100 flex flex-wrap justify-center p-2">
+                <div className="w-5/6 bg-gray-100 flex flex-wrap p-2">
                     <div className="w-full justify-start">
                         <MeetListSearch 
-                            onChange={(e) => setSearchTerm(e.target.value)} 
+                            onChange={(value) => setSearchTerm(value)} 
+                            value={searchTerm} 
                             className="w-full"
                         />
                     </div>
-                    <div className='flex flex-wrap justify-between w-full mt-4'>
-                        {filteredCategoryData.map((meet) => ( 
-                            <div 
-                                key={meet.categoryId} 
-                                className="w-1/4 p-2" 
-                                onClick={() => handleButtonClick(meet.categoryId)} // 클릭 시 categoryId 전달
-                            >
-                                <MeetCard 
-                                    meetId={meet.categoryId} 
-                                    image={meet.image} 
-                                    title={meet.title} 
-                                    description={meet.description} 
-                                    tags={meet.tags}
-                                />
-                            </div>
-                        ))}
+                    <div className='flex flex-wrap justify-start w-full mt-4'>
+                        {combinedResults.length > 0 ? (
+                            combinedResults.map((meet) => (
+                                <div 
+                                    key={meet.id || meet.categoryTitle} 
+                                    className="w-1/4 p-2" 
+                                    onClick={() => handleButtonClick(meet.id || meet.categoryId, meet.isCategory, meet.categoryTitle)}
+                                >
+                                    <MeetCard 
+                                        meetId={meet.categoryId || meet.id} 
+                                        image={meet.image} 
+                                        title={meet.title} 
+                                        description={meet.description} 
+                                        tags={meet.tags} 
+                                        isMeetPage={meet.isCategory} 
+                                        onTitleClick={() => {
+                                            if (meet.isCategory) {
+                                                goToCategoryList(meet.categoryTitle);
+                                            } else {
+                                                goToMeetDetail(meet.id, meet.categoryTitle);
+                                            }
+                                        }} 
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <div className="w-full text-center mt-4">모임이 없습니다.</div>
+                        )}
                     </div>
                 </div>
                 <MeetSideMenu />

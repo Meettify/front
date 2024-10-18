@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "aws s3 sync ./dist s3://meettify-front --profile=sample-s3",
+    "invalidate": "aws cloudfront create-invalidation --profile=sample-s3 --distribution-id E31OAEMQAW3G63 --paths /*"
   },
   "dependencies": {
     "axios": "^1.7.7",

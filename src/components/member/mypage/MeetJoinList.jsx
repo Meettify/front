@@ -1,17 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import useNavigation from '../../../hooks/useNavigation';
 import { getMeetJoinList } from '../../../api/meetAPI';
 
 const MeetJoinList = () => {
   const [meets, setMeets] = useState([]);
-  const navigate = useNavigate();
+  const { goToMeetDetail } = useNavigation();
 
   // 모임 리스트 받아오기
   useEffect(() => {
     const fetchMeets = async () => {
       try {
         const response = await getMeetJoinList();
-        setMeets(response.data);
+
+        if(response.length <= 0){
+          return [];
+        }
+
+        if (Array.isArray(response) && response.length > 0) {
+            const formattedMeets = response.map(meet => ({
+            meetMemberId: meet.meetMemberId,
+            meetId: meet.meetId,
+            meetName: meet.meetName,
+            meetLocation: meet.location,
+            category: meet.category,
+            meetMaximum: meet.maximum,
+            images: meet.imageUrls.length > 0 ? meet.imageUrls[0] : null,
+            meetRole: meet.meetRole
+          }));
+    
+          setMeets(formattedMeets);
+        }
       } catch (error) {
         console.error('Error fetching meet join list:', error);
       }
@@ -20,9 +38,9 @@ const MeetJoinList = () => {
   }, []);
 
   // 모임 상세 페이지로 이동
-  const handleDetailClick = (meetId, isActive) => {
+  const handleDetailClick = (category, meetId, isActive) => {
     if (isActive) {
-      navigate(`/meet/${meetId}`);
+      goToMeetDetail(category, meetId);
     }
   };
 
@@ -84,7 +102,7 @@ const MeetJoinList = () => {
                     src={meet.images} 
                     alt={meet.meetName} 
                     className={`w-full h-full object-cover rounded-lg cursor-pointer ${isActive ? '' : 'pointer-events-none'}`}
-                    onClick={() => handleDetailClick(meet.meetId, isActive)}
+                    onClick={() => handleDetailClick(meet.category, meet.meetId, isActive)}
                   />
                 ) : (
                   <span className="text-center">사진 없음</span>
