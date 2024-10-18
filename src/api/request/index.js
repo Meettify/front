@@ -17,8 +17,8 @@ const init = () => {
     axiosInstance = axios.create({
         baseURL: import.meta.env.VITE_APP_API_BASE_URL || 'http://localhost:8080/api/v1',
         headers: {
-            'Content-Type': 'application/json;charset=UTF-8', // request data type
-            Accept: 'application/json', // response data type
+            'Content-Type': 'application/json;charset=UTF-8', // 기본 request data type
+            Accept: 'application/json', // 기본 response data type
             Authorization: 'Bearer ' + token
         },
     });
@@ -116,6 +116,13 @@ const post = async (payload) => {
 
 
 const put = async (payload) => {
+    payload.headers = payload.headers || {};
+
+    // FormData가 포함된 경우 Content-Type을 자동 설정
+    if (payload.data instanceof FormData) {
+        payload.headers['Content-Type'] = 'multipart/form-data';
+    }
+
     return await apiRequest({ ...payload, method: METHOD.PUT });
 }
 
