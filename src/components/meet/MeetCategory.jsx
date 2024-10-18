@@ -4,39 +4,34 @@ import MeetSideMenu from './MeetSideMenu';
 import MeetCard from './MeetCard';
 import SectionText from '../../components/text/SectionText';
 import MeetCategoryData from './MeetCategoryData';
-import MeetListData from './MeetListData';
 import MeetListSearch from './MeetListSearch';
 
 const MeetCategory = () => {
-    const { goToCategoryList } = useNavigation();
+    const { goToCategoryList, goToMeetDetail } = useNavigation();   
     const [searchTerm, setSearchTerm] = useState("");
 
-    const handleButtonClick = (id, isCategory) => {
-        console.log(`Navigating to ${isCategory ? 'categoryId' : 'meetId'}: ${id}`);
-        if (isCategory) {
-            goToCategoryList(id);
+    const handleButtonClick = (id, isCategory, categoryTitle) => {
+        console.log(`Navigating to ${isCategory ? 'categoryTitle' : 'meetId'}: ${id}`);
+        console.log(`Category Title: ${categoryTitle}`); // 확인
+        if (isCategory && categoryTitle) {
+            goToCategoryList(categoryTitle);
         } else {
             console.log(`Navigating to meet with ID: ${id}`);
+            goToMeetDetail(id, categoryTitle);
         }
     };
 
     const normalizeString = (str) => {
-        return str.toLowerCase().replace(/\s+/g, ''); // 소문자 변환 및 공백 제거
+        return str.toLowerCase().replace(/\s+/g, '');
     };
 
-    // 카테고리 및 모임 데이터 필터링
     const filteredCategoryData = MeetCategoryData.filter(meet =>
         normalizeString(meet.title).includes(normalizeString(searchTerm))
     );
 
-    const filteredMeetListData = MeetListData.filter(meet =>
-        normalizeString(meet.title).includes(normalizeString(searchTerm))
-    );
-
-    // 검색어가 없을 때는 카테고리만 보이도록
     const combinedResults = searchTerm === ""
-        ? filteredCategoryData.map(meet => ({ ...meet, isCategory: true })) // 카테고리만 표시
-        : filteredMeetListData.map(meet => ({ ...meet, isCategory: false })); // 제목에 맞는 모임 표시
+        ? filteredCategoryData.map(meet => ({ ...meet, isCategory: true, categoryTitle: meet.categoryTitle }))
+        : filteredCategoryData.map(meet => ({ ...meet, categoryTitle: meet.categoryTitle }));
 
     return (
         <div className="bg-gray-100 flex-1 h-full">
@@ -51,17 +46,17 @@ const MeetCategory = () => {
                     <div className="w-full justify-start">
                         <MeetListSearch 
                             onChange={(value) => setSearchTerm(value)} 
-                            value={searchTerm} // 검색어 유지
+                            value={searchTerm} 
                             className="w-full"
                         />
                     </div>
                     <div className='flex flex-wrap justify-start w-full mt-4'>
                         {combinedResults.length > 0 ? (
-                            combinedResults.map((meet) => ( 
+                            combinedResults.map((meet) => (
                                 <div 
-                                    key={meet.id || meet.categoryId} // id가 없을 경우 categoryId 사용
+                                    key={meet.id || meet.categoryTitle} 
                                     className="w-1/4 p-2" 
-                                    onClick={() => handleButtonClick(meet.id || meet.categoryId, meet.isCategory)} // 클릭 시 ID에 따라 행동
+                                    onClick={() => handleButtonClick(meet.id || meet.categoryId, meet.isCategory, meet.categoryTitle)}
                                 >
                                     <MeetCard 
                                         meetId={meet.categoryId || meet.id} 
@@ -69,7 +64,14 @@ const MeetCategory = () => {
                                         title={meet.title} 
                                         description={meet.description} 
                                         tags={meet.tags} 
-                                        isMeetPage={true} // 여기서 true로 설정
+                                        isMeetPage={meet.isCategory} 
+                                        onTitleClick={() => {
+                                            if (meet.isCategory) {
+                                                goToCategoryList(meet.categoryTitle);
+                                            } else {
+                                                goToMeetDetail(meet.id, meet.categoryTitle);
+                                            }
+                                        }} 
                                     />
                                 </div>
                             ))
