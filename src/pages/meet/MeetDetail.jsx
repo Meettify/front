@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DetailImage from '../../components/meet/DetailImage';
-import { getMeetingDetail, deleteMeet } from '../../api/meetAPI';
+import { getMeetingDetail, deleteMeet, postMeetJoin } from '../../api/meetAPI'; // postMeetJoin 추가
 import MeetSideMenu from '../../components/meet/MeetSideMenu';
 import RoundedButton from '../../components/button/RoundedButton';
 
@@ -32,10 +32,12 @@ const MeetDetail = () => {
   const imageUrl = images && images.length > 0 ? images[0] : null;
   const { meetPermissionDTO } = meeting;
 
+  // 수정하기 버튼 핸들러
   const handleEdit = () => {
     navigate(`/meet/update/${meetId}`);
   };
 
+  // 삭제하기 버튼 핸들러
   const handleDelete = async () => {
     if (window.confirm('정말로 이 모임을 삭제하시겠습니까?')) {
       try {
@@ -50,6 +52,21 @@ const MeetDetail = () => {
         console.error('모임 삭제 오류:', error);
         alert('모임 삭제에 실패했습니다.');
       }
+    }
+  };
+
+  // 가입신청 버튼 핸들러
+  const handleJoin = async () => {
+    try {
+      const response = await postMeetJoin(meetId); // 가입 신청 API 호출
+      if (response.status === 200) {
+        alert('가입 신청이 완료되었습니다.');
+      } else {
+        alert('가입 신청에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('가입 신청 오류:', error);
+      alert('가입 신청에 실패했습니다.');
     }
   };
 
@@ -85,19 +102,24 @@ const MeetDetail = () => {
             </div>
           </div>
 
-          {/* 수정하기와 삭제하기 버튼을 양옆으로 배치 */}
-          <div className="flex space-x-4"> {/* 버튼들을 가로로 배치 */}
+          {/* 수정하기, 삭제하기, 가입신청 버튼을 양옆으로 배치 */}
+          <div className="flex space-x-4">
             {meetPermissionDTO.canEdit && (
-              <RoundedButton onClick={handleEdit} className="w-1/3">
+              <RoundedButton onClick={handleEdit} className="w-1/4">
                 수정하기
               </RoundedButton>
             )}
-            
+
             {meetPermissionDTO.canDelete && (
-              <RoundedButton onClick={handleDelete} className="w-1/3 bg-gray-500 hover:bg-gray-600">
+              <RoundedButton onClick={handleDelete} className="w-1/4 bg-gray-500 hover:bg-gray-600">
                 삭제하기
               </RoundedButton>
             )}
+
+            {/* 가입신청 버튼 추가 */}
+            <RoundedButton onClick={handleJoin} className="w-1/4 bg-blue-500 hover:bg-blue-600">
+              가입신청
+            </RoundedButton>
           </div>
         </div>
         <MeetSideMenu />

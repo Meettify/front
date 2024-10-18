@@ -9,8 +9,8 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
-
 import SearchBar from '../../components/menus/SearchBar'; // SearchBar import
+import useAuthStore from '../../stores/useAuthStore';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -19,6 +19,13 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
+    const { user = { role: '' } } = useAuthStore(); // 기본값 설정
+
+    useEffect(() => {
+        console.log('User Role Updated:', user.memberRole); // 상태 변화 확인
+    }, [user]);
+
+
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -67,16 +74,7 @@ const BasicMenu = () => {
                         <LuSearch size={30} />
                     </button>
                 </li>
-                <li>
-                    <Link to="/chat" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(2px)' }}>
-                        <BsChatSquareText size={26} />
-                    </Link>
-                </li>
-                <li>
-                    <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(0px)' }}>
-                        <BsCart3 size={27} />
-                    </Link>
-                </li>
+
                 <li>
                     <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(1px)' }}>
                         <PiBell size={29} />
@@ -91,8 +89,11 @@ const BasicMenu = () => {
                         <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
-                <li> <Link to={'/mypage'}>마이페이지</Link> </li>
-                <li> <Link to={'/admin'}>관리자페이지</Link> </li>
+                {user.memberRole === 'ADMIN' && (
+                    <li> <Link to={'/admin'}>관리자페이지</Link> </li>
+                )}
+
+
             </ul>
 
             {modals['info'] && (

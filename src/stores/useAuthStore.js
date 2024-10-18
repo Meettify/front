@@ -8,13 +8,23 @@ const useAuthStore = create(persist((set) => ({
     nickName: '',
     memberAddr: '',
     memberAddrDetail: '',
-    memberZipCode: ''
+    memberZipCode: '',
+    memberRole: '',
   },
   isAuthenticated: false,
   memberId: null,
 
   login: (userData) => {
-    set({ user: userData, isAuthenticated: true, memberId: localStorage.getItem('memberId') });
+    console.log('Logging in with userData:', userData);  // 데이터 확인
+    set({
+      user: { 
+        ...userData, 
+        memberRole: userData.memberRole || 'USER'
+      },
+      isAuthenticated: true, 
+      memberId: userData.memberId || localStorage.getItem('memberId')
+    });
+    localStorage.removeItem('undefined');
   },
   
   logout: () => {
