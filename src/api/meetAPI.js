@@ -136,22 +136,7 @@ export const getMeetJoinList = async () => {
         };
     }
 }
-  try {
-    const response = await request.get({
-        url: `${BASE_URL}/meets/myMeet`,
-    });
-    return response.data;
-} catch (error) {
-    console.error('소모임 삭제 오류:', error);
-    if (error.response) {
-        return error.response;
-    } else {
-        return {
-            status: 500,
-            message: '서버에 연결할 수 없습니다.',
-        };
-    }
-}
+
 }
 
 // 소모임 수정 API
