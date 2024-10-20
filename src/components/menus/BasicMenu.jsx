@@ -10,7 +10,6 @@ import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
 import SearchBar from '../../components/menus/SearchBar'; // SearchBar import
-import { useAuth } from '../../hooks/useAuth';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -19,7 +18,6 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
-    const { user } = useAuth();
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
