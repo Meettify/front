@@ -4,15 +4,15 @@ import { LuList } from "react-icons/lu";
 
 const FilterSection = () => {
     return (
-        <div className="w-1/5 p-2 border-r border-gray-300">
+        <div className="w-1/5 p-2 pr-8 border-r border-gray-300">
             {/* 상단 필터 아이콘과 드롭다운 */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                    <LuList size={19} style={{ transform: 'translateY(-3px)' }} />
-                    <span className="text-md font-semibold">필터</span>
+                    <LuList size={16} />
+                    <span className="font-semibold">필터</span>
                 </div>
 
-                <select className="p-2 border border-gray-300 rounded-md">
+                <select className="p-2 border border-gray-300 rounded-lg text-sm" style={{ transform: 'translateY(3px)' }}>
                     <option value="최신순">최신순</option>
                     <option value="오래된순">오래된 순</option>
                 </select>

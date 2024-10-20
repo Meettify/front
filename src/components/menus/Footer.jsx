@@ -7,8 +7,8 @@ const Footer = () => {
             <div className="text-left mb-4 ml-8">
                 <h4 className="font-semibold mb-2">빠른 링크</h4>
                 <div className="flex space-x-4">
-                    <RoundedButton>상품 등록 신청</RoundedButton>
-                    <RoundedButton>반품하기</RoundedButton>
+                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}> 상품 등록 신청</RoundedButton>
+                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}>반품하기</RoundedButton>
                 </div>
             </div>
             <div className="flex justify-center space-x-8">
