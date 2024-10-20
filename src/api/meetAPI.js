@@ -126,7 +126,7 @@ export const getMeetJoinList = async () => {
     });
     return response.data;
 } catch (error) {
-    console.error('소모임 삭제 오류:', error);
+    console.error('가입한 모임 리스트 GET 에러', error);
     if (error.response) {
         return error.response;
     } else {

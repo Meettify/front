@@ -10,7 +10,7 @@ import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
 import SearchBar from '../../components/menus/SearchBar'; // SearchBar import
-import useAuthStore from '../../stores/useAuthStore';
+import { useAuth } from '../../hooks/useAuth';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -19,13 +19,7 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
-    const { user = { role: '' } } = useAuthStore(); // 기본값 설정
-
-    useEffect(() => {
-        console.log('User Role Updated:', user.memberRole); // 상태 변화 확인
-    }, [user]);
-
-
+    const { user } = useAuth();
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -89,11 +83,6 @@ const BasicMenu = () => {
                         <HiOutlineUserCircle size={35} strokeWidth={1.2} />
                     </button>
                 </li>
-                {user.memberRole === 'ADMIN' && (
-                    <li> <Link to={'/admin'}>관리자페이지</Link> </li>
-                )}
-
-
             </ul>
 
             {modals['info'] && (
