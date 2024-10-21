@@ -3,17 +3,22 @@ import SupportQna from "../../components/support/SupportQna";
 
 const SupportPage = () => {
     return (
-        <div className="container mx-48 mt-20 max-w-5xl text-left">
-            <h2 className="text-left text-5xl font-bold mb-4">
+        <div className="max-w-5xl mx-auto mt-12 px-4 text-left">
+            <h2 className="text-4xl font-bold mb-6">
                 <span className="text-black">고객센터.</span> <span className="text-gray-500">도움이 필요하신가요?</span>
             </h2>
-            <div className="text-2xl font-bold mb-4 text-left my-14">어떤 문제가 있는지 입력해주세요.</div>
 
-            <div className="mb-8">
-                <input type="text" placeholder="문의 검색하기" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black" />
+            <div className="text-2xl font-bold mb-6">어떤 문제가 있는지 입력해주세요.</div>
+
+            <div className="mb-6">
+                <input
+                    type="text"
+                    placeholder="문의 검색하기"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+                />
             </div>
 
-            <div className="text-2xl font-bold mb-4 text-left my-14">자주 묻는 질문</div>
+            <div className="text-2xl font-bold mb-6">자주 묻는 질문</div>
             <div className="border-t border-gray-300">
                 <SupportQna question="질문1">
                     <p>첫 번째 답변 목록이야</p>

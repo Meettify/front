@@ -5,12 +5,15 @@ import useNavigation from "../../../hooks/useNavigation";
 import { HiUserCircle } from "react-icons/hi2";
 import { BsCart3 } from "react-icons/bs";
 import { BsChatSquareText } from "react-icons/bs";
+import { RiAdminLine } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 
 const InfoModal = ({ buttonPosition, onClose }) => {
     const { isAuthenticated, logout, user } = useAuth();
     const { modals, closeModal, openModal } = useModalStore();
     const {goToMyPage} = useNavigation();
+    const nav = useNavigate();
 
     const handleLoginClick = () => {
         closeModal('info');
@@ -22,6 +25,11 @@ const InfoModal = ({ buttonPosition, onClose }) => {
     const handleMyifoClick = () => {
         closeModal('info');
         goToMyPage();
+    }
+
+    const handleAdmin = () => {
+        closeModal('info');
+        nav('/admin');
     }
 
     const handleModalClick = (e) => {
@@ -38,7 +46,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
             style={{ zIndex: 999 }}
             onClick={handleBackgroundClick}>
             <div
-                className="absolute bg-white rounded-lg w-72 h-64 p-5 shadow-lg"
+                className={`absolute bg-white rounded-lg w-72 ${user && user.memberRole !== "ADMIN" ? 'h-64' : 'h-72'} p-5 shadow-lg`}
                 onClick={handleModalClick}
                 style={{
                     top: `${buttonPosition.top}px`,
@@ -46,7 +54,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                     zIndex: 1000,
                 }}
             >
-                {isAuthenticated ? (
+                {isAuthenticated && user ? (
                     <>
                         <div className="ml-2 text-left text-md">
                             <h2 className="text-zinc-800 ">{user.nickName}</h2>
@@ -70,11 +78,22 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                                 ><BsCart3 size={24} /> <p className="ml-2">장바구니</p>
                             </button>
                             <button 
-                                className="flex ml-1 mb-3 p-2 w-32 text-center h-10 items-center
-                                text-gray-400 transition-colors duration-200 hover:text-gray-700"
+                                className={`flex ml-3 w-24 text-center h-10 items-center 
+                                    text-gray-400 transition-colors duration-200 hover:text-gray-700
+                                    ${user.memberRole !== "ADMIN" ? 'mb-3' : ''}`}
                                 onClick={() => {}}
-                                ><BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
+                            >
+                                <BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
                             </button>
+                            {user && user.memberRole === "ADMIN" ? (
+                                <button 
+                                className="flex ml-[11px] mt-2 mb-3 w-32 text-center
+                                text-gray-400 transition-colors duration-200 hover:text-gray-700"
+                                onClick={handleAdmin}
+                                ><RiAdminLine size={25} /> <p className="ml-[6px]">관리자페이지</p>
+                                </button>
+                            ) : null}
+                            
                             <p onClick={logout} className="flex text-[14px] ml-3 w-16 text-gray-400
                              transition-colors duration-200 hover:text-gray-700 hover: cursor-pointer " >로그아웃</p>
                         </div>

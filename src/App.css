@@ -90,7 +90,7 @@ html, body {
 
 body {
   font-family: 'Freesentation-Medium', Arial, sans-serif;
-  font-size: 17px;  /* 폰트 크기 */
+  font-size: 15px;  /* 폰트 크기 */
   color: #000; /* 폰트 색상 */
   overflow: auto; /* 스크롤 가능하도록 auto */
   letter-spacing: 0.3px; /* 자간을 0.5px로 설정 */

@@ -10,7 +10,6 @@ import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
 import SearchBar from '../../components/menus/SearchBar'; // SearchBar import
-import useAuthStore from '../../stores/useAuthStore';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -19,13 +18,6 @@ const BasicMenu = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false); // SearchBar 가시성 상태
     const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
     const location = useLocation(); // 현재 위치 확인
-    const { user = { role: '' } } = useAuthStore(); // 기본값 설정
-
-    useEffect(() => {
-        console.log('User Role Updated:', user.memberRole); // 상태 변화 확인
-    }, [user]);
-
-
 
     const handleInfoClick = () => {
         const buttonRect = buttonRef.current.getBoundingClientRect();
@@ -57,43 +49,38 @@ const BasicMenu = () => {
 
     return (
         <nav id='navbar' className="flex items-center justify-center w-full py-0 px-5 relative">
-            <div className="flex items-center mr-20">
+            <div className="flex items-center mr-14">
                 <Link to="/">
-                    <img src={logo} alt="Meettify Logo" className="w-48 h-auto" />
+                    <img src={logo} alt="Meettify Logo" className="w-48 h-auto" style={{ transform: 'translateY(-4px)' }} />
                 </Link>
             </div>
 
-            <ul className="flex space-x-16 text-black m-0">
+            <ul className="flex space-x-14 text-black m-0">
                 <li> <Link to={'/main'}>메인</Link> </li>
                 <li> <Link to={'/meet'}>모임</Link> </li>
                 <li> <Link to={'/comm/'}>커뮤니티</Link> </li>
                 <li> <Link to={'/shop/'}>쇼핑</Link> </li>
                 <li> <Link to={'/support'}>고객센터</Link> </li>
                 <li>
-                    <button onClick={toggleSearchBar} className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-2px)' }}>
-                        <LuSearch size={30} />
+                    <button onClick={toggleSearchBar} className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                        <LuSearch size={26} />
                     </button>
                 </li>
 
                 <li>
-                    <Link to="/#" className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(1px)' }}>
-                        <PiBell size={29} />
+                    <Link to="/#" className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                        <PiBell size={28} />
                     </Link>
                 </li>
                 <li>
                     <button
                         ref={buttonRef}
-                        className="mr-1 text-gray-800 flex items-center" style={{ transform: 'translateY(-4px)' }}
+                        className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(-2px)' }}
                         onClick={handleInfoClick}
                     >
-                        <HiOutlineUserCircle size={35} strokeWidth={1.2} />
+                        <HiOutlineUserCircle size={30} strokeWidth={1.3} />
                     </button>
                 </li>
-                {user.memberRole === 'ADMIN' && (
-                    <li> <Link to={'/admin'}>관리자페이지</Link> </li>
-                )}
-
-
             </ul>
 
             {modals['info'] && (

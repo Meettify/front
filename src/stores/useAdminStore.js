@@ -1,56 +1,48 @@
 import { create } from 'zustand';
-import { createItem, getAllItems, getItemDetail } from '../api/adminAPI';
+import { getItemList, createItem, deleteItem } from '../api/adminAPI';
 
 const useAdminStore = create((set) => ({
-    itemList: [],  // 상품 목록 상태
+    itemList: [],
     loading: false,
     error: null,
 
-    // 전체 상품 조회 함수
-    fetchAllItemsWithDetails: async () => {
-      set({ loading: true }); // 로딩 상태 설정
-      try {
-          const response = await getAllItems(); // 모든 상품 조회 API 호출
-          console.log('Fetched items:', response); // API 응답 확인
-          set({ itemList: response.items, loading: false }); // 상품 목록 업데이트
-      } catch (error) {
-          set({ error: error.message, loading: false }); // 에러 처리
-          console.error('상품 목록 조회 중 오류:', error);
-      }
-  },  
-
-    // 상품 상세 조회
-    fetchItemDetail: async (itemId) => {
+    // **상품 목록 조회 함수**
+    fetchItemList: async (page = 1, size = 10) => {
         set({ loading: true });
         try {
-            const item = await getItemDetail(itemId);
-            return item;
+            const items = await getItemList(page, size);
+            set({ itemList: items, loading: false });
         } catch (error) {
             set({ error: error.message, loading: false });
         }
     },
 
-    // 상품 추가 함수
+    // **상품 생성 함수**
     addItem: async (itemData, files) => {
-        set({ loading: true }); // 로딩 상태 설정
+        set({ loading: true });
         try {
-            const newItem = await createItem(itemData, files); // API 호출
+            const newItem = await createItem(itemData, files);
             set((state) => ({
-                itemList: [...state.itemList, newItem], // 새 상품 추가
-                loading: false, // 로딩 완료
+                itemList: [...state.itemList, newItem],
+                loading: false,
             }));
         } catch (error) {
-            set({ error: error.message, loading: false }); // 에러 처리
-            console.error('상품 추가 중 오류:', error);
+            set({ error: error.message, loading: false });
         }
     },
 
-    // 상품 삭제
-    deleteItem: async (itemId) => {
-        await deleteItem(itemId);
-        set((state) => ({
-            itemList: state.itemList.filter(item => item.itemId !== itemId),
-        }));
+    // **상품 삭제 함수**
+    removeItem: async (itemId) => {
+        set({ loading: true });
+        try {
+            await deleteItem(itemId);
+            set((state) => ({
+                itemList: state.itemList.filter((item) => item.itemId !== itemId),
+                loading: false,
+            }));
+        } catch (error) {
+            set({ error: error.message, loading: false });
+        }
     },
 }));
 
