@@ -1,35 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md"; // 아이콘 사용
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import useCommStore from "../../stores/useCommStore";
 
 const CommPage = () => {
-    const { posts, fetchPosts, loading, error } = useCommStore(); // Zustand 스토어 사용
-    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-    const [totalPage, setTotalPage] = useState(1); // 전체 페이지 수
-
-    const navigate = useNavigate(); // useNavigate 훅 사용
+    const { posts, fetchPosts, loading, error } = useCommStore();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const navigate = useNavigate();
 
     const goToCommAdd = () => {
         console.log('글쓰기 페이지로 이동합니다.');
         navigate('/comm/add');
     };
 
-
     // 페이지 데이터 가져오기
     useEffect(() => {
         const fetchPageData = async () => {
             try {
-                const total = await fetchPosts(currentPage); // 전체 페이지 수 반환
-                setTotalPage(total); // 전체 페이지 수 설정
+                const total = await fetchPosts(currentPage);
+                setTotalPage(total);
             } catch (error) {
                 console.error('페이지 데이터 가져오기 실패:', error);
             }
         };
         fetchPageData();
     }, [currentPage, fetchPosts]);
-
 
     // 페이지 변경 핸들러
     const handlePageChange = (page) => {
@@ -44,9 +41,7 @@ const CommPage = () => {
             <div className="text-3xl font-semibold mb-4 text-left">커뮤니티 둘러보기.</div>
 
             <div className="bg-gray-100 p-4 rounded-md mb-4 text-left">
-                <p className="text-base mb-1">
-                    유용한 답변을 공유하고 싶으신가요? 추천 기능을 이용해 보세요!
-                </p>
+                <p className="text-base mb-1">유용한 답변을 공유하고 싶으신가요? 추천 기능을 이용해 보세요!</p>
                 <p className="text-sm text-gray-600">
                     문제 해결에 도움이 된 답변에 추천을 눌러보세요.
                     <a href="#" className="text-blue-500 ml-1">Meettify 커뮤니티 더 알아보기</a>
