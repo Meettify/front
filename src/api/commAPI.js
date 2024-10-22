@@ -118,15 +118,24 @@ export const getAllCommunityPosts = async (page = 1, size = 10) => {
   }
 };
 
-// 커뮤니티 게시물 뷰 카운트 증가 (POST)
-export const increaseViewCount = async (communityId) => {
+export const increasePostViewCount = async (communityId) => {
   try {
-    const response = await request.post({
-      url: `/community/${communityId}/view`,
-    });
-    return response.data;
+    await updateViewCountAPI(communityId); // 조회수 업데이트 API 호출
+    // 상태 업데이트 - fetchPosts를 호출해 목록을 다시 불러오기
+    await fetchPosts(); 
   } catch (error) {
-    console.error('뷰 카운트 증가 실패:', error);
-    throw error;
+    console.error('조회수 증가 실패:', error);
+  }
+};
+
+export const getRedisViewCount = async (communityId) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/community/viewCount/${communityId}`
+    );
+    return response.data.viewCount;
+  } catch (error) {
+    console.error('Redis 조회수 가져오기 실패:', error);
+    return 0; // 오류 시 0 반환
   }
 };

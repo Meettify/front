@@ -19,14 +19,19 @@ const CommPage = () => {
     useEffect(() => {
         const fetchPageData = async () => {
             try {
-                const total = await fetchPosts(currentPage);
+                const total = await fetchPosts(currentPage); // 전체 게시글 가져오기
                 setTotalPage(total);
             } catch (error) {
-                console.error('페이지 데이터 가져오기 실패:', error);
+                console.error("페이지 데이터 가져오기 실패:", error);
             }
         };
         fetchPageData();
-    }, [currentPage, fetchPosts]);
+    }, [currentPage, fetchPosts]); // 상태가 변경될 때마다 목록을 갱신
+
+    // **posts 상태가 변경될 때 로그 출력** (여기 추가)
+    useEffect(() => {
+        console.log("posts 상태:", posts); // posts 상태 확인용 로그
+    }, [posts]);
 
     // 페이지 변경 핸들러
     const handlePageChange = (page) => {
@@ -68,22 +73,24 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {posts.map((post, index) => (
-                        <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
-                            <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
-                            <td className="p-2 text-left">
-                                <Link to={`/comm/detail/${post.boardId}`} className="text-black hover:underline">
-                                    {post.title}
-                                </Link>
-                            </td>
-                            <td className="p-2 text-center">{post.nickName}</td>
-                            <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                            <td className="p-2 text-center">{post.viewCount || 0}</td>
-                        </tr>
-                    ))}
+                    {posts.map((post, index) => {
+                        console.log(`게시글 ID: ${post.boardId}, 조회수: ${post.viewCount}`); // 게시글 및 조회수 상태 로그
+                        return (
+                            <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
+                                <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
+                                <td className="p-2 text-left">
+                                    <Link to={`/comm/detail/${post.boardId}`} className="text-black hover:underline">
+                                        {post.title}
+                                    </Link>
+                                </td>
+                                <td className="p-2 text-center">{post.nickName}</td>
+                                <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
+                                <td className="p-2 text-center">{post.viewCount}</td> {/* 최신화된 조회수 */}
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
-
             <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
         </div>
     );

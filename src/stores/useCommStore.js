@@ -5,7 +5,8 @@ import {
   createCommunityPost, 
   updateCommunityPost, 
   deleteCommunityPost, 
-  searchCommunityPosts 
+  searchCommunityPosts ,
+  getRedisViewCount,
 } from '../api/commAPI';
 
 const useCommStore = create((set) => ({
@@ -15,30 +16,73 @@ const useCommStore = create((set) => ({
   error: null,
 
   // 전체 게시물 불러오기
-  fetchPosts: async (page = 1, size = 10) => {
+   // 전체 게시물 불러오기
+   fetchPosts: async (page = 1, size = 10) => {
     set({ loading: true });
     try {
-        const data = await getAllCommunityPosts(page, size);
-        console.log('API 응답:', data); // 응답 데이터 확인
-        const { communities = [], totalPage = 1 } = data;
-        set({ posts: communities, loading: false });
-        return totalPage; // 전체 페이지 수 반환
-    } catch (error) {
-        set({ error, loading: false });
-        throw error; // 에러를 상위에서 처리하도록 던지기
-    }
-},
+      const data = await getAllCommunityPosts(page, size);
+      console.log('API 응답:', data);
 
-  // 개별 게시물 불러오기
-  fetchPostDetail: async (communityId) => {
-    set({ loading: true });
-    try {
-      const data = await getCommunityPost(communityId);
-      set({ postDetail: data, loading: false });
+      const postsWithViewCount = await Promise.all(
+        data.communities.map(async (post) => {
+          const redisViewCount = await getRedisViewCount(post.boardId); // Redis 조회수 불러오기
+          return { ...post, viewCount: redisViewCount };
+        })
+      );
+
+      set({ posts: postsWithViewCount, loading: false });
     } catch (error) {
+      console.error('페이지 데이터 가져오기 실패:', error);
       set({ error, loading: false });
     }
   },
+  
+  fetchPostDetail: async (communityId) => {
+    console.log(`fetchPostDetail 호출됨, ID: ${communityId}`); // 디버깅용 로그
+    set({ loading: true });
+    try {
+        const data = await getCommunityPost(communityId);
+        console.log(`API로부터 받아온 게시글 데이터:`, data); // API 응답 로그
+        set({ postDetail: data, loading: false });
+        return data; // 상세 데이터를 반환
+    } catch (error) {
+        console.error('게시글 불러오기 실패:', error);
+        set({ error, loading: false });
+        throw error;
+    }
+},
+
+increasePostViewCount: (communityId) => {
+  console.log(`increasePostViewCount 호출됨, ID: ${communityId}`);
+  set((state) => {
+      const updatedPosts = state.posts.map((post) =>
+          post.boardId === communityId
+              ? { ...post, viewCount: post.viewCount + 1 }
+              : post
+      );
+      const updatedPostDetail =
+          state.postDetail?.boardId === communityId
+              ? { ...state.postDetail, viewCount: state.postDetail.viewCount + 1 }
+              : state.postDetail;
+
+      console.log('업데이트된 posts:', updatedPosts);
+      console.log('업데이트된 postDetail:', updatedPostDetail);
+
+      return {
+          posts: updatedPosts,
+          postDetail: updatedPostDetail,
+      };
+  });
+},
+
+// 게시물 목록 업데이트 함수
+updatePostInList: (updatedPost) => {
+  set((state) => ({
+      posts: state.posts.map((post) =>
+          post.boardId === updatedPost.boardId ? updatedPost : post
+      ),
+  }));
+},
 
   // 게시물 생성
   createPost: async (title, content, files = []) => {
@@ -67,7 +111,10 @@ const useCommStore = create((set) => ({
     set({ loading: true });
     try {
       await deleteCommunityPost(communityId);
-      set({ loading: false });
+      set((state) => ({
+        posts: state.posts.filter((post) => post.boardId !== communityId),
+        loading: false,
+      }));
     } catch (error) {
       set({ error, loading: false });
     }
