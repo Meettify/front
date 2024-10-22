@@ -1,5 +1,12 @@
 import { create } from 'zustand';
-import { getAllCommunityPosts, getCommunityPost, createCommunityPost, updateCommunityPost, deleteCommunityPost, searchCommunityPosts } from '../api/commAPI';
+import { 
+  getAllCommunityPosts, 
+  getCommunityPost, 
+  createCommunityPost, 
+  updateCommunityPost, 
+  deleteCommunityPost, 
+  searchCommunityPosts 
+} from '../api/commAPI';
 
 const useCommStore = create((set) => ({
   posts: [], // 게시물 리스트
@@ -11,19 +18,22 @@ const useCommStore = create((set) => ({
   fetchPosts: async (page = 1, size = 10) => {
     set({ loading: true });
     try {
-      const data = await getAllCommunityPosts(page, size); // 페이지와 사이즈로 API 호출
-      set({ posts: data.communities, loading: false });
+        const data = await getAllCommunityPosts(page, size);
+        console.log('API 응답:', data); // 응답 데이터 확인
+        const { communities = [], totalPage = 1 } = data;
+        set({ posts: communities, loading: false });
+        return totalPage; // 전체 페이지 수 반환
     } catch (error) {
-      set({ error, loading: false });
+        set({ error, loading: false });
+        throw error; // 에러를 상위에서 처리하도록 던지기
     }
-  },
+},
 
   // 개별 게시물 불러오기
   fetchPostDetail: async (communityId) => {
     set({ loading: true });
     try {
       const data = await getCommunityPost(communityId);
-      console.log("게시글 데이터:", data); // 서버 응답 확인
       set({ postDetail: data, loading: false });
     } catch (error) {
       set({ error, loading: false });
@@ -31,7 +41,7 @@ const useCommStore = create((set) => ({
   },
 
   // 게시물 생성
-  createPost: async (title, content, files) => {
+  createPost: async (title, content, files = []) => {
     set({ loading: true });
     try {
       await createCommunityPost(title, content, files);
@@ -42,7 +52,7 @@ const useCommStore = create((set) => ({
   },
 
   // 게시물 수정
-  updatePost: async (communityId, title, content, remainImgId, files) => {
+  updatePost: async (communityId, title, content, remainImgId = [], files = []) => {
     set({ loading: true });
     try {
       await updateCommunityPost(communityId, title, content, remainImgId, files);
@@ -64,7 +74,7 @@ const useCommStore = create((set) => ({
   },
 
   // 게시물 검색
-  searchPosts: async (page, size, sort) => {
+  searchPosts: async (page = 1, size = 10, sort = []) => {
     set({ loading: true });
     try {
       const data = await searchCommunityPosts(page, size, sort);

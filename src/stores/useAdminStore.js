@@ -1,10 +1,24 @@
 import { create } from 'zustand';
 import { getItemList, createItem, deleteItem } from '../api/adminAPI';
+import { getMember } from '../api/memberAPI';
 
 const useAdminStore = create((set) => ({
     itemList: [],
+    memberList: [], // 초기값을 빈 배열로 설정
     loading: false,
     error: null,
+
+    // 회원 목록 조회
+    fetchMemberList: async () => {
+        set({ loading: true });
+        try {
+            const members = await getMember(); // 서버에서 회원 목록 가져오기
+            console.log('Member List:', members); // 콘솔로 응답 확인
+            set({ memberList: members || [], loading: false }); // 결과가 없으면 빈 배열 설정
+        } catch (error) {
+            set({ error: error.message, loading: false });
+        }
+    },    
 
     // **상품 목록 조회 함수**
     fetchItemList: async (page = 1, size = 10) => {

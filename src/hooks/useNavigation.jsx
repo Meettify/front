@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToMemList = () => {
+        navigate('/admin/memList');
+    };
+
     const goToItemList = () => {
-        navigate('/admin/itemlist');
+        navigate('/admin/itemList');
     };
 
     const goToComm = () => {
@@ -36,12 +40,12 @@ const useNavigation = () => {
     }
 
     const goToMeetDetail = (meetId, categoryTitle) => {
-        navigate(`/meet/detail?categoryTitle=${categoryTitle}&meetId=${meetId}`); 
-    };            
-    
+        navigate(`/meet/detail?categoryTitle=${categoryTitle}&meetId=${meetId}`);
+    };
+
     const goToCategoryList = (categoryTitle) => {
         navigate(`/meet/list?categoryTitle=${categoryTitle}`);
-    };       
+    };
 
     const goToSearchList = (categoryTitle, query) => {
         navigate(`/meet/list?categoryTitle=${categoryTitle}&query=${query}`);
@@ -94,6 +98,7 @@ const useNavigation = () => {
         goToComm,
         goToItemList,
         goToCommEdit,
+        goToMemList,
     };
 };
 
