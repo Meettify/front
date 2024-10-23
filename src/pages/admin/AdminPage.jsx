@@ -18,7 +18,7 @@ const AdminPage = () => {
                 <section className="mb-6">
                     <h2 className="font-semibold mb-3 text-left text-xl">회원 관리</h2>
                     <ul className="space-y-2 text-left">
-                        <li><Link to="member-list">회원 조회</Link></li>
+                        <li><Link to="memList">회원 조회</Link></li>
                     </ul>
                 </section>
 

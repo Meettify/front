@@ -1,16 +1,42 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import useCommStore from "../../stores/useCommStore";
-import useNavigation from "../../hooks/useNavigation";
 
 const CommPage = () => {
-    const { posts, fetchPosts, loading, error } = useCommStore();  // Zustand에서 데이터 불러오기
-    const { goToCommAdd } = useNavigation();
+    const { posts, fetchPosts, loading, error } = useCommStore();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const navigate = useNavigate();
 
+    const goToCommAdd = () => {
+        console.log('글쓰기 페이지로 이동합니다.');
+        navigate('/comm/add');
+    };
+
+    // 페이지 데이터 가져오기
     useEffect(() => {
-        fetchPosts();  // 컴포넌트 마운트 시 게시글 목록 불러오기
-    }, [fetchPosts]);
+        const fetchPageData = async () => {
+            try {
+                const total = await fetchPosts(currentPage); // 전체 게시글 가져오기
+                setTotalPage(total);
+            } catch (error) {
+                console.error("페이지 데이터 가져오기 실패:", error);
+            }
+        };
+        fetchPageData();
+    }, [currentPage, fetchPosts]); // 상태가 변경될 때마다 목록을 갱신
+
+    // **posts 상태가 변경될 때 로그 출력** (여기 추가)
+    useEffect(() => {
+        console.log("posts 상태:", posts); // posts 상태 확인용 로그
+    }, [posts]);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPage) setCurrentPage(page);
+    };
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -20,21 +46,22 @@ const CommPage = () => {
             <div className="text-3xl font-semibold mb-4 text-left">커뮤니티 둘러보기.</div>
 
             <div className="bg-gray-100 p-4 rounded-md mb-4 text-left">
-                <p className="text-base mb-1">
-                    유용한 답변을 다른 사람들과도 공유하고 싶으신가요? 그렇다면 추천 기능을 이용해 보세요!
-                </p>
+                <p className="text-base mb-1">유용한 답변을 공유하고 싶으신가요? 추천 기능을 이용해 보세요!</p>
                 <p className="text-sm text-gray-600">
-                    회원님이 문제를 해결할 수 있도록 도움을 주신 분이 있으신가요? 아니면 다른 사람의 답변이 도움이 되었다면 추천해 주세요.
-                    <a href="#" className="text-blue-500 ml-1">모임 더 알아보기 - Meettify 커뮤니티</a>
+                    문제 해결에 도움이 된 답변에 추천을 눌러보세요.
+                    <a href="#" className="text-blue-500 ml-1">Meettify 커뮤니티 더 알아보기</a>
                 </p>
             </div>
 
-            {/* 글쓰기 버튼 */}
             <div className="flex justify-end mb-3">
-                <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }} onClick={() => goToCommAdd("/comm/add")}>글쓰기</RoundedButton>
+                <RoundedButton
+                    style={{ padding: "6px 14px", fontSize: "12px" }}
+                    onClick={goToCommAdd}
+                >
+                    글쓰기
+                </RoundedButton>
             </div>
 
-            {/* 글 목록 테이블 */}
             <table className="w-full table-auto border-t border-gray-300 text-sm">
                 <thead className="bg-gray-50">
                     <tr>
@@ -46,22 +73,69 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {posts.map((post, index) => (
-                        <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
-                            <td className="p-2 text-center">{index + 1}</td>
-                            <td className="p-2 text-left">
-                                <Link to={`/comm/detail/${post.boardId}`} className="text-blue-500 hover:underline">
-                                    {post.title}
-                                </Link>
-                            </td>
-                            <td className="p-2 text-center">{post.nickName}</td>
-                            <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                            <td className="p-2 text-center">{post.views || 0}</td>
-                        </tr>
-                    ))}
+                    {posts.map((post, index) => {
+                        console.log(`게시글 ID: ${post.boardId}, 조회수: ${post.viewCount}`); // 게시글 및 조회수 상태 로그
+                        return (
+                            <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
+                                <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
+                                <td className="p-2 text-left">
+                                    <Link to={`/comm/detail/${post.boardId}`} className="text-black hover:underline">
+                                        {post.title}
+                                    </Link>
+                                </td>
+                                <td className="p-2 text-center">{post.nickName}</td>
+                                <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
+                                <td className="p-2 text-center">{post.viewCount}</td> {/* 최신화된 조회수 */}
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
+            <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
         </div>
+    );
+};
+
+const Pagination = ({ currentPage, totalPage, onPageChange }) => {
+    return (
+        <nav className="flex justify-center mt-10">
+            <ul className="inline-flex items-center space-x-1">
+                <li>
+                    <button
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`w-4 h-4 border rounded-sm flex items-center justify-center
+                            ${currentPage === 1 ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}
+                        `}
+                    >
+                        <MdKeyboardArrowLeft />
+                    </button>
+                </li>
+                {Array.from({ length: totalPage }, (_, i) => i + 1).map((number) => (
+                    <li key={number}>
+                        <button
+                            onClick={() => onPageChange(number)}
+                            className={`w-5 h-4 flex items-center justify-center
+                                ${currentPage === number ? 'text-black' : 'text-gray-500'}
+                            `}
+                        >
+                            {number}
+                        </button>
+                    </li>
+                ))}
+                <li>
+                    <button
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage === totalPage}
+                        className={`w-4 h-4 border rounded-sm flex items-center justify-center
+                            ${currentPage === totalPage ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}
+                        `}
+                    >
+                        <MdKeyboardArrowRight />
+                    </button>
+                </li>
+            </ul>
+        </nav>
     );
 };
 

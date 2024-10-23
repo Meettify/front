@@ -15,11 +15,11 @@ const ShopCard = ({ title = "상품명", description = "상품 내용", price = 
                 <h3 className="font-semibold text-sm mb-1">{title}</h3>
                 <p className="text-gray-500 text-xs mb-2">{description}</p>
                 <p className="font-bold text-smfont-bold text-sm">{price}</p>
-                <div className="mt-2">
+                {/* <div className="mt-2">
                     <RoundedButton style={{ padding: '4px 14px', fontSize: '12px' }}>
-                        주문하기
+                        담기
                     </RoundedButton>
-                </div>
+                </div> */}
             </div>
 
         </div>
