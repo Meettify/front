@@ -1,21 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import MeetCard from "../../components/meet/MeetCard";
 import MainSection from "../../components/main/MainSection";
 import CommLatestPosts from "../../components/comm/CommLatestPosts";
 import SectionText from "../../components/text/SectionText";
 import MeetListData from "../../components/meet/MeetListData";
-import useNavigation from "../../hooks/useNavigation";
 
 const SearchPage = () => {
-    const [searchParams] = useSearchParams();
-    const query = searchParams.get("query") || "";
-    const categoryId = searchParams.get("categoryId") || ""; // 카테고리 ID를 가져옴
-    const { goToSearchList } = useNavigation();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const totalKeyword = searchParams.get("totalKeyword") || "";
+    const categoryTitle = searchParams.get("categoryTitle") || "";
 
     const filteredMeets = MeetListData.filter(meet =>
-        meet.title.toLowerCase().includes(query.toLowerCase())
+        meet.title.toLowerCase().includes(totalKeyword.toLowerCase())
     );
+
+    const handleSearch = () => {
+        setSearchParams({ totalKeyword, categoryTitle });
+    };
 
     return (
         <div className="container mx-auto mt-20">
@@ -28,7 +30,7 @@ const SearchPage = () => {
 
             <MainSection
                 title={<SectionText title="최신모임." subtitle="따끈따끈한 모임이야기." />}
-                items={filteredMeets.slice(0, 10)} // 최대 10개만 표시
+                items={filteredMeets.slice(0, 10)} 
                 renderItem={(meet) => (
                     <MeetCard 
                         key={meet.id}
@@ -44,7 +46,7 @@ const SearchPage = () => {
             {filteredMeets.length > 5 && (
                 <div className="text-center my-5">
                     <Link 
-                        to={`/meet/list?categoryId=${categoryId}&query=${query}`} // categoryId와 query 유지
+                        to={`/meet/list?totalKeyword=${totalKeyword}&categoryTitle=${categoryTitle}`}
                         className="text-blue-500 hover:underline"
                     >
                         더보기

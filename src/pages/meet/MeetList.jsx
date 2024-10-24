@@ -3,41 +3,39 @@ import { useSearchParams } from "react-router-dom";
 import MeetCard from "../../components/meet/MeetCard";
 import MeetSideMenu from "../../components/meet/MeetSideMenu";
 import SectionText from "../../components/text/SectionText";
-import MeetListData from "../../components/meet/MeetListData";
 import MeetListSearch from "../../components/meet/MeetListSearch";
 import useNavigation from "../../hooks/useNavigation";
 import RoundedButton from "../../components/button/RoundedButton";
+import { getMeetList } from "../../api/meetApi";
 
 const MeetList = () => {
     const [searchParams] = useSearchParams();
-    const categoryTitle = searchParams.get("categoryTitle") || ""; 
-    const query = searchParams.get("query") || "";
+    const category = searchParams.get("category") || ""; 
+    const totalKeyword = searchParams.get("totalKeyword") || "";
     const { goToMeetDetail, goToMeetInsert } = useNavigation();
     const [filteredMeetData, setFilteredMeetData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState(query.trim());
+    const [searchTerm, setSearchTerm] = useState(totalKeyword.trim());
+    const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 상태
+    const [totalPages, setTotalPages] = useState(0); // 총 페이지 수 상태
 
     useEffect(() => {
-        const normalizedSearchTerm = searchTerm.toLowerCase().replace(/\s+/g, '');
-    
-        const filteredData = MeetListData.filter(meet => {
-            const meetTitle = meet.title.toLowerCase().replace(/\s+/g, '');
-            const meetDescription = meet.description.toLowerCase().replace(/\s+/g, '');
-    
-            return (
-                (meet.categoryTitle === categoryTitle) &&
-                (meetTitle.includes(normalizedSearchTerm) || meetDescription.includes(normalizedSearchTerm))
-            );
-        });
-    
-        console.log("Category Title:", categoryTitle); // 현재 카테고리 타이틀
-        console.log("Search Term:", searchTerm); // 현재 검색어
-        console.log("Filtered Data:", filteredData); // 필터링된 데이터
-    
-        setFilteredMeetData(filteredData);
-        setLoading(false);
-    }, [categoryTitle, searchTerm]);
-    
+        const fetchMeetData = async () => {
+            setLoading(true);
+            try {
+                const data = await getMeetList(currentPage, 10, "meetName", searchTerm || "ALL", category);
+                console.log("API 응답 데이터:", data);
+                setFilteredMeetData(data.content || []); // 데이터 상태에 저장
+                setTotalPages(data.totalPages); // 총 페이지 수 설정
+            } catch (error) {
+                console.error("API 호출 중 오류:", error);
+            } finally {
+                setLoading(false);
+            }
+        };    
+
+        fetchMeetData();
+    }, [searchTerm, category, currentPage]); // 검색어와 카테고리, 현재 페이지 변경 시 호출
 
     return (
         <div className="container mx-auto mt-20 w-full flex">
@@ -65,13 +63,30 @@ const MeetList = () => {
                                     description={meet.description} 
                                     tags={meet.tags} 
                                     isMeetPage={false}
-                                    onTitleClick={() => goToMeetDetail(meet.id, categoryTitle)}
+                                    onTitleClick={() => goToMeetDetail(meet.id, category)}
                                 />
                             </div>
                         ))
                     ) : (
                         <div className="w-full text-center mt-4">모임이 없습니다.</div>
                     )}
+                </div>
+                <div className="flex justify-center mt-4">
+                    <button 
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))} 
+                        disabled={currentPage === 0}
+                        className="mr-2 bg-blue-500 text-white py-1 px-4 rounded disabled:opacity-50"
+                    >
+                        이전
+                    </button>
+                    <span>{currentPage + 1} / {totalPages}</span>
+                    <button 
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))} 
+                        disabled={currentPage + 1 >= totalPages}
+                        className="ml-2 bg-blue-500 text-white py-1 px-4 rounded disabled:opacity-50"
+                    >
+                        다음
+                    </button>
                 </div>
             </div>
             <MeetSideMenu />

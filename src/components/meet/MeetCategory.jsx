@@ -11,12 +11,9 @@ const MeetCategory = () => {
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleButtonClick = (id, isCategory, categoryTitle) => {
-        console.log(`Navigating to ${isCategory ? 'categoryTitle' : 'meetId'}: ${id}`);
-        console.log(`Category Title: ${categoryTitle}`); // 확인
         if (isCategory && categoryTitle) {
             goToCategoryList(categoryTitle);
         } else {
-            console.log(`Navigating to meet with ID: ${id}`);
             goToMeetDetail(id, categoryTitle);
         }
     };
@@ -25,13 +22,11 @@ const MeetCategory = () => {
         return str.toLowerCase().replace(/\s+/g, '');
     };
 
-    const filteredCategoryData = MeetCategoryData.filter(meet =>
-        normalizeString(meet.title).includes(normalizeString(searchTerm))
-    );
-
-    const combinedResults = searchTerm === ""
-        ? filteredCategoryData.map(meet => ({ ...meet, isCategory: true, categoryTitle: meet.categoryTitle }))
-        : filteredCategoryData.map(meet => ({ ...meet, categoryTitle: meet.categoryTitle }));
+    const filteredCategoryData = searchTerm === ""
+        ? MeetCategoryData
+        : MeetCategoryData.filter(meet =>
+            normalizeString(meet.categoryTitle).includes(normalizeString(searchTerm))
+        );
 
     return (
         <div className="bg-gray-100 flex-1 h-full">
@@ -51,27 +46,21 @@ const MeetCategory = () => {
                         />
                     </div>
                     <div className='flex flex-wrap justify-start w-full mt-4'>
-                        {combinedResults.length > 0 ? (
-                            combinedResults.map((meet) => (
+                        {filteredCategoryData.length > 0 ? (
+                            filteredCategoryData.map((meet) => (
                                 <div 
-                                    key={meet.id || meet.categoryTitle} 
+                                    key={meet.categoryId} 
                                     className="w-1/4 p-2" 
-                                    onClick={() => handleButtonClick(meet.id || meet.categoryId, meet.isCategory, meet.categoryTitle)}
+                                    onClick={() => handleButtonClick(meet.categoryId, true, meet.categoryTitle)}
                                 >
                                     <MeetCard 
-                                        meetId={meet.categoryId || meet.id} 
+                                        meetId={meet.categoryId} 
                                         image={meet.image} 
                                         title={meet.title} 
                                         description={meet.description} 
                                         tags={meet.tags} 
-                                        isMeetPage={meet.isCategory} 
-                                        onTitleClick={() => {
-                                            if (meet.isCategory) {
-                                                goToCategoryList(meet.categoryTitle);
-                                            } else {
-                                                goToMeetDetail(meet.id, meet.categoryTitle);
-                                            }
-                                        }} 
+                                        isMeetPage={true} 
+                                        onTitleClick={() => goToCategoryList(meet.categoryTitle)} 
                                     />
                                 </div>
                             ))
