@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import RoundedButton from '../button/RoundedButton';
 
-const MeetJoin = ({ meetId, onSubmit }) => {
+const MeetJoin = ({ meetId, onSubmit, className }) => {  // className prop 추가
   const [isModalOpen, setIsModalOpen] = useState(false);  // 모달 상태 관리
   const [allChecked, setAllChecked] = useState(false);
   const [personalInfoChecked, setPersonalInfoChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
 
-  // '모두 동의' 체크박스 처리
   const handleAllCheck = (event) => {
     const isChecked = event.target.checked;
     setAllChecked(isChecked);
@@ -15,44 +14,44 @@ const MeetJoin = ({ meetId, onSubmit }) => {
     setTermsChecked(isChecked);
   };
 
-  // 개별 체크박스 처리
   const handlePersonalInfoCheck = (event) => {
-    setPersonalInfoChecked(event.target.checked);
+    const isChecked = event.target.checked;
+    setPersonalInfoChecked(isChecked);
+    setAllChecked(isChecked && termsChecked);
   };
 
   const handleTermsCheck = (event) => {
-    setTermsChecked(event.target.checked);
+    const isChecked = event.target.checked;
+    setTermsChecked(isChecked);
+    setAllChecked(isChecked && personalInfoChecked);
   };
 
-  const openModal = () => setIsModalOpen(true);  // 모달 열기
-  const closeModal = () => setIsModalOpen(false);  // 모달 닫기
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (personalInfoChecked && termsChecked) {
-      alert('가입이 신청되었습니다.');
       if (onSubmit) {
         onSubmit();  // 부모 컴포넌트의 함수 호출
       }
-      closeModal();  // 모달 닫기
+      closeModal();
     }
   };
 
   return (
     <>
-      {/* 가입 신청 버튼 (모달을 열기 위한 트리거) */}
-      <RoundedButton style={{ padding: '7px 15px', fontSize: '12px' }} onClick={openModal}>
+      {/* 가입 신청 버튼 */}
+      <RoundedButton onClick={openModal} className={className}>
         가입신청
       </RoundedButton>
 
-      {/* 모달창 */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
             <form onSubmit={handleSubmit} className="p-6 bg-white shadow-lg rounded-lg max-w-md mx-auto">
               <h2 className="text-2xl font-semibold mb-4">모임가입 동의</h2>
 
-              {/* 모두 동의 체크박스 */}
               <div className="flex items-center mb-4">
                 <input
                   type="checkbox"
@@ -66,7 +65,6 @@ const MeetJoin = ({ meetId, onSubmit }) => {
                 </label>
               </div>
 
-              {/* 개인정보 수집 및 이용 동의 */}
               <div className="mb-4">
                 <div className="flex items-center mb-2">
                   <input
@@ -85,7 +83,6 @@ const MeetJoin = ({ meetId, onSubmit }) => {
                 </p>
               </div>
 
-              {/* 서비스 이용 약관 동의 */}
               <div className="mb-4">
                 <div className="flex items-center mb-2">
                   <input
@@ -104,7 +101,6 @@ const MeetJoin = ({ meetId, onSubmit }) => {
                 </p>
               </div>
 
-              {/* 제출 버튼 */}
               <button
                 type="submit"
                 disabled={!(personalInfoChecked && termsChecked)}
@@ -117,7 +113,6 @@ const MeetJoin = ({ meetId, onSubmit }) => {
               </button>
             </form>
 
-            {/* 모달 닫기 버튼 */}
             <div className="flex justify-end mt-4">
               <RoundedButton onClick={closeModal} style={{ backgroundColor: 'red', color: 'white' }}>
                 취소
