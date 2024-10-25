@@ -136,22 +136,7 @@ export const getMeetJoinList = async () => {
         };
     }
 }
-  try {
-    const response = await request.get({
-        url: `${BASE_URL}/meets/myMeet`,
-    });
-    return response.data;
-} catch (error) {
-    console.error('소모임 삭제 오류:', error);
-    if (error.response) {
-        return error.response;
-    } else {
-        return {
-            status: 500,
-            message: '서버에 연결할 수 없습니다.',
-        };
-    }
-}
+
 }
 
 // 소모임 수정 API
@@ -194,7 +179,7 @@ export const updateMeet = async (meetId, updateMeetDTO, newImages = []) => {
 export const postMeetJoin = async (meetId) => {
     try {
         const response = await request.post({
-            url: `/meets/${meetId}/members`, // 가입 신청 엔드포인트
+            url: `${BASE_URL}/meets/${meetId}/members`, // 가입 신청 엔드포인트 수정
             headers: {
                 "Content-Type": "application/json",
             }
@@ -202,6 +187,30 @@ export const postMeetJoin = async (meetId) => {
         return response.data; // 가입 신청 성공 응답 반환
     } catch (error) {
         console.error('가입 신청 오류:', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
+
+// 회원 역할 업데이트 API
+export const updateMemberRole = async (meetId, meetMemberId, newRole) => {
+    try {
+        const response = await request.put({
+            url: `${BASE_URL}/meets/admin/${meetId}/${meetMemberId}`,  // 엔드포인트 수정
+            data: { newRole },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error('회원 역할 업데이트 오류:', error);
         if (error.response) {
             return error.response;
         } else {
