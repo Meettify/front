@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DetailImage from '../../components/meet/DetailImage';
-import { getMeetingDetail, deleteMeet, postMeetJoin } from '../../api/meetAPI'; // postMeetJoin 추가
+import { getMeetingDetail, deleteMeet, postMeetJoin } from '../../api/meetAPI';
 import MeetSideMenu from '../../components/meet/MeetSideMenu';
 import RoundedButton from '../../components/button/RoundedButton';
+import MeetJoin from '../../components/meet/MeetJoin';
 
 const MeetDetail = () => {
   const { meetId } = useParams();
@@ -32,17 +33,15 @@ const MeetDetail = () => {
   const imageUrl = images && images.length > 0 ? images[0] : null;
   const { meetPermissionDTO } = meeting;
 
-  // 수정하기 버튼 핸들러
   const handleEdit = () => {
     navigate(`/meet/update/${meetId}`);
   };
 
-  // 삭제하기 버튼 핸들러
   const handleDelete = async () => {
     if (window.confirm('정말로 이 모임을 삭제하시겠습니까?')) {
       try {
         const response = await deleteMeet(meetId);
-        if (response.status === 200) {  // 상태 코드가 200일 때 성공
+        if (response.status === 200) {
           alert('모임이 성공적으로 삭제되었습니다.');
           navigate('/meet/list');
         } else {
@@ -55,19 +54,31 @@ const MeetDetail = () => {
     }
   };
 
-  // 가입신청 버튼 핸들러
-  const handleJoin = async () => {
+  const handleJoinSubmit = async () => {
     try {
       const response = await postMeetJoin(meetId); // 가입 신청 API 호출
-      if (response.status === 200) {
-        alert('가입 신청이 완료되었습니다.');
+      console.log('응답 객체 전체:', response); // 응답 객체 전체 확인
+  
+      // 서버 응답의 데이터 구조를 확인한 후 성공 여부 판단
+      if (response && response.data) {
+        console.log('응답 데이터:', response.data); // 서버에서 받은 데이터 구조 출력
+        if (response.data.message === '가입 신청이 완료되었습니다.') {
+          alert('가입 신청이 완료되었습니다.');
+        } else {
+          alert(`가입 신청에 실패했습니다. 서버 응답: ${response.data.message || '알 수 없는 오류'}`);
+        }
       } else {
-        alert('가입 신청에 실패했습니다.');
+        alert('서버 응답이 올바르지 않습니다.');
       }
     } catch (error) {
       console.error('가입 신청 오류:', error);
-      alert('가입 신청에 실패했습니다.');
+      alert('가입 신청에 실패했습니다. 서버에 문제가 있을 수 있습니다.');
     }
+  };
+
+  // 회원 조회 버튼 클릭 핸들러
+  const handleMemberAccept = () => {
+    navigate(`/meets/${meetId}/members`); // 회원 조회 페이지로 이동
   };
 
   return (
@@ -102,7 +113,6 @@ const MeetDetail = () => {
             </div>
           </div>
 
-          {/* 수정하기, 삭제하기, 가입신청 버튼을 양옆으로 배치 */}
           <div className="flex space-x-4">
             {meetPermissionDTO.canEdit && (
               <RoundedButton onClick={handleEdit} className="w-1/4">
@@ -116,9 +126,12 @@ const MeetDetail = () => {
               </RoundedButton>
             )}
 
-            {/* 가입신청 버튼 추가 */}
-            <RoundedButton onClick={handleJoin} className="w-1/4 bg-blue-500 hover:bg-blue-600">
-              가입신청
+            {/* 가입신청 버튼 */}
+            <MeetJoin meetId={meetId} onSubmit={handleJoinSubmit} className="w-1/4 bg-blue-500 hover:bg-blue-600" />
+
+            {/* 회원 조회 버튼 */}
+            <RoundedButton onClick={handleMemberAccept} className="w-1/4 bg-green-500 hover:bg-green-600">
+              회원 조회
             </RoundedButton>
           </div>
         </div>

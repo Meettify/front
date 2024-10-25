@@ -1,4 +1,3 @@
-// C:\project3\front\src\router\meetRouter.js
 import { Suspense, lazy } from "react";
 
 const Loading = () => <div>Loading..</div>;
@@ -7,7 +6,7 @@ const MeetList = lazy(() => import("../pages/meet/MeetList"));
 const MeetDetail = lazy(() => import("../pages/meet/MeetDetail"));
 const MeetUpdate = lazy(() => import("../pages/meet/MeetUpdate"));
 const MeetInsert = lazy(() => import("../pages/meet/MeetInsert"));
-const MeetAccept = lazy(() => import("../pages/meet/MeetAccept"));
+const MeetAccept = lazy(() => import("../components/meet/MeetAccept")); // 이미 존재하는 컴포넌트
 const MeetPost = lazy(() => import("../pages/meet/MeetComm"));
 
 const meetRouter = () => {
@@ -33,8 +32,8 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetInsert /></Suspense>,
     },
     {
-      path: "/meet/:meetId/accept", 
-      element: <Suspense fallback={<Loading />}><MeetAccept /></Suspense>,
+      path: "/meets/:meetId/members",  // 수정된 경로
+      element: <Suspense fallback={<Loading />}><MeetAccept /></Suspense>,  // 회원 관리 및 가입 승인 페이지
     },
     {
       path: "/meet/list/:categoryId",  // 카테고리 ID를 포함한 경로
