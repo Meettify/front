@@ -118,27 +118,65 @@ export const getMeetingDetail = async (meetId) => {
     }
 };
 
-// 마이페이지의 가입한 모임 리스트 API
+// 마이페이지 가입한 모임 리스트 API
 export const getMeetJoinList = async () => {
-  try {
-    const response = await request.get({
-        url: `${BASE_URL}/meets/myMeet`,
-    });
-    return response.data;
-} catch (error) {
-    console.error('가입한 모임 리스트 GET 에러', error);
-    if (error.response) {
-        return error.response;
-    } else {
-        return {
-            status: 500,
-            message: '서버에 연결할 수 없습니다.',
-        };
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/meets/myMeet`,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('가입한 모임 리스트 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
     }
 }
 
+// 마이페이지 모임탈퇴 API
+export const putLeaveMeet = async (meetId, meetMemberId) => {
+    try {
+        const response = await request.put({
+            url: `${BASE_URL}/meets/${meetId}/${meetMemberId}`,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('가입한 모임 탈퇴 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
 
-}
+// 마이페이지 모임취소 API / 수정해야됨
+export const putCancelMeet = async () => {
+    try {
+        const response = await request.put({
+            url: `${BASE_URL}/meets/`, // 수정해야됨
+        });
+        return response.data;
+    } catch (error) {
+        console.error('모임신청 취소 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
 
 // 소모임 수정 API
 export const updateMeet = async (meetId, updateMeetDTO, newImages = []) => {
