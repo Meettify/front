@@ -28,6 +28,7 @@ const CommPage = () => {
         fetchPageData();
     }, [currentPage, fetchPosts]); // 상태가 변경될 때마다 목록을 갱신
 
+
     // **posts 상태가 변경될 때 로그 출력** (여기 추가)
     useEffect(() => {
         console.log("posts 상태:", posts); // posts 상태 확인용 로그
@@ -85,7 +86,7 @@ const CommPage = () => {
                                 </td>
                                 <td className="p-2 text-center">{post.nickName}</td>
                                 <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                                <td className="p-2 text-center">{post.viewCount}</td> {/* 최신화된 조회수 */}
+                                <td className="p-2 text-center">{post.viewCount}</td> {/* 최신 조회수 */}
                             </tr>
                         );
                     })}
@@ -116,8 +117,8 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
                         <button
                             onClick={() => onPageChange(number)}
                             className={`w-5 h-4 flex items-center justify-center
-                                ${currentPage === number ? 'text-black' : 'text-gray-500'}
-                            `}
+          ${currentPage === number ? 'text-black' : 'text-gray-500'}
+      `}
                         >
                             {number}
                         </button>

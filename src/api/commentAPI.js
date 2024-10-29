@@ -1,56 +1,57 @@
-import request from './request'; // 공용 Axios 인스턴스 가져오기
+import request from './request'; // Axios 인스턴스 가져오기
 
-const BASE_URL = 'http://meettify.store/api/v1'; // 공용 URL 설정
+const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-// 댓글 생성 (POST)
-export const createComment = async (communityId, commentContent, commentParentId = null) => {
-    try {
-        const url = `${BASE_URL}/${communityId}/comment`; // 동적 URL 생성
-        console.log(`댓글 생성 요청 URL: ${url}`);
-
-        const response = await request.post(url, {
-            comment: commentContent,
-            commentParentId: commentParentId,
-        });
-
-        console.log('댓글 생성 성공:', response.data);
-        return response.data;
-    } catch (error) {
-        console.error('댓글 생성 중 오류 발생:', error.response?.data || error.message);
-        throw error;
-    }
+// 댓글 생성
+export const createComment = async (communityId, comment, parentId = null) => {
+  try {
+    const response = await request.post({
+      url: `${BASE_URL}/${communityId}/comment`,
+      data: { comment, commentParentId: parentId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('댓글 생성 중 오류 발생:', error);
+    throw error;
+  }
 };
 
-// 댓글 목록 조회 (GET)
+
+// 댓글 목록 조회
 export const getComments = async (communityId, page = 1, size = 10) => {
-    try {
-        const url = `${BASE_URL}/${communityId}/comment/commentList`; // 동적 URL 생성
-        console.log(`댓글 목록 조회 요청 URL: ${url}`);
-
-        const response = await request.get(url, {
-            params: { page, size },
-        });
-
-        console.log('댓글 목록:', response.data);
+      try {
+        const response = await request.get({ url: `${BASE_URL}/${communityId}/comment/commentList`, params: { page, size } });
         return response.data;
-    } catch (error) {
-        console.error('댓글 목록 조회 중 오류 발생:', error.response?.data || error.message);
+      } catch (error) {
+        console.error('게시물 조회 중 오류 발생:', error);
         throw error;
-    }
+      }
 };
 
-// 댓글 삭제 (DELETE)
+// 댓글 수정
+export const updateComment = async (communityId, commentId, newContent) => {
+  try {
+    const response = await request.put({
+      url: `${BASE_URL}/${communityId}/comment/${commentId}`,
+      data: { comment: newContent },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('댓글 수정 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+// 댓글 삭제
 export const deleteComment = async (communityId, commentId) => {
-    try {
-        const url = `${BASE_URL}/${communityId}/comment/${commentId}`; // 동적 URL 생성
-        console.log(`댓글 삭제 요청 URL: ${url}`);
-
-        const response = await request.delete(url);
-
-        console.log('댓글 삭제 성공:', response.data);
-        return response.data;
-    } catch (error) {
-        console.error('댓글 삭제 중 오류 발생:', error.response?.data || error.message);
-        throw error;
-    }
+  try {
+    const response = await request.del({
+      url: `${BASE_URL}/${communityId}/comment/${commentId}`,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('댓글 삭제 중 오류 발생:', error);
+    throw error;
+  }
 };
+
