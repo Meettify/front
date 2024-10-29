@@ -31,20 +31,33 @@ export const createCommunityPost = async (title, content, files = []) => {
   }
 };
 
-
-export const updateCommunityPost = async (communityId, title, content, remainImgId = [], files = []) => {
+export const updateCommunityPost = async (
+  communityId, 
+  title, 
+  content, 
+  remainImgId = [], 
+  files = []
+) => {
   try {
-    const requestBody = new FormData();
+    const formData = new FormData();
 
-    // JSON 데이터를 Blob으로 감싸 전달
+    // JSON 데이터를 Blob으로 감싸서 FormData에 추가
     const communityData = JSON.stringify({ title, content, remainImgId });
-    requestBody.append('community', new Blob([communityData], { type: 'application/json' }));
+    formData.append('community', new Blob([communityData], { type: 'application/json' }));
+
+    // remainImgId 배열 개별 추가
+    remainImgId.forEach(id => formData.append('remainImgId', id));
 
     // 파일 처리
-    files.forEach(file => requestBody.append('files', file));
-    requestBody.append('remainImgId', JSON.stringify(remainImgId));
+    if (files.length > 0) {
+      files.forEach(file => requestBody.append('files', file));
+    } else {
+      formData.append('files', new Blob([]));
+    }
 
-    const response = await request.put(`${BASE_URL}/${communityId}`, requestBody, {
+    const response = await request.put({
+      url: `${BASE_URL}/${communityId}`,
+      data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -54,7 +67,6 @@ export const updateCommunityPost = async (communityId, title, content, remainImg
     throw error;
   }
 };
-
 
 // 게시물 삭제 API 호출 (댓글과 무관하게 삭제)
 export const deleteCommunityPost = async (communityId) => {

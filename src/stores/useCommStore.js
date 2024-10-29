@@ -89,17 +89,30 @@ const useCommStore = create((set) => ({
     }
   },
 
-// 게시물 수정
+// 게시물 수정 함수 (Zustand store 내 정의)
 updatePost: async (communityId, title, content, remainImgId = [], files = []) => {
-  set({ loading: true });
+  set({ loading: true }); // 로딩 상태 설정
   try {
-    await updateCommunityPost(communityId, title, content, remainImgId, files);
-    set({ loading: false });
+      // 호출된 함수에 대해 로그를 추가하여 인자 확인
+      console.log('updatePost 호출:', { communityId, title, content, remainImgId, files });
+      await updateCommunityPost(communityId, title, content, remainImgId, files);
+      set({ loading: false }); // 로딩 완료 후 상태 초기화
   } catch (error) {
-    set({ error, loading: false });
+      console.error('게시글 수정 오류:', error);
+      set({ error, loading: false }); // 오류 처리
   }
 },
-
+updatePost: async (communityId, title, content, remainImgId = []) => {
+    set({ loading: true }); // 로딩 상태 설정
+    try {
+      await updateCommunityPost(communityId, title, content, remainImgId); // 업데이트 요청
+      set({ loading: false }); // 로딩 완료 후 상태 초기화
+    } catch (error) {
+      console.error('게시글 수정 오류:', error);
+      set({ error, loading: false }); // 오류 처리
+    }
+  },
+  
 // 게시물 삭제
 deletePost: async (communityId) => {
   set({ loading: true });

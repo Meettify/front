@@ -18,15 +18,20 @@ export const createComment = async (communityId, comment, parentId = null) => {
 
 
 // 댓글 목록 조회
-export const getComments = async (communityId, page = 1, size = 10) => {
-      try {
-        const response = await request.get({ url: `${BASE_URL}/${communityId}/comment/commentList`, params: { page, size } });
-        return response.data;
-      } catch (error) {
-        console.error('게시물 조회 중 오류 발생:', error);
-        throw error;
-      }
+export const getComments = async (communityId, page = 0, size = 10) => {
+  try {
+    const response = await request.get({
+      url: `${BASE_URL}/${communityId}/comment/commentList`,
+      params: { page, size },
+    });
+    console.log('댓글 목록 응답:', response);
+    return response.data;
+  } catch (error) {
+    console.error('게시물 조회 중 오류 발생:', error);
+    throw error;
+  }
 };
+
 
 // 댓글 수정
 export const updateComment = async (communityId, commentId, newContent) => {

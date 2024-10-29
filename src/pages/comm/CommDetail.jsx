@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useCommStore from '../../stores/useCommStore';
-import useCommentStore from '../../stores/useCommentStore';
+import useCommentStore from '../../stores/usecommentStore';
 import { useAuth } from '../../hooks/useAuth';
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import RoundedDeleteButton from '../../components/button/RoundedDeleteButton'
 import { CiRead } from 'react-icons/ci';
+
 
 const CommDetail = () => {
     const { id: communityId } = useParams();
@@ -17,18 +18,23 @@ const CommDetail = () => {
 
     const [commentContent, setCommentContent] = useState('');
 
-    // 게시물 상세 정보 및 댓글 가져오기
     useEffect(() => {
         const fetchDetail = async () => {
             try {
                 await fetchPostDetail(communityId);
-                await fetchComments(communityId);
+                const comments = await fetchComments(communityId);
+                console.log('로드된 댓글:', comments); // 댓글 확인
             } catch (error) {
                 console.error('게시물 조회 실패:', error);
             }
         };
         fetchDetail();
     }, [communityId, fetchPostDetail, fetchComments]);
+
+
+    // comments 상태 확인
+    console.log('현재 댓글 상태:', comments);
+
 
     const handleCommentChange = (e) => setCommentContent(e.target.value);
 

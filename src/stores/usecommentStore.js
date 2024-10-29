@@ -6,11 +6,13 @@ const useCommentStore = create((set) => ({
   comments: [], // 초기화 시 빈 배열로 설정
   error: null,
 
-  // 댓글 목록 조회
   fetchComments: async (communityId) => {
     try {
       const response = await commentAPI.getComments(communityId);
-      set({ comments: response.content }); // API 응답에 맞게 설정
+      console.log('댓글 목록 응답:', response);
+
+      // 댓글 상태를 올바르게 설정합니다.
+      set({ comments: response.comments || [] }); 
     } catch (error) {
       console.error('댓글 목록 조회 실패:', error);
       set({ error });
