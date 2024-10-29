@@ -110,6 +110,7 @@ deletePost: async (communityId) => {
       loading: false,
     }));
   } catch (error) {
+    console.error('게시물 삭제 중 오류:', error);
     set({ error, loading: false });
   }
 },

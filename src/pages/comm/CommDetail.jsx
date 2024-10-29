@@ -85,8 +85,14 @@ const CommDetail = () => {
                     <RoundedCancelButton onClick={() => navigate(`/comm/edit/${communityId}`)}>
                         수정
                     </RoundedCancelButton>
-                    <RoundedDeleteButton onClick={handleDeletePost}>삭제</RoundedDeleteButton>
-
+                    <RoundedDeleteButton
+                        onClick={async () => {
+                            await deletePost(communityId);
+                            navigate('/comm');
+                        }}
+                    >
+                        삭제
+                    </RoundedDeleteButton>
                 </div>
             )}
 
