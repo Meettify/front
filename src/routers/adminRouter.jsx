@@ -15,15 +15,15 @@ const adminRouter = () => {
             element: <Suspense fallback={<Loading />}><ItemAdd /></Suspense>,
         },
         {
-            path: "itemDetail",
-            element: <Suspense fallback={<Loading />}><ItemDetail /></Suspense>,
+            path: "itemDetail/:itemId",
+            element: <Suspense fallback={<div>Loading...</div>}><ItemDetail /></Suspense>,
         },
         {
             path: "itemList",
             element: <Suspense fallback={<Loading />}><ItemList /></Suspense>,
         },
         {
-            path: "itemModify",
+            path: "itemModify/:itemId",
             element: <Suspense fallback={<Loading />}><ItemModify /></Suspense>,
         },
         {

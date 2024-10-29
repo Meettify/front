@@ -1,13 +1,25 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAdminStore from '../../stores/useAdminStore';
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 
 const ItemList = () => {
     const { itemList, fetchItemList, loading, error, removeItem } = useAdminStore();
+    const navigate = useNavigate();
+
+    const goToItemDetail = (itemId) => {
+        console.log('Navigating to itemDetail with ID:', itemId); // 디버깅용 로그
+        if (!itemId) {
+            console.error('Item ID가 없습니다.');
+            return;
+        }
+        navigate(`/admin/itemDetail/${itemId}`);
+    };
+
 
     useEffect(() => {
-        fetchItemList(); // 페이지 로드 시 상품 목록 조회
+        fetchItemList();  // 페이지 로드 시 상품 목록 조회
     }, [fetchItemList]);
 
     if (loading) return <p>로딩 중...</p>;
@@ -16,42 +28,29 @@ const ItemList = () => {
 
     return (
         <div className="container mx-auto">
-            {/* <div className="text-2xl font-semibold mb-4 text-left">상품 목록</div> */}
-
-            {/* 상품 등록 버튼 */}
-            <div className="flex justify-between items-center mb-4">
-                <div></div>
-                <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }} onClick={() => console.log('상품 등록')}>
-                    상품 등록
-                </RoundedButton>
-            </div>
-
-            {/* 상품 목록 테이블 */}
             <table className="w-full table-fixed border-t border-gray-300 text-sm">
                 <thead className="bg-gray-50">
                     <tr>
-                        <th className="p-2 text-center font-medium w-1/12">번호</th>
-                        <th className="p-2 text-center font-medium w-2/12">카테고리</th>
-                        <th className="p-2 text-center font-medium w-2/12">가격</th>
-                        <th className="p-2 text-center font-medium w-3/12">상품명</th>
-                        <th className="p-2 text-center font-medium w-2/12">이미지</th>
-                        <th className="p-2 text-center font-medium w-1/12">수량</th>
-                        <th className="p-2 text-center font-medium w-1/12">상태</th>
-                        <th className="p-2 text-center font-medium w-1/12">삭제</th>
+                        <th className="p-2 text-center">번호</th>
+                        <th className="p-2 text-center">카테고리</th>
+                        <th className="p-2 text-center">가격</th>
+                        <th className="p-2 text-center">상품명</th>
+                        <th className="p-2 text-center">삭제</th>
                     </tr>
                 </thead>
                 <tbody>
                     {itemList.map((item) => (
-                        <tr key={item.itemId} className="border-b border-gray-200 hover:bg-gray-100">
+                        <tr key={item.itemId} className="hover:bg-gray-100">
                             <td className="p-2 text-center">{item.itemId}</td>
                             <td className="p-2 text-center">{item.itemCategory}</td>
                             <td className="p-2 text-center">{item.itemPrice}</td>
-                            <td className="p-2 text-center">{item.itemName}</td>
-                            <td className="p-2 text-center">{'{images}'}</td>
-                            <td className="p-2 text-center">{item.itemCount}</td>
-                            <td className="p-2 text-center">{item.itemStatus}</td>
                             <td className="p-2 text-center">
-                                <RoundedCancelButton style={{ padding: '6px 14px', fontSize: '12px' }} onClick={() => removeItem(item.itemId)}>
+                                <button onClick={() => goToItemDetail(item.itemId)}>
+                                    {item.itemName}
+                                </button>
+                            </td>
+                            <td className="p-2 text-center">
+                                <RoundedCancelButton onClick={() => removeItem(item.itemId)}>
                                     삭제
                                 </RoundedCancelButton>
                             </td>
