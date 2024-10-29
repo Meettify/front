@@ -50,13 +50,29 @@ export const updateComment = async (communityId, commentId, newContent) => {
 // 댓글 삭제
 export const deleteComment = async (communityId, commentId) => {
   try {
+    console.log(`삭제 요청 시작: /${communityId}/comment/${commentId}`);
     const response = await request.del({
       url: `${BASE_URL}/${communityId}/comment/${commentId}`,
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`, // JWT 토큰 추가
+      },
     });
+    console.log('댓글 삭제 완료:', response.data);
     return response.data;
   } catch (error) {
-    console.error('댓글 삭제 중 오류 발생:', error);
+    console.error('댓글 삭제 중 오류 발생:', error.response || error);
     throw error;
   }
 };
 
+// export const deleteComment = async (communityId, commentId) => {
+//   try {
+//     const response = await request.del({
+//       url: `${BASE_URL}/${communityId}/comment/${commentId}`,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error('댓글 삭제 중 오류 발생:', error);
+//     throw error;
+//   }
+// };
