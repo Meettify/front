@@ -1,26 +1,33 @@
-import React, { useState } from "react";
+import React from "react";
 import { CiStar } from "react-icons/ci";
 import { TiStarFullOutline } from "react-icons/ti";
 import useCartStore from "../../stores/useCartStore";
 
-const ShopCard = ({
-    itemId,
-    title,
-    description,
-    price,
-    imageUrl,
-}) => {
-    const [isFavorite, setIsFavorite] = useState(false);
-    const { addToCart } = useCartStore();
+const ShopCard = ({ itemId, title, description, price, imageUrl }) => {
+    const { addToCart, isFavorite } = useCartStore(); // 상태 가져오기
 
     const handleStarClick = () => {
-        const item = { itemId, title, description, price, imageUrl };
-        setIsFavorite((prev) => !prev);
-        if (!isFavorite) {
-            addToCart(item); // 장바구니에 전체 상품 객체 추가
+        // ₩ 기호 및 공백 제거 후 숫자로 변환
+        const parsedPrice = Number(price.replace(/[^0-9.-]+/g, ''));
+
+        if (isNaN(parsedPrice)) {
+            console.error(`잘못된 가격 값: ${price}`);
+            return; // 잘못된 가격이면 추가하지 않음
+        }
+
+        if (!isFavorite(itemId)) {
+            const item = {
+                itemId,
+                title,
+                description,
+                price: parsedPrice, // 변환된 가격 사용
+                imageUrl,
+            };
+            addToCart(item); // 장바구니 및 별표 추가
             console.log(`아이템 ${itemId} 장바구니에 추가 완료`);
         }
     };
+
 
     return (
         <div className="relative overflow-hidden w-48 py-5 text-center">
@@ -34,7 +41,7 @@ const ShopCard = ({
                     className="absolute top-3 right-3 text-2xl"
                     onClick={handleStarClick}
                 >
-                    {isFavorite ? (
+                    {isFavorite(itemId) ? (
                         <TiStarFullOutline className="text-yellow-400" />
                     ) : (
                         <CiStar className="text-gray-200" />
