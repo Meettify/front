@@ -11,7 +11,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 // Custom Toolbar 컴포넌트 정의 (CommAdd와 동일)
 const CommToolbar = ({ handleFileInputClick }) => (
     <div id="toolbar">
-        {/* 기본적인 툴바 옵션들 */}
         <select className="ql-header" defaultValue="">
             <option value="1"></option>
             <option value="2"></option>
@@ -20,8 +19,6 @@ const CommToolbar = ({ handleFileInputClick }) => (
         <button className="ql-bold"></button>
         <button className="ql-italic"></button>
         <button className="ql-underline"></button>
-
-        {/* 파일 선택 아이콘 버튼 */}
         <button className="ql-file" onClick={handleFileInputClick}>
             <GoFileMedia size={20} />
         </button>
@@ -66,7 +63,6 @@ const CommEdit = () => {
         setFiles(Array.from(e.target.files));  // 파일 배열로 변환하여 상태에 저장
     };
 
-    // 게시글 수정 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
         const accessToken = sessionStorage.getItem('accessToken');
@@ -75,13 +71,18 @@ const CommEdit = () => {
             return;
         }
 
+        // 요청 데이터 확인 로그
+        console.log('수정 요청 데이터:', { id, title, content, files });
+
         try {
-            await updatePost(id, title, content, [], files);
-            navigate('/comm');  // 성공 시 커뮤니티 페이지로 이동
+            await updatePost(id, title, content, []); // remainImgId는 빈 배열로 전달
+            console.log('게시글 수정 성공');
+            navigate('/comm');
         } catch (error) {
             console.error('게시글 수정 중 오류:', error);
         }
     };
+
 
     // 취소 버튼 핸들러
     const handleCancel = () => {
@@ -111,7 +112,7 @@ const CommEdit = () => {
                 onChange={handleTitleChange}
             />
 
-            {/* 커스텀 툴바 적용 (CommAdd와 동일한 툴바 사용) */}
+            {/* 커스텀 툴바 적용 */}
             <CommToolbar handleFileInputClick={handleFileInputClick} />
 
             {/* 내용 입력 (ReactQuill 사용) */}
@@ -132,7 +133,7 @@ const CommEdit = () => {
             {/* 파일 선택 입력 (숨김 상태) */}
             <input type="file" id="file-input" multiple onChange={handleFileChange} style={{ display: 'none' }} />
 
-            {/* 글 수정 및 취소 버튼 */}
+            {/* 수정 및 취소 버튼 */}
             <div className="flex space-x-4">
                 <RoundedButton onClick={handleSubmit}>수정하기</RoundedButton>
                 <RoundedCancelButton onClick={handleCancel}>취소</RoundedCancelButton>

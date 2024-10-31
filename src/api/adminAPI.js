@@ -53,3 +53,17 @@ export const deleteItem = async (itemId) => {
         throw error;
     }
 };
+
+export const getItemDetail = async (itemId) => {
+    try {
+        console.log(`Fetching item detail for ID: ${itemId}`); // 디버깅용 로그
+        const response = await request.get({
+            url: `${BASE_URL}/${itemId}`,
+        });
+        console.log('API Response:', response.data); // 응답 로그
+        return response.data;
+    } catch (error) {
+        console.error('상품 상세 조회 중 오류 발생:', error);
+        throw error;
+    }
+};

@@ -1,12 +1,9 @@
-// commAPI.js - 기존 코드 유지, commentAPI 추가
-
-import request from './request'; // Axios 인스턴스 가져오기
+import request from './request';
+import { deleteComment } from './commentAPI';
 import axios from 'axios';
 
 const BASE_URL = '/community'; // 공통 경로
 const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
-
-// 커뮤니티 게시물 관련 함수들
 
 export const createCommunityPost = async (title, content, files = []) => {
   try {
@@ -35,101 +32,75 @@ export const createCommunityPost = async (title, content, files = []) => {
   }
 };
 
-
-// commAPI.js - 댓글 생성 API
-export const addCommentAPI = async (communityId, comment, nickName) => {
+export const updateCommunityPost = async (
+  communityId, 
+  title, 
+  content, 
+  remainImgId = [], 
+  files = []
+) => {
   try {
-    const url = `${API_BASE_URL}/${communityId}/comment`;
+    const formData = new FormData();
 
-    const response = await request.post(url, 
-      { 
-        comment, 
-        nickName 
-      }, 
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('accessToken') || ''}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // JSON 데이터를 Blob으로 감싸서 FormData에 추가
+    const communityData = JSON.stringify({ title, content, remainImgId });
+    formData.append('community', new Blob([communityData], { type: 'application/json' }));
 
-    console.log('댓글 생성 성공:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('댓글 생성 실패:', error.response?.data || error.message);
-    throw error;
-  }
-};
+    // remainImgId 배열 개별 추가
+    remainImgId.forEach(id => formData.append('remainImgId', id));
 
-
-
-//댓글조회
-export const getComments = async (communityId, page = 1, size = 10) => {
-  try {
-    const response = await request.get({
-      url: `${API_BASE_URL}/${communityId}/comment/commentList`,
-      params: { page, size },
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('accessToken') || ''}`,
-      },
-    });
-
-    console.log('댓글 목록:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error(
-      '댓글 목록 조회 중 오류 발생:',
-      error.response?.data || error.message
-    );
-    throw error;
-  }
-};
-
-export const deleteComment = async (communityId, commentId) => {
-  try {
-    const url = `${API_BASE_URL}/${communityId}/comment/${commentId}`;
-    console.log(`댓글 삭제 요청 URL: ${url}`);
-
-    const response = await request.delete(url);
-
-    console.log('댓글 삭제 성공:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('댓글 삭제 중 오류 발생:', error.response?.data || error.message);
-    throw error;
-  }
-};
-
-// 기존 게시물 관련 함수들 유지
-
-export const updateCommunityPost = async (communityId, title, content, remainImgId = [], files = []) => {
-  try {
-    const requestBody = new FormData();
-    requestBody.append('community', new Blob([JSON.stringify({ title, content, remainImgId })], { type: 'application/json' }));
-
-    files.forEach(file => requestBody.append('files', file));
-    requestBody.append('remainImgId', JSON.stringify(remainImgId));
+    // 파일 처리
+    if (files.length > 0) {
+      files.forEach(file => requestBody.append('files', file));
+    } else {
+      formData.append('files', new Blob([]));
+    }
 
     const response = await request.put({
       url: `${BASE_URL}/${communityId}`,
-      data: requestBody,
+      data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
     return response.data;
   } catch (error) {
-    console.error('게시글 수정 중 오류 발생:', error);
+    console.error('게시글 수정 중 오류 발생:', error.response?.data || error.message);
     throw error;
   }
 };
 
+// 게시물 삭제 API 호출 (댓글과 무관하게 삭제)
 export const deleteCommunityPost = async (communityId) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/community/${communityId}`, { params: { communityId } });
+    console.log(`삭제 요청 시작: /community/${communityId}`);
+
+    // 댓글 ID를 가져오는 로직 (모든 댓글을 가져오는 API 호출)
+    const commentsResponse = await request.get({
+      url: `${API_BASE_URL}/${communityId}/comment/commentList`, // 댓글 목록 조회 API
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`, // JWT 토큰 추가
+      },
+    });
+
+    const comments = commentsResponse.data;
+
+    // 모든 댓글 삭제
+    for (const comment of comments) {
+      await deleteComment(communityId, comment.id);
+    }
+
+    // 게시물 삭제
+    const response = await request.del({
+      url: `${BASE_URL}/${communityId}`, // 게시물 삭제 API
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`, // JWT 토큰 추가
+      },
+    });
+
+    console.log('게시글 삭제 완료:', response.data);
     return response.data;
   } catch (error) {
-    console.error('게시글 삭제 중 오류 발생:', error);
+    console.error('게시글 삭제 중 오류 발생:', error.response || error);
     throw error;
   }
 };
@@ -172,13 +143,3 @@ export const increasePostViewCount = async (communityId) => {
     console.error('조회수 증가 실패:', error);
   }
 };
-
-// export const getRedisViewCount = async (communityId) => {
-//   try {
-//     const response = await axios.get(`${API_BASE_URL}/community/${communityId}`);
-//     return response.data.viewCount;
-//   } catch (error) {
-//     console.error('Redis 조회수 가져오기 실패:', error);
-//     return 0;
-//   }
-// };
