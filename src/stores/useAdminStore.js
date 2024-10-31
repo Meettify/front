@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getItemList, createItem, deleteItem } from '../api/adminAPI';
+import { getItemList, createItem, deleteItem, getItemDetail } from '../api/adminAPI';
 import { getMember } from '../api/memberAPI';
 
 const useAdminStore = create((set) => ({
@@ -26,6 +26,17 @@ const useAdminStore = create((set) => ({
         try {
             const items = await getItemList(page, size);
             set({ itemList: items, loading: false });
+        } catch (error) {
+            set({ error: error.message, loading: false });
+        }
+    },
+
+     // 상품 상세 조회 함수
+     fetchItemDetail: async (itemId) => {
+        set({ loading: true, itemDetail: null }); // 초기화 및 로딩 시작
+        try {
+            const detail = await getItemDetail(itemId);
+            set({ itemDetail: detail, loading: false });
         } catch (error) {
             set({ error: error.message, loading: false });
         }

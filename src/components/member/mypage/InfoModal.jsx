@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const InfoModal = ({ buttonPosition, onClose }) => {
     const { isAuthenticated, logout, user } = useAuth();
     const { modals, closeModal, openModal } = useModalStore();
-    const {goToMyPage} = useNavigation();
+    const { goToMyPage, goToCart } = useNavigation();
     const nav = useNavigate();
 
     const handleLoginClick = () => {
@@ -26,6 +26,12 @@ const InfoModal = ({ buttonPosition, onClose }) => {
         closeModal('info');
         goToMyPage();
     }
+
+    const handleCart = () => {
+        closeModal('info');
+        goToCart();
+    };
+
 
     const handleAdmin = () => {
         closeModal('info');
@@ -60,40 +66,40 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                             <h2 className="text-zinc-800 ">{user.nickName}</h2>
                             <h2 className="text-zinc-500 mb-3">{user.memberEmail}</h2>
                         </div>
-                        
+
                         <hr className="border-blue-300" />
                         <div className="text-center">
-                            <button 
+                            <button
                                 className="flex mt-3 p-2 w-32 text-center h-10
                                 text-gray-400 
                                 transition-colors duration-200 hover:text-gray-700"
                                 onClick={handleMyifoClick}
-                                ><HiUserCircle size={26} /> <p className="ml-2">내 정보</p>
+                            ><HiUserCircle size={26} /> <p className="ml-2">내 정보</p>
                             </button>
-                            <button 
+                            <button
                                 className="flex ml-[2px] mb-1 p-2 w-32 text-center h-10
                                 text-gray-400 
                                 transition-colors duration-200 hover:text-gray-700"
-                                onClick={() => {}}
-                                ><BsCart3 size={24} /> <p className="ml-2">장바구니</p>
+                                onClick={handleCart}
+                            ><BsCart3 size={24} /> <p className="ml-2">장바구니</p>
                             </button>
-                            <button 
+                            <button
                                 className={`flex ml-3 w-24 text-center h-10 items-center 
                                     text-gray-400 transition-colors duration-200 hover:text-gray-700
                                     ${user.memberRole !== "ADMIN" ? 'mb-3' : ''}`}
-                                onClick={() => {}}
+                                onClick={(handleCartClick) => { }}
                             >
                                 <BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
                             </button>
                             {user && user.memberRole === "ADMIN" ? (
-                                <button 
-                                className="flex ml-[11px] mt-2 mb-3 w-32 text-center
+                                <button
+                                    className="flex ml-[11px] mt-2 mb-3 w-32 text-center
                                 text-gray-400 transition-colors duration-200 hover:text-gray-700"
-                                onClick={handleAdmin}
+                                    onClick={handleAdmin}
                                 ><RiAdminLine size={25} /> <p className="ml-[6px]">관리자페이지</p>
                                 </button>
                             ) : null}
-                            
+
                             <p onClick={logout} className="flex text-[14px] ml-3 w-16 text-gray-400
                              transition-colors duration-200 hover:text-gray-700 hover: cursor-pointer " >로그아웃</p>
                         </div>
@@ -103,7 +109,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                         <h2 className="text-2xl font-bold text-black mb-5 mt-8 text-center">로그인 후 Meettify를 이용해 주세요.</h2>
                         <hr />
                         <div className="text-center">
-                            <button 
+                            <button
                                 onClick={handleLoginClick}
                                 className="p-2 mt-5 w-3/4 text-white bg-blue-500 rounded"
                             >

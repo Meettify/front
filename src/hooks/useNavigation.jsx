@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToCart = () => {
+        navigate('/cart');
+    };
+
     const goToMemList = () => {
         navigate('/admin/memList');
     };
@@ -99,6 +103,7 @@ const useNavigation = () => {
         goToItemList,
         goToCommEdit,
         goToMemList,
+        goToCart,
     };
 };
 

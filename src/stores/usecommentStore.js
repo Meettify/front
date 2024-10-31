@@ -1,43 +1,62 @@
-// src/stores/useCommentStore.js
 import { create } from 'zustand';
-import { addCommentAPI, getComments, deleteComment as deleteCommentAPI } from '../api/commAPI'; // API 함수 가져오기
+import { createComment, getComments, updateComment,deleteComment } from '../api/commentAPI';
+import * as commentAPI from '../api/commentAPI'; // 모든 named export 가져오기
 
 const useCommentStore = create((set) => ({
-  comments: [],
+  comments: [], // 초기화 시 빈 배열로 설정
+  error: null,
 
-  // 댓글 목록 가져오기
-  fetchComments: async (communityId, page = 1, size = 10) => {
+  fetchComments: async (communityId) => {
     try {
-      const response = await getComments(communityId, page, size); // 올바른 API 호출
-      console.log('불러온 댓글:', response.comments); // 상태 확인용 로그
-      set({ comments: response.comments || [] }); // Zustand 상태 갱신
+      const response = await commentAPI.getComments(communityId);
+      console.log('댓글 목록 응답:', response);
+
+      // 댓글 상태를 올바르게 설정합니다.
+      set({ comments: response.comments || [] }); 
     } catch (error) {
-      console.error('댓글 목록 불러오기 실패:', error);
+      console.error('댓글 목록 조회 실패:', error);
+      set({ error });
     }
   },
 
-  // 댓글 생성
-  addComment: async (communityId, commentContent, nickName) => {
+  // 댓글 추가
+  addComment: async (communityId, comment, parentId = null) => {
     try {
-      const newComment = await addCommentAPI(communityId, commentContent, nickName);
-      console.log('댓글 등록 성공:', newComment); // 로그 확인
+      const newComment = await commentAPI.createComment(communityId, comment, parentId);
       set((state) => ({
-        comments: [...state.comments, newComment], // 상태 갱신
+        comments: [...(state.comments || []), newComment], // comments가 항상 배열로 처리되도록 보장
       }));
     } catch (error) {
       console.error('댓글 생성 실패:', error);
+      set({ error });
+    }
+  },
+
+  // 댓글 수정
+  updateComment: async (communityId, commentId, newContent) => {
+    try {
+      await commentAPI.updateComment(communityId, commentId, newContent);
+      set((state) => ({
+        comments: state.comments.map((c) =>
+          c.commentId === commentId ? { ...c, comment: newContent } : c
+        ),
+      }));
+    } catch (error) {
+      console.error('댓글 수정 실패:', error);
+      set({ error });
     }
   },
 
   // 댓글 삭제
   deleteComment: async (communityId, commentId) => {
     try {
-      await deleteCommentAPI(communityId, commentId); // 삭제 API 호출
+      await commentAPI.deleteComment(communityId, commentId);
       set((state) => ({
-        comments: state.comments.filter((comment) => comment.commentId !== commentId),
+        comments: state.comments.filter((c) => c.commentId !== commentId),
       }));
     } catch (error) {
       console.error('댓글 삭제 실패:', error);
+      set({ error });
     }
   },
 }));

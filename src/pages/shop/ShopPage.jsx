@@ -1,19 +1,21 @@
-import React, { useEffect } from "react";
-import ShopCard from "../../components/shop/ShopCard";
-import FilterSection from "../../components/shop/FilterSection";
-import useNavigation from "../../hooks/useNavigation";
-import InfiniteScroll from "react-infinite-scroll-component";
-import useAdminStore from "../../stores/useAdminStore";
+import React, { useEffect } from 'react';
+import ShopCard from '../../components/shop/ShopCard';
+import FilterSection from '../../components/shop/FilterSection';
+import useNavigation from '../../hooks/useNavigation';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { getItemList } from '../../api/adminAPI'; // adminAPI에서 상품 목록 가져오기
 
 const ShopPage = () => {
     const { goToShopList } = useNavigation();
-
-    // AdminStore에서 상품 목록 가져오기
-    const { itemList, fetchItemList } = useAdminStore();
+    const [itemList, setItemList] = React.useState([]);
 
     useEffect(() => {
-        fetchItemList(); // 페이지 로드 시 상품 목록 조회
-    }, [fetchItemList]);
+        const fetchItems = async () => {
+            const items = await getItemList(); // 상품 목록 조회
+            setItemList(items);
+        };
+        fetchItems();
+    }, []);
 
     return (
         <div className="max-w-7xl mx-auto mt-12 px-4 flex">
@@ -29,7 +31,7 @@ const ShopPage = () => {
                 <InfiniteScroll
                     dataLength={itemList.length}
                     next={() => { }}
-                    hasMore={false} // 무한 스크롤 비활성화 (필요에 따라 변경)
+                    hasMore={false}
                     loader={<h4>Loading...</h4>}
                     endMessage={<p>더 이상 상품이 없습니다.</p>}
                 >
@@ -37,13 +39,14 @@ const ShopPage = () => {
                         {itemList.map((item) => (
                             <ShopCard
                                 key={item.itemId}
+                                itemId={item.itemId}
                                 title={item.itemName}
                                 description={item.itemDetails}
                                 price={`₩${item.itemPrice}`}
                                 imageUrl={
                                     item.files?.[0]
                                         ? `https://example.com/${item.files[0]}`
-                                        : "https://via.placeholder.com/150"
+                                        : 'https://via.placeholder.com/150'
                                 }
                             />
                         ))}
