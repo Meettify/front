@@ -26,7 +26,7 @@ const DeleteMemberForm = () => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-[894px] max-h-full m-auto">
+        <div className="bg-white p-6 rounded-lg drop-shadow-lg max-w-[894px] max-h-full m-auto mt-32 mb-32">
             <h2 className="text-2xl font-bold text-red-600 mb-4">탈퇴 안내</h2>
             <p className="mb-4">
                 사용하고 계신 아이디는 탈퇴할 경우 복구가 불가능합니다.
@@ -46,7 +46,7 @@ const DeleteMemberForm = () => {
                     <label className="inline-flex items-center">
                         <input
                             type="checkbox"
-                            className="form-checkbox h-5 w-5 text-red-600"
+                            className="form-checkbox h-5 w-5 text-red-600 cursor-pointer"
                             checked={isChecked}
                             onChange={handleCheckboxChange}
                         />

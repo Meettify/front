@@ -35,9 +35,10 @@ const refreshAccessToken = async (refreshToken) => {
     }
 
     try {
-        const response = await request.get({
-            url :`${import.meta.env.VITE_APP_API_BASE_URL}/token`,
-            refreshToken,
+        const response = await axiosInstance.get(`${import.meta.env.VITE_APP_API_BASE_URL}/token`, {
+            headers: {
+                'Authorization': `Bearer ${refreshToken}`
+            }
         });
         return response.data;
     } catch (error) {
@@ -52,24 +53,36 @@ const setInterceptor = () => {
         (response) => response,
         async (error) => {
             const originalRequest = error.config;
-            console.log(`Error occurred: ${error}`);
+
+            console.log(`ERROR INTERCEPTOR`)
+            console.log(`ERROR.CONFIG.URL : ${error.config.url}`)
+            console.log(`ERROR.RESPONSE?.STATUS : ${error.response?.status}`)
 
             // 401 Unauthorized 처리: 토큰 만료
             if (error.response?.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
                 originalRequest._retry = true; // 무한 루프 방지
-                const token = await refreshAccessToken(localStorage.getItem('refreshToken')); // 새로운 엑세스 토큰 요청
+                const token = await refreshAccessToken(localStorage.getItem('refreshToken')); // TokenDTO
 
-                if (token) {
-                    sessionStorage.setItem('accessToken', token);
-                    originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                console.log(`토큰재발급 Interceptor`)
+
+                const accessToken = token.accessToken;
+                const refreshToken = token.refreshToken;
+
+                if (accessToken && refreshToken) {
+                    sessionStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                    console.log(`토큰 재발급 및 저장`)
+
+                    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
                     // 요청을 다시 시도
                     return getInstance().request(originalRequest);
                 } else {
-                    console.error('Token could not be refreshed'); // 토큰 갱신 실패 로그
+                    console.error('Token could not be refreshed');
                 }
             } else {
-                console.error('Error response:', error.response); // 기타 오류 로그
+                console.error('Error response:', error.response);
             }
             return Promise.reject(error);
         }

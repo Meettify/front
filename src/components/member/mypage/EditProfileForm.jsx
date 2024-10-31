@@ -163,7 +163,7 @@ const EditProfileForm = () => {
     && Object.values(formData).every(field => field !== '');
 
     return (
-        <>
+        <div className="w-1/2 ml-40">
             <form onSubmit={handleSubmit} className="form-container">
                 <h2 className="text-3xl mb-8">회원정보 수정</h2>
 
@@ -278,7 +278,7 @@ const EditProfileForm = () => {
                     변경하기
                 </button>
             </form>
-        </>
+        </div>
         
     );
 };
