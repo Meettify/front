@@ -122,7 +122,7 @@ export const getMeetingDetail = async (meetId) => {
 export const getMeetJoinList = async () => {
     try {
         const response = await request.get({
-            url: `${BASE_URL}/meets/myMeet`,
+            url: `${BASE_URL}/meets/my-meet`,
         });
         return response.data;
     } catch (error) {
