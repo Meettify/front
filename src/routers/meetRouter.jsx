@@ -36,7 +36,7 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetAccept /></Suspense>,  // 회원 관리 및 가입 승인 페이지
     },
     {
-      path: "/meet/list/:categoryId",  // 카테고리 ID를 포함한 경로
+      path: "/meet/list/:categoryTitle",
       element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
     },
   ];
