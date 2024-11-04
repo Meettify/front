@@ -55,7 +55,7 @@ const MeetCategory = () => {
                                 >
                                     <MeetCard 
                                         meetId={meet.categoryId} 
-                                        image={meet.image} 
+                                        imageUrls={[meet.image]}  // 배열로 변경
                                         title={meet.title} 
                                         description={meet.description} 
                                         tags={meet.tags} 

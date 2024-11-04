@@ -6,36 +6,44 @@ import SectionText from "../../components/text/SectionText";
 import MeetListSearch from "../../components/meet/MeetListSearch";
 import useNavigation from "../../hooks/useNavigation";
 import RoundedButton from "../../components/button/RoundedButton";
-import { getMeetList } from "../../api/meetApi";
+import { getMeetList } from "../../api/meetAPI";
 
 const MeetList = () => {
     const [searchParams] = useSearchParams();
     const category = searchParams.get("category") || ""; 
     const totalKeyword = searchParams.get("totalKeyword") || "";
     const { goToMeetDetail, goToMeetInsert } = useNavigation();
+    const [meetData, setMeetData] = useState([]);
     const [filteredMeetData, setFilteredMeetData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState(totalKeyword.trim());
-    const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 상태
-    const [totalPages, setTotalPages] = useState(0); // 총 페이지 수 상태
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         const fetchMeetData = async () => {
             setLoading(true);
             try {
-                const data = await getMeetList(currentPage, 10, "meetName", searchTerm || "ALL", category);
-                console.log("API 응답 데이터:", data);
-                setFilteredMeetData(data.content || []); // 데이터 상태에 저장
-                setTotalPages(data.totalPages); // 총 페이지 수 설정
+                const data = await getMeetList(currentPage, 12, "meetName", category);
+                console.log("API 응답 데이터:", data); // 응답 데이터 확인
+                setMeetData(data.meets || []);
+                setTotalPages(data.totalPage); // totalPage가 올바르게 설정되는지 확인
             } catch (error) {
                 console.error("API 호출 중 오류:", error);
             } finally {
                 setLoading(false);
             }
-        };    
-
+        };
+    
         fetchMeetData();
-    }, [searchTerm, category, currentPage]); // 검색어와 카테고리, 현재 페이지 변경 시 호출
+    }, [category, currentPage]);
+
+    useEffect(() => {
+        const filteredData = meetData.filter(meet => 
+            meet.meetName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredMeetData(filteredData);
+    }, [searchTerm, meetData]);
 
     return (
         <div className="container mx-auto mt-20 w-full flex">
@@ -55,15 +63,15 @@ const MeetList = () => {
                         <div className="w-full text-center mt-4">로딩 중...</div>
                     ) : filteredMeetData.length > 0 ? (
                         filteredMeetData.map((meet) => (
-                            <div className="w-1/4 p-2" key={meet.id}>
+                            <div className="w-1/4 p-2" key={meet.meetId}>
                                 <MeetCard 
-                                    meetId={meet.id} 
-                                    image={meet.image} 
-                                    title={meet.title} 
+                                    meetId={meet.meetId}
+                                    imageUrls={meet.imageUrls}  
+                                    title={meet.meetName}
                                     description={meet.description} 
                                     tags={meet.tags} 
                                     isMeetPage={false}
-                                    onTitleClick={() => goToMeetDetail(meet.id, category)}
+                                    onTitleClick={() => goToMeetDetail(meet.meetId)}
                                 />
                             </div>
                         ))

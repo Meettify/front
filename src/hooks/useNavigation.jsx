@@ -39,8 +39,8 @@ const useNavigation = () => {
         navigate('/meet/insert');
     }
 
-    const goToMeetDetail = (meetId, category) => {
-        navigate(`/meet/detail?category=${category}&meetId=${meetId}`); 
+    const goToMeetDetail = (meetId) => {
+        navigate(`/meet/detail/${meetId}`); 
     };            
     
     const goToCategoryList = (category) => {
