@@ -1,3 +1,4 @@
+// useCommStore.js
 import { create } from 'zustand';
 import {
   getAllCommunityPosts,
@@ -9,33 +10,14 @@ import {
 } from '../api/commAPI';
 import { getComments, deleteComment } from '../api/commentAPI';
 
-// Zustand store 정의
 const useCommStore = create((set) => ({
-  posts: [],  // 게시물 리스트
-  postDetail: null, // 개별 게시물
+  posts: [], 
+  postDetail: null, 
   loading: false,
   error: null,
-
-  // 조회수 증가 후 상태 동기화
-  increasePostViewCount: (communityId) => {
-    set((state) => {
-      const updatedPosts = state.posts.map((post) =>
-        post.boardId === communityId
-          ? { ...post, viewCount: post.viewCount + 1 }
-          : post
-      );
-
-      const updatedPostDetail =
-        state.postDetail?.boardId === communityId
-          ? { ...state.postDetail, viewCount: state.postDetail.viewCount + 1 }
-          : state.postDetail;
-
-      return { posts: updatedPosts, postDetail: updatedPostDetail };
-    });
-  },
   
-   // 전체 게시물 조회
-   fetchPosts: async (page = 1, size = 10) => {
+  // 전체 게시물 조회
+  fetchPosts: async (page = 1, size = 10) => {
     set({ loading: true });
     try {
       const response = await getAllCommunityPosts(page, size); // 목록 가져오기
@@ -54,23 +36,14 @@ const useCommStore = create((set) => ({
     }
   },
 
-  // 게시물 상세 조회 및 조회수 동기화
+  // 게시물 상세 조회
   fetchPostDetail: async (communityId) => {
     set({ loading: true });
     try {
-      const postDetail = await getCommunityPost(communityId); // Redis와 DB 조회수 동기화
-      set((state) => {
-        const updatedPosts = state.posts.map((post) =>
-          post.boardId === communityId
-            ? { ...post, viewCount: postDetail.viewCount } // 조회수 동기화
-            : post
-        );
-
-        return {
-          posts: updatedPosts,
-          postDetail,
-          loading: false,
-        };
+      const postDetail = await getCommunityPost(communityId); // Redis와 DB 조회수 동기화는 백엔드에서 처리
+      set({
+        postDetail,
+        loading: false,
       });
     } catch (error) {
       console.error('게시물 상세 조회 실패:', error);
@@ -90,27 +63,15 @@ const useCommStore = create((set) => ({
     }
   },
 
-// 게시물 수정 함수 (Zustand store 내 정의)
-updatePost: async (communityId, title, content, remainImgId = [], files = []) => {
-  set({ loading: true }); // 로딩 상태 설정
-  try {
-      // 호출된 함수에 대해 로그를 추가하여 인자 확인
-      console.log('updatePost 호출:', { communityId, title, content, remainImgId, files });
-      await updateCommunityPost(communityId, title, content, remainImgId, files);
-      set({ loading: false }); // 로딩 완료 후 상태 초기화
-  } catch (error) {
-      console.error('게시글 수정 오류:', error);
-      set({ error, loading: false }); // 오류 처리
-  }
-},
-updatePost: async (communityId, title, content, remainImgId = []) => {
-    set({ loading: true }); // 로딩 상태 설정
+  // 게시물 수정
+  updatePost: async (communityId, title, content, remainImgId = [], files = []) => {
+    set({ loading: true });
     try {
-      await updateCommunityPost(communityId, title, content, remainImgId); // 업데이트 요청
-      set({ loading: false }); // 로딩 완료 후 상태 초기화
+      await updateCommunityPost(communityId, title, content, remainImgId, files);
+      set({ loading: false });
     } catch (error) {
       console.error('게시글 수정 오류:', error);
-      set({ error, loading: false }); // 오류 처리
+      set({ error, loading: false });
     }
   },
   
@@ -154,7 +115,7 @@ updatePost: async (communityId, title, content, remainImgId = []) => {
       console.error('게시물 삭제 중 오류:', error);
       set({ error, loading: false });
     }
-  },  
+  },
 
   // 게시물 검색
   searchPosts: async (page = 1, size = 10, sort = []) => {
@@ -166,6 +127,7 @@ updatePost: async (communityId, title, content, remainImgId = []) => {
       set({ error, loading: false });
     }
   },
+
 }));
 
 export default useCommStore;
