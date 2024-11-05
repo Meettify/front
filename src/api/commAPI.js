@@ -1,9 +1,6 @@
 import request from './request';
-import { deleteComment, getComments } from './commentAPI';
-import axios from 'axios';
 
 const BASE_URL = '/community'; // 공통 경로
-const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 export const createCommunityPost = async (title, content, files = []) => {
   try {
@@ -42,7 +39,7 @@ export const updateCommunityPost = async (
   try {
     const formData = new FormData();
 
-    // JSON 데이터를 Blob으로 감싸서 FormData에 추가
+    // API 요청 본문 형식 설정
     const communityData = JSON.stringify({ title, content, remainImgId });
     formData.append('community', new Blob([communityData], { type: 'application/json' }));
 
@@ -51,9 +48,14 @@ export const updateCommunityPost = async (
 
     // 파일 처리
     if (files.length > 0) {
-      files.forEach(file => requestBody.append('files', file));
+      files.forEach(file => formData.append('files', file));
     } else {
       formData.append('files', new Blob([]));
+    }
+
+    // 요청 데이터 로그
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
     }
 
     const response = await request.put({
@@ -68,6 +70,7 @@ export const updateCommunityPost = async (
     throw error;
   }
 };
+
 
 export const deleteCommunityPost = async (communityId) => {
   try {
