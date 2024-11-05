@@ -7,6 +7,7 @@ import {
   deleteCommunityPost,
   searchCommunityPosts,
 } from '../api/commAPI';
+import { getComments, deleteComment } from '../api/commentAPI';
 
 // Zustand store 정의
 const useCommStore = create((set) => ({
@@ -113,20 +114,47 @@ updatePost: async (communityId, title, content, remainImgId = []) => {
     }
   },
   
-// 게시물 삭제
-deletePost: async (communityId) => {
-  set({ loading: true });
-  try {
-    await deleteCommunityPost(communityId);
-    set((state) => ({
-      posts: state.posts.filter((post) => post.boardId !== communityId),
-      loading: false,
-    }));
-  } catch (error) {
-    console.error('게시물 삭제 중 오류:', error);
-    set({ error, loading: false });
-  }
-},
+  deletePost: async (communityId) => {
+    set({ loading: true });
+    try {
+      let page = 1;
+      let hasNextPage = true;
+  
+      // 모든 댓글을 페이지별로 가져와 삭제
+      while (hasNextPage) {
+        const commentsResponse = await getComments(communityId, page);
+        const comments = commentsResponse.comments || [];
+        const isLastPage = commentsResponse.isLastPage;
+  
+        // 현재 페이지의 댓글 삭제
+        await Promise.all(
+          comments.map((comment) =>
+            deleteComment(communityId, comment.commentId).then(() =>
+              console.log(`댓글 ID ${comment.commentId} 삭제 완료`)
+            )
+          )
+        );
+  
+        // 다음 페이지로 이동
+        hasNextPage = !isLastPage;
+        page++;
+      }
+  
+      // 모든 댓글 삭제 후 게시물 삭제
+      await deleteCommunityPost(communityId);
+  
+      // 상태에서 게시물 제거
+      set((state) => ({
+        posts: state.posts.filter((post) => post.boardId !== communityId),
+        loading: false,
+      }));
+  
+      console.log('게시물 및 모든 댓글 삭제 완료');
+    } catch (error) {
+      console.error('게시물 삭제 중 오류:', error);
+      set({ error, loading: false });
+    }
+  },  
 
   // 게시물 검색
   searchPosts: async (page = 1, size = 10, sort = []) => {

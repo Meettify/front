@@ -16,16 +16,16 @@ export const createComment = async (communityId, comment, parentId = null) => {
   }
 };
 
-
-// 댓글 목록 조회
 export const getComments = async (communityId, page = 0, size = 10) => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/${communityId}/comment/commentList`,
-      params: { page, size },
+      params: page && size ? { page, size } : undefined,
     });
     console.log('댓글 목록 응답:', response);
-    return response.data;
+
+    // `comments` 속성 유무를 확인하고 반환
+    return response.data ? response.data : { comments: [] };
   } catch (error) {
     console.error('게시물 조회 중 오류 발생:', error);
     throw error;
@@ -33,16 +33,25 @@ export const getComments = async (communityId, page = 0, size = 10) => {
 };
 
 
+
 // 댓글 수정
 export const updateComment = async (communityId, commentId, newContent) => {
+  console.log("communityId:", communityId);
+  console.log("commentId:", commentId);
+  console.log("newContent:", newContent);
+
   try {
     const response = await request.put({
-      url: `${BASE_URL}/${communityId}/comment/${commentId}`,
-      data: { comment: newContent },
+      url: `${BASE_URL}/${communityId}/comment/${commentId}`, // URL 전달
+      data: { comment: newContent }, // 데이터 객체 전달
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`, // JWT 토큰 추가
+      },
     });
     return response.data;
   } catch (error) {
-    console.error('댓글 수정 중 오류 발생:', error);
+    console.error('댓글 수정 중 오류 발생:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -64,15 +73,3 @@ export const deleteComment = async (communityId, commentId) => {
     throw error;
   }
 };
-
-// export const deleteComment = async (communityId, commentId) => {
-//   try {
-//     const response = await request.del({
-//       url: `${BASE_URL}/${communityId}/comment/${commentId}`,
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error('댓글 삭제 중 오류 발생:', error);
-//     throw error;
-//   }
-// };

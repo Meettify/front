@@ -10,18 +10,15 @@ const SearchBar = () => {
 
     const handleInputChange = (event) => {
         setSearchTerm(event.target.value);
-
-        // 검색어가 입력될 때마다 조건에 따라 페이지를 이동할 수 있습니다.
-        if (event.target.value.length > 2) { // 예: 3글자 이상일 때
-            navigate(`/search?query=${encodeURIComponent(event.target.value)}`);
-        }
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
-        setSearchTerm('');
-        closeSearch();
+        if (searchTerm.trim()) { // 검색어가 비어있지 않은 경우에만 실행
+            navigate(`/search?totalKeyword=${encodeURIComponent(searchTerm)}`);
+            setSearchTerm(''); // 검색 후 입력 필드 비우기
+            closeSearch(); // 검색 창 닫기
+        }
     };
 
     return (

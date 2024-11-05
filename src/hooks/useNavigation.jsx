@@ -43,20 +43,20 @@ const useNavigation = () => {
         navigate('/meet/insert');
     }
 
-    const goToMeetDetail = (meetId, categoryTitle) => {
-        navigate(`/meet/detail?categoryTitle=${categoryTitle}&meetId=${meetId}`);
+    const goToMeetDetail = (meetId) => {
+        navigate(`/meet/detail/${meetId}`); 
+    };            
+    
+    const goToCategoryList = (category) => {
+        navigate(`/meet/list?category=${category}`);
+    };       
+
+    const goToSearchList = (totalKeyword) => {
+        navigate(`/meet/list?totalKeyword=${totalKeyword}`);
     };
 
-    const goToCategoryList = (categoryTitle) => {
-        navigate(`/meet/list?categoryTitle=${categoryTitle}`);
-    };
-
-    const goToSearchList = (categoryTitle, query) => {
-        navigate(`/meet/list?categoryTitle=${categoryTitle}&query=${query}`);
-    };
-
-    const handleNavigateToCategory = (categoryTitle) => {
-        goToCategoryList(categoryTitle);
+    const handleNavigateToCategory = (category) => {
+        goToCategoryList(category);
     };
 
     const goToPostWrite = () => {

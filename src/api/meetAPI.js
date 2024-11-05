@@ -68,7 +68,7 @@ export const deleteMeet = async (meetId) => {
 
 
 // 소모임 리스트 조회 API
-export const getMeetList = async (page, size, sort, name, category) => {
+export const getMeetList = async (page = 0, size = 10, sort = "meetName", category = "") => {
     try {
         const response = await request.get({
             url: `${BASE_URL}/meets`,
@@ -76,15 +76,15 @@ export const getMeetList = async (page, size, sort, name, category) => {
                 page,
                 size,
                 sort,
-                name,
-                category // 카테고리를 문자열로 전달
+                name: '',  // name을 빈 문자열로 설정
+                category: category || undefined, // category가 비어있지 않을 경우 전달
             },
         });
         return response.data;
     } catch (error) {
         console.error('소모임 리스트 조회 오류:', error);
         if (error.response) {
-            return error.response;
+            return error.response.data;
         } else {
             return {
                 status: 500,
@@ -122,7 +122,7 @@ export const getMeetingDetail = async (meetId) => {
 export const getMeetJoinList = async () => {
     try {
         const response = await request.get({
-            url: `${BASE_URL}/meets/myMeet`,
+            url: `${BASE_URL}/meets/my-meet`,
         });
         return response.data;
     } catch (error) {
@@ -237,6 +237,7 @@ export const postMeetJoin = async (meetId) => {
     }
 };
 
+
 // 회원 역할 업데이트 API
 export const updateMemberRole = async (meetId, meetMemberId, newRole) => {
     try {
@@ -261,3 +262,23 @@ export const updateMemberRole = async (meetId, meetMemberId, newRole) => {
     }
 };
 
+// 전체 검색 API
+export const searchMeets = async (totalKeyword) => {
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/search`, // URL은 실제 API 엔드포인트에 맞게 수정해야 합니다.
+            params: { totalKeyword }
+        });
+        return response.data; // 응답 데이터를 반환
+    } catch (error) {
+        console.error('검색 오류:', error);
+        if (error.response) {
+            return error.response.data; // 에러 응답 데이터 반환
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
