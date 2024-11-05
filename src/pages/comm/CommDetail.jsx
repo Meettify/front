@@ -128,8 +128,6 @@ const CommDetail = () => {
 
             <div dangerouslySetInnerHTML={{ __html: postDetail.content }} className="text-gray-700 mb-6" />
 
-            <div dangerouslySetInnerHTML={{ __html: postDetail.content }} className="text-gray-700 mb-6" />
-
             {/* 이미지가 존재하면 렌더링 */}
             {postDetail.images && postDetail.images.length > 0 && (
                 <div className="mt-4">
