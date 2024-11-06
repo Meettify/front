@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { LuList } from "react-icons/lu"; // LuList 아이콘 임포트
 import useCommStore from "../../stores/useCommStore";
 
 const CommPage = () => {
     const { posts, fetchPosts, loading, error } = useCommStore();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
+    const [sortOrder, setSortOrder] = useState("최신순"); // 정렬 상태 유지
     const navigate = useNavigate();
 
     const goToCommAdd = () => {
@@ -15,26 +17,25 @@ const CommPage = () => {
         navigate('/comm/add');
     };
 
-    // 페이지 데이터 가져오기
     useEffect(() => {
         const fetchPageData = async () => {
             try {
-                const total = await fetchPosts(currentPage); // 전체 게시글 가져오기
+                const sort = sortOrder === "최신순" ? "desc" : "asc"; // 정렬 순서 설정
+                console.log(`Fetching posts with sort order: ${sort}`); // 디버깅용 로그
+                const total = await fetchPosts(currentPage, 10, sort); // sort 전달
                 setTotalPage(total);
             } catch (error) {
                 console.error("페이지 데이터 가져오기 실패:", error);
             }
         };
         fetchPageData();
-    }, [currentPage, fetchPosts]); // 상태가 변경될 때마다 목록을 갱신
+    }, [currentPage, fetchPosts, sortOrder]); // sortOrder에 따라 데이터 가져오기
 
 
-    // **posts 상태가 변경될 때 로그 출력** (여기 추가)
-    useEffect(() => {
-        console.log("posts 상태:", posts); // posts 상태 확인용 로그
-    }, [posts]);
+    const handleSortChange = (event) => {
+        setSortOrder(event.target.value); // 정렬 상태 변경
+    };
 
-    // 페이지 변경 핸들러
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPage) setCurrentPage(page);
     };
@@ -54,7 +55,20 @@ const CommPage = () => {
                 </p>
             </div>
 
-            <div className="flex justify-end mb-3">
+            <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center space-x-2">
+                    <LuList size={16} />
+                    <span className="font-semibold">필터</span>
+                    <select
+                        className="p-2 border border-gray-300 rounded-lg text-sm"
+                        value={sortOrder}
+                        onChange={handleSortChange}
+                        style={{ transform: 'translateY(3px)' }}
+                    >
+                        <option value="최신순">최신순</option>
+                        <option value="오래된순">오래된 순</option>
+                    </select>
+                </div>
                 <RoundedButton
                     style={{ padding: "6px 14px", fontSize: "12px" }}
                     onClick={goToCommAdd}
@@ -74,28 +88,26 @@ const CommPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {posts.map((post, index) => {
-                        console.log(`게시글 ID: ${post.boardId}, 조회수: ${post.viewCount}`); // 게시글 및 조회수 상태 로그
-                        return (
-                            <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
-                                <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
-                                <td className="p-2 text-left">
-                                    <Link to={`/comm/detail/${post.boardId}`} className="text-black hover:underline">
-                                        {post.title}
-                                    </Link>
-                                </td>
-                                <td className="p-2 text-center">{post.nickName}</td>
-                                <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                                <td className="p-2 text-center">{post.viewCount}</td> {/* 최신 조회수 */}
-                            </tr>
-                        );
-                    })}
+                    {posts.map((post, index) => (
+                        <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
+                            <td className="p-2 text-left">
+                                <Link to={`/comm/detail/${post.boardId}`} className="text-black hover:underline">
+                                    {post.title}
+                                </Link>
+                            </td>
+                            <td className="p-2 text-center">{post.nickName}</td>
+                            <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
+                            <td className="p-2 text-center">{post.viewCount}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
         </div>
     );
 };
+
 
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
     return (

@@ -113,12 +113,18 @@ export const searchCommunityPosts = async (page = 1, size = 10, sort = []) => {
   }
 };
 
-export const getAllCommunityPosts = async (page = 1, size = 10) => {
-  try {
-    const response = await request.get({ url: `${BASE_URL}/communityList`, params: { page, size } });
-    return response.data;
-  } catch (error) {
-    console.error('게시물 조회 중 오류 발생:', error);
-    throw error;
-  }
+export const getAllCommunityPosts = async (page = 1, size = 10, sort = 'desc') => {
+    try {
+        console.log(`API Request params - Page: ${page}, Size: ${size}, Sort: ${sort}`); // 디버깅용 로그
+        const response = await request.get({
+            url: `${BASE_URL}/communityList`,
+            params: { page, size, sort },
+        });
+        console.log('API Response Data:', response.data); // 디버깅용 로그
+        return response.data;
+    } catch (error) {
+        console.error('게시물 조회 중 오류 발생:', error);
+        throw error;
+    }
 };
+
