@@ -28,7 +28,7 @@ const CommDetail = () => {
     useEffect(() => {
         const fetchDetail = async () => {
             try {
-                console.log('fetchDetail 호출'); // 호출 확인용
+                console.log('fetchDetail 호출');
                 await fetchPostDetail(communityId);
                 await fetchComments(communityId);
             } catch (error) {
@@ -38,7 +38,7 @@ const CommDetail = () => {
 
         if (communityId && isFirstLoad.current) {
             fetchDetail();
-            isFirstLoad.current = false; // 첫 로드 후에는 호출 방지
+            isFirstLoad.current = false;
         }
     }, [communityId]);
 
@@ -128,19 +128,22 @@ const CommDetail = () => {
 
             <div dangerouslySetInnerHTML={{ __html: postDetail.content }} className="text-gray-700 mb-6" />
 
-            {/* 이미지가 존재하면 렌더링 */}
-            {postDetail.images && postDetail.images.length > 0 && (
+            {Array.isArray(postDetail.images) && postDetail.images.length > 0 && (
                 <div className="mt-4">
-                    {postDetail.images.map((image, index) => (
-                        <img
-                            key={index}
-                            src={image.uploadImgUrl} // 각 이미지의 URL
-                            alt={`첨부 이미지 ${index + 1}`}
-                            className="w-full mb-4 rounded"
-                        />
-                    ))}
+                    {postDetail.images
+                        .filter(image => image.uploadImgUrl && image.originalImgName !== 'blob') // 조건 추가
+                        .map((image, index) => (
+                            <img
+                                key={index}
+                                src={image.uploadImgUrl}
+                                alt={`첨부 이미지 ${index + 1}`}
+                                className="w-full mb-4 rounded"
+                            />
+                        ))}
                 </div>
             )}
+
+
 
             {isAuthor && (
                 <div className="flex justify-end space-x-3 pb-5">

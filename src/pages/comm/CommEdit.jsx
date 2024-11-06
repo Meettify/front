@@ -192,17 +192,20 @@ const CommEdit = () => {
                     />
                     <div className="flex flex-wrap gap-4">
                         {/* 기존 파일 표시 */}
-                        {existingFiles.map((file, index) => (
-                            <div key={index} className="relative w-24 h-24 rounded-lg overflow-hidden shadow-md">
-                                <img src={file.uploadImgUrl} alt={`preview-${index}`} className="w-full h-full object-cover" />
-                                <button
-                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                                    onClick={() => handleRemoveExistingFile(index)}
-                                >
-                                    X
-                                </button>
-                            </div>
-                        ))}
+                        {existingFiles
+                            .filter(file => file.uploadImgUrl && file.originalImgName !== 'blob') // 조건 추가
+                            .map((file, index) => (
+                                <div key={index} className="relative w-24 h-24 rounded-lg overflow-hidden shadow-md">
+                                    <img src={file.uploadImgUrl} alt={`preview-${index}`} className="w-full h-full object-cover" />
+                                    <button
+                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                                        onClick={() => handleRemoveExistingFile(index)}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                            ))}
+
                         {/* 새로 추가된 파일 표시 */}
                         {newFiles.map((file, index) => (
                             <div key={index} className="relative w-24 h-24 rounded-lg overflow-hidden shadow-md">

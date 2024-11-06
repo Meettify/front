@@ -16,41 +16,46 @@ const useCommStore = create((set) => ({
   loading: false,
   error: null,
   
-  // 전체 게시물 조회
-  fetchPosts: async (page = 1, size = 10) => {
+  fetchPosts: async (page = 1, size = 10, sort = 'desc') => {
     set({ loading: true });
     try {
-      const response = await getAllCommunityPosts(page, size); // 목록 가져오기
-      const { communities, totalPage } = response;
+        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}`); // 디버깅용 로그
+        const response = await getAllCommunityPosts(page, size, sort); // sort 전달
+        const { communities, totalPage } = response;
 
-      set({
-        posts: communities,
-        loading: false,
-      });
+        console.log('API Response:', response); // 디버깅용 로그
+        set({
+            posts: communities,
+            loading: false,
+        });
 
-      return totalPage; // 총 페이지 수 반환
+        return totalPage; // 총 페이지 수 반환
     } catch (error) {
-      console.error('페이지 데이터 가져오기 실패:', error);
-      set({ error, loading: false });
-      throw error;
+        console.error('페이지 데이터 가져오기 실패:', error);
+        set({ error, loading: false });
+        throw error;
     }
-  },
+},
 
-  // 게시물 상세 조회
-  fetchPostDetail: async (communityId) => {
-    set({ loading: true });
-    try {
-      const postDetail = await getCommunityPost(communityId); // Redis와 DB 조회수 동기화는 백엔드에서 처리
-      set({
-        postDetail,
-        loading: false,
-      });
-    } catch (error) {
-      console.error('게시물 상세 조회 실패:', error);
-      set({ error, loading: false });
-      throw error;
-    }
-  },
+// 게시물 상세 조회
+fetchPostDetail: async (communityId) => {
+  set({ loading: true });
+  try {
+    const postDetail = await getCommunityPost(communityId); // Redis와 DB 조회수 동기화는 백엔드에서 처리
+    
+    // images가 없거나 비어 있으면 빈 배열로 설정
+    postDetail.images = postDetail.images || [];
+
+    set({
+      postDetail,
+      loading: false,
+    });
+  } catch (error) {
+    console.error('게시물 상세 조회 실패:', error);
+    set({ error, loading: false });
+    throw error;
+  }
+},
   
   // 게시물 생성
   createPost: async (title, content, files = []) => {
