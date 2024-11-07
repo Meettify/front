@@ -15,21 +15,21 @@ const useCommStore = create((set) => ({
   postDetail: null, 
   loading: false,
   error: null,
-  
-  fetchPosts: async (page = 1, size = 10, sort = 'desc') => {
-    set({ loading: true });
+
+  fetchPosts: async (page = 0, size = 1, sort = 'desc') => {
+    set({ loading: true, posts: [] }); // 이전 상태 초기화
     try {
-        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}`); // 디버깅용 로그
-        const response = await getAllCommunityPosts(page, size, sort); // sort 전달
+        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}`);
+        const response = await getAllCommunityPosts(page, size, sort);
         const { communities, totalPage } = response;
 
-        console.log('API Response:', response); // 디버깅용 로그
+        console.log('API Response:', response);
         set({
-            posts: communities,
+            posts: communities, // 데이터를 덮어쓰는 방식으로 설정
             loading: false,
         });
 
-        return totalPage; // 총 페이지 수 반환
+        return totalPage;
     } catch (error) {
         console.error('페이지 데이터 가져오기 실패:', error);
         set({ error, loading: false });
