@@ -4,10 +4,12 @@ import FilterSection from '../../components/shop/FilterSection';
 import useNavigation from '../../hooks/useNavigation';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getItemList } from '../../api/adminAPI'; // adminAPI에서 상품 목록 가져오기
+import { useNavigate } from 'react-router-dom';
 
 const ShopPage = () => {
     const { goToShopList } = useNavigation();
     const [itemList, setItemList] = React.useState([]);
+    const navigate = useNavigate(); // useNavigate 사용
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -16,6 +18,11 @@ const ShopPage = () => {
         };
         fetchItems();
     }, []);
+
+    // handleNavigateToDetail 함수 정의
+    const handleNavigateToDetail = (itemId) => {
+        navigate(`/shop/detail/${itemId}`);
+    };
 
     return (
         <div className="max-w-7xl mx-auto mt-12 px-4 flex">
@@ -48,6 +55,7 @@ const ShopPage = () => {
                                         ? `https://example.com/${item.files[0]}`
                                         : 'https://via.placeholder.com/150'
                                 }
+                                onClick={handleNavigateToDetail} // handleNavigateToDetail 함수 전달
                             />
                         ))}
                     </div>
