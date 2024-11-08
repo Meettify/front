@@ -53,7 +53,6 @@ const useNotificationSSE = () => {
       eventSource.close();
     };
 
-
     return () => {
       console.log('SSE 연결이 해제되었습니다.');
       eventSource.close();
