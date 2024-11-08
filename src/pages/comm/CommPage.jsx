@@ -20,20 +20,22 @@ const CommPage = () => {
     useEffect(() => {
         const fetchPageData = async () => {
             try {
-                const sort = sortOrder === "최신순" ? "desc" : "asc"; // 정렬 순서 설정
-                console.log(`Fetching posts with sort order: ${sort}`); // 디버깅용 로그
-                const total = await fetchPosts(currentPage, 10, sort); // sort 전달
+                const sort = sortOrder === "최신순" ? "desc" : "asc";
+                console.log(`Fetching posts with sort order: ${sort}`);
+                const total = await fetchPosts(currentPage, 10, sort);
                 setTotalPage(total);
             } catch (error) {
                 console.error("페이지 데이터 가져오기 실패:", error);
             }
         };
+
         fetchPageData();
-    }, [currentPage, fetchPosts, sortOrder]); // sortOrder에 따라 데이터 가져오기
+    }, [currentPage, sortOrder]); // 필요 시 의존성을 추가
 
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value); // 정렬 상태 변경
+        setCurrentPage(1); // 정렬 변경 시 첫 페이지로 이동
     };
 
     const handlePageChange = (page) => {

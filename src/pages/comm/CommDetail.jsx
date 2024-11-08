@@ -117,7 +117,7 @@ const CommDetail = () => {
                 <div className="text-gray-500">
                     <span>{postDetail.nickName}</span>
                     <span className="block text-sm">
-                        작성일: {new Date(postDetail.regTime).toLocaleDateString()}
+                        작성일: {new Date(postDetail.regTime).toLocaleString()} {/* 날짜와 시간 포맷 */}
                     </span>
                 </div>
                 <div className="flex items-center">
@@ -142,8 +142,6 @@ const CommDetail = () => {
                         ))}
                 </div>
             )}
-
-
 
             {isAuthor && (
                 <div className="flex justify-end space-x-3 pb-5">
@@ -211,7 +209,7 @@ const CommDetail = () => {
                                 )}
 
                                 <div className="text-sm text-gray-400">
-                                    {new Date(comment.createdAt).toLocaleString()}
+                                    {new Date(comment.createdAt).toLocaleString()} {/* 날짜와 시간 포맷 */}
                                 </div>
 
                                 <div className="flex justify-end space-x-2 mt-2">
@@ -262,7 +260,7 @@ const CommDetail = () => {
                                         <div className="text-sm font-semibold text-gray-700">{child.nickName}</div>
                                         <div>{child.comment}</div>
                                         <div className="text-xs text-gray-400">
-                                            {new Date(child.createdAt).toLocaleString()}
+                                            {new Date(child.createdAt).toLocaleString()} {/* 날짜와 시간 포맷 */}
                                         </div>
                                     </div>
                                 ))}
