@@ -11,11 +11,13 @@ import { LuSearch } from "react-icons/lu";
 import { PiBell } from "react-icons/pi";
 import SearchBar from '../../components/menus/SearchBar';
 import { useAuth } from '../../hooks/useAuth';
+import NotificationModal from '../Notification/NotificationModal';
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
     const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef(null);
+    const notificationButtonRef = useRef(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const location = useLocation();
@@ -29,6 +31,16 @@ const BasicMenu = () => {
         });
         openModal('info');
     };
+
+    const handleNotificationClick = () => {
+        const buttonRect = notificationButtonRef.current.getBoundingClientRect();
+        setButtonPosition({
+            top: buttonRect.bottom + window.scrollY,
+            left: buttonRect.left + window.scrollX - 50
+        });
+        openModal('notification');
+    };
+
 
     const toggleSearchBar = () => {
         setIsSearchOpen(prev => !prev);
@@ -69,9 +81,14 @@ const BasicMenu = () => {
                     </button>
                 </li>
                 <li>
-                    <Link to="/#" className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                    <button
+                        ref={notificationButtonRef}
+                        onClick={handleNotificationClick}
+                        className="mr-1 text-gray-700 flex items-center"
+                        style={{ transform: 'translateY(0px)' }}
+                    >
                         <PiBell size={28} />
-                    </Link>
+                    </button>
                 </li>
                 <li>
                     <button
@@ -95,6 +112,13 @@ const BasicMenu = () => {
                 <LoginModal
                     isOpen={modals['login']}
                     onClose={() => closeModal('login')}
+                />
+            )}
+
+            {modals['notification'] && (
+                <NotificationModal
+                    buttonPosition={buttonPosition}
+                    onClose={() => closeModal('notification')} // Pass onClose prop to close the modal
                 />
             )}
 
