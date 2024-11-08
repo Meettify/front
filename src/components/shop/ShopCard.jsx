@@ -3,16 +3,22 @@ import { CiStar } from "react-icons/ci";
 import { TiStarFullOutline } from "react-icons/ti";
 import useCartStore from "../../stores/useCartStore";
 
-const ShopCard = ({ itemId, title, description, price, imageUrl }) => {
+const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
     const { addToCart, isFavorite } = useCartStore(); // 상태 가져오기
 
-    const handleStarClick = () => {
-        // ₩ 기호 및 공백 제거 후 숫자로 변환
+    const handleCardClick = () => {
+        if (onClick) {
+            onClick(itemId); // 부모에서 전달된 onClick prop 실행
+        }
+    };
+
+    const handleStarClick = (e) => {
+        e.stopPropagation(); // 별 클릭 시 부모의 클릭 이벤트 방지
         const parsedPrice = Number(price.replace(/[^0-9.-]+/g, ''));
 
         if (isNaN(parsedPrice)) {
             console.error(`잘못된 가격 값: ${price}`);
-            return; // 잘못된 가격이면 추가하지 않음
+            return;
         }
 
         if (!isFavorite(itemId)) {
@@ -20,17 +26,19 @@ const ShopCard = ({ itemId, title, description, price, imageUrl }) => {
                 itemId,
                 title,
                 description,
-                price: parsedPrice, // 변환된 가격 사용
+                price: parsedPrice,
                 imageUrl,
             };
-            addToCart(item); // 장바구니 및 별표 추가
+            addToCart(item);
             console.log(`아이템 ${itemId} 장바구니에 추가 완료`);
         }
     };
 
-
     return (
-        <div className="relative overflow-hidden w-48 py-5 text-center">
+        <div
+            onClick={handleCardClick} // 클릭 이벤트 추가
+            className="relative overflow-hidden w-48 py-5 text-center cursor-pointer transition"
+        >
             <div className="relative bg-gray-200 h-36 flex items-center justify-center rounded-md">
                 <img
                     src={imageUrl}
