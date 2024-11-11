@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getItemDetail } from '../../api/adminAPI'; // 상품 상세 조회 함수 가져오기
-import useAdminStore from '../../stores/useAdminStore'; // 필요한 경우 Zustand 스토어 사용
+import { BsCart3 } from "react-icons/bs"; // React Icons 가져오기
+import RoundedButton from '../../components/button/RoundedButton'; // RoundedButton 가져오기
 
 const ShopDetail = () => {
     const { itemId } = useParams(); // URL에서 itemId 가져오기
@@ -24,6 +25,15 @@ const ShopDetail = () => {
 
         fetchItem();
     }, [itemId]);
+
+    const handleAddToCart = () => {
+        console.log(`아이템 ${itemId}을(를) 장바구니에 추가`);
+    };
+
+    const handleOrderNow = () => {
+        console.log(`아이템 ${itemId}을(를) 주문`);
+        navigate('/order'); // 주문 페이지로 이동 (필요에 따라 경로 수정)
+    };
 
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>{error}</p>;
@@ -54,12 +64,21 @@ const ShopDetail = () => {
                 <p className="text-gray-500">이미지가 없습니다.</p>
             )}
 
-            <div className="mt-6">
-                <Link to="/shop">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+            {/* 버튼 영역 */}
+            <div className="mt-6 flex flex-col items-center">
+
+                <div className="flex gap-5">
+                    <RoundedButton onClick={() => navigate('/shop')} className="mb-5 bg-blue-500 hover:bg-blue-700 text-white">
                         목록으로 돌아가기
-                    </button>
-                </Link>
+                    </RoundedButton>
+                    <RoundedButton onClick={handleAddToCart} className="flex items-center">
+                        {/* <BsCart3 className="mr-2" />  */}
+                        장바구니
+                    </RoundedButton>
+                    <RoundedButton onClick={handleOrderNow} className="bg-red-500 hover:bg-red-700 text-white">
+                        주문하기
+                    </RoundedButton>
+                </div>
             </div>
         </div>
     );
