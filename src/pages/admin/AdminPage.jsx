@@ -26,7 +26,7 @@ const AdminPage = () => {
                     <h2 className="font-semibold mb-3 text-left text-xl">상품 관리</h2>
                     <ul className="space-y-2 text-left">
                         <li><Link to="itemList">상품 조회</Link></li>
-                        <li><Link to="itemAdd">상품 등록 내역</Link></li>
+                        <li><Link to="itemConfirm">상품 등록 내역</Link></li>
                         <li><Link to="itemAdd">현재 재고 내역</Link></li>
                     </ul>
                 </section>

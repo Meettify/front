@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToShopAdd = () => {
+        navigate('/shop/add');
+    };
+
     const goToCart = () => {
         navigate('/cart');
     };
@@ -31,10 +35,6 @@ const useNavigation = () => {
         navigate(`/comm/detail/${id}`);
     };
 
-    const goToShopList = () => {
-        navigate('/shop/list');
-    };
-
     const goToHome = () => {
         navigate('/');
     };
@@ -44,12 +44,12 @@ const useNavigation = () => {
     }
 
     const goToMeetDetail = (meetId) => {
-        navigate(`/meet/detail/${meetId}`); 
-    };            
-    
+        navigate(`/meet/detail/${meetId}`);
+    };
+
     const goToCategoryList = (category) => {
         navigate(`/meet/list?category=${category}`);
-    };       
+    };
 
     const goToSearchList = (totalKeyword) => {
         navigate(`/meet/list?totalKeyword=${totalKeyword}`);
@@ -84,7 +84,6 @@ const useNavigation = () => {
     };
 
     return {
-        goToShopList,
         goToHome,
         goToMeetInsert,
         goToMeetDetail,
@@ -104,6 +103,7 @@ const useNavigation = () => {
         goToCommEdit,
         goToMemList,
         goToCart,
+        goToShopAdd,
     };
 };
 

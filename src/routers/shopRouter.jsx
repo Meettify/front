@@ -1,14 +1,14 @@
 import { Suspense, lazy } from "react";
 
 const Loading = () => <div>Loading..</div>;
-const ShopList = lazy(() => import("../pages/shop/ShopList"));
+const ShopAdd = lazy(() => import("../pages/shop/ShopAdd"));
 const ShopDetail = lazy(() => import('../pages/shop/ShopDetail'));
 
 const shopRouter = () => {
     return [
         {
-            path: "/shop/list",
-            element: <Suspense fallback={<Loading />}><ShopList /></Suspense>,
+            path: "/shop/add",
+            element: <Suspense fallback={<Loading />}><ShopAdd /></Suspense>,
         },
         {
             path: '/shop/detail/:itemId',

@@ -7,7 +7,7 @@ import { getItemList } from '../../api/adminAPI'; // adminAPI에서 상품 목�
 import { useNavigate } from 'react-router-dom';
 
 const ShopPage = () => {
-    const { goToShopList } = useNavigation();
+    const { goToShopAdd } = useNavigation();
     const [itemList, setItemList] = React.useState([]);
     const navigate = useNavigate(); // useNavigate 사용
 
@@ -30,7 +30,7 @@ const ShopPage = () => {
             <div className="flex-1 pl-8">
                 <div className="flex justify-between items-center mb-4">
                     <div className="text-3xl font-bold">상품 살펴보기.</div>
-                    <button onClick={goToShopList} className="text-blue-500">
+                    <button onClick={goToShopAdd} className="text-blue-500">
                         상품 등록 신청하기 &gt;
                     </button>
                 </div>

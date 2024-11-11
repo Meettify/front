@@ -1,27 +1,32 @@
-import request from "./request"; // request.js에서 Axios 인스턴스 가져오기
+import request from './request';
 
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL; // 환경 변수에서 API 기본 URL 가져오기
+const BASE_URL = '/items'; // 공통 경로
 
-// 상품 상세 정보 가져오기
-export const fetchItemDetails = async (itemId) => {
-    try {
-        const response = await request.get(`${BASE_URL}/api/v1/items/${itemId}`);
-        return response.data; // 데이터 반환
-    } catch (error) {
-        console.error("상품 상세 정보를 가져오는 데 오류가 발생했습니다:", error);
-        throw error; // 에러를 다시 던져서 호출한 곳에서 처리할 수 있도록
+// 상품 등록 함수
+export const createItem = async (itemName, itemPrice, itemDetails, itemStatus, itemCount, itemCategory, files = []) => {
+  try {
+    const formData = new FormData();
+    const itemData = JSON.stringify({ itemName, itemPrice, itemDetails, itemStatus, itemCount, itemCategory });
+    formData.append('item', new Blob([itemData], { type: 'application/json' }));
+
+    // 파일이 있을 경우 처리
+    if (files.length > 0) {
+      files.forEach(file => formData.append('files', file));
+    } else {
+      formData.append('files', new Blob([]));
     }
-};
 
-// 상품 목록 가져오기
-export const fetchItems = async (page = 1, limit = 10) => {
-    try {
-        const response = await request.get(`${BASE_URL}/api/v1/items`, {
-            params: { page, limit },
-        });
-        return response.data; // 데이터 반환
-    } catch (error) {
-        console.error("상품 목록을 가져오는 데 오류가 발생했습니다:", error);
-        throw error; // 에러를 다시 던져서 호출한 곳에서 처리할 수 있도록
-    }
+    console.log('FormData 내용:', Array.from(formData.entries())); // 디버깅용 로그
+
+    const response = await request.post({
+      url: `${BASE_URL}`,
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('상품 등록 중 오류 발생:', error.response?.data || error.message);
+    throw error;
+  }
 };
