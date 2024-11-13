@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { createItem } from '../../api/adminAPI';
 
 const ItemAdd = () => {
-    const [itemName, setItemName] = useState(''); // 빈 문자열로 초기화
-    const [itemPrice, setItemPrice] = useState('0'); // 숫자도 문자열로 초기화하면 경고 방지
-    const [itemCount, setItemCount] = useState(1); // 초기화된 값이 있는지 확인
+    const [itemName, setItemName] = useState('');
+    const [itemPrice, setItemPrice] = useState('0');
+    const [itemCount, setItemCount] = useState(1);
     const [itemDetails, setItemDetails] = useState('');
     const [itemCategory, setItemCategory] = useState('SPORTS');
     const [files, setFiles] = useState([]);
@@ -15,11 +15,8 @@ const ItemAdd = () => {
         setFiles(selectedFiles);
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // files가 배열이 아닌 경우 빈 배열로 초기화
         const fileArray = Array.isArray(files) ? files : [];
 
         try {
@@ -27,14 +24,12 @@ const ItemAdd = () => {
                 itemName,
                 parseFloat(itemPrice),
                 itemDetails,
-                'WAIT', // 상태 고정
                 parseInt(itemCount, 10),
                 itemCategory,
-                fileArray // 항상 배열로 전달
+                fileArray
             );
             console.log('상품 등록 성공:', response);
             alert('상품이 등록되었습니다.');
-            // 필요한 경우 상태 초기화
             setItemName('');
             setItemPrice('');
             setItemDetails('');
@@ -96,15 +91,6 @@ const ItemAdd = () => {
                         <option value="FASHION_BEAUTY">패션/뷰티</option>
                         <option value="PETS">반려동물</option>
                     </select>
-                </div>
-                <div className="flex flex-col items-center">
-                    <label className="block text-sm font-semibold text-gray-600 mb-1 w-1/2 text-left">상태</label>
-                    <input
-                        type="text"
-                        value="대기중"
-                        disabled
-                        className="w-1/2 border border-gray-300 p-2 rounded bg-gray-100 cursor-not-allowed"
-                    />
                 </div>
                 <div className="flex flex-col items-center">
                     <label className="block text-sm font-semibold text-gray-600 mb-1 w-1/2 text-left">파일 업로드</label>
