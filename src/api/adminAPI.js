@@ -2,80 +2,42 @@ import request from './request';
 
 const BASE_URL = '/items'; // 상품 관련 공통 경로
 
-// export const createItem = async (itemName, itemPrice, itemDetails, itemCount, itemCategory, files = []) => {
-//     const itemStatus = 'WAIT'; // 기본 상태를 대문자 'WAIT'으로 설정
-//     try {
-//         const formData = new FormData();
-//         const itemData = JSON.stringify({ itemName, itemPrice, itemDetails, itemStatus, itemCount, itemCategory });
-//         formData.append('item', new Blob([itemData], { type: 'application/json' }));
-
-// // 파일 처리
-// if (Array.isArray(files) && files.length > 0) {
-//     files.forEach(file => formData.append('files', file));
-// } else {
-//     formData.append('files', new Blob([]));
-// }
-
-//         console.log('FormData 내용:', Array.from(formData.entries())); // 디버깅용 로그
-
-//         const response = await request.post({
-//             url: `${BASE_URL}`,
-//             data: formData,
-//             headers: { 'Content-Type': 'multipart/form-data' },
-//         });
-
-//         return response.data;
-//     } catch (error) {
-//         console.error('상품 등록 중 오류 발생:', error.response?.data || error.message);
-//         throw error;
-//     }
-// };
-
-// export const createItem = async (itemName, itemPrice, itemDetails, itemCount, itemCategory) => {
-//   const itemStatus = 'WAIT'; // 기본 상태 설정
-//   const itemData = { itemName, itemPrice, itemDetails, itemStatus, itemCount, itemCategory };
-
-//   try {
-//       const response = await request.post({
-//           url: `${BASE_URL}`,
-//           data: JSON.stringify(itemData), // JSON 데이터로 전송
-//           headers: {
-//               'Content-Type': 'application/json' // JSON 요청으로 Content-Type 설정
-//           }
-//       });
-
-//       return response.data;
-//   } catch (error) {
-//       console.error('상품 등록 중 오류 발생:', error.response?.data || error.message);
-//       throw error;
-//   }
-// };
-
-export const createItem = async (itemName, itemPrice, itemDetails, itemCount, itemCategory) => {
-  const itemStatus = 'WAIT'; // 기본 상태 설정
+export const createItem = async (itemName, itemPrice, itemDetails, itemCount, itemCategory, files = []) => {
+  const itemStatus = 'WAIT'; 
   try {
       const formData = new FormData();
-      formData.append('itemName', itemName);
-      formData.append('itemPrice', itemPrice);
-      formData.append('itemDetails', itemDetails);
-      formData.append('itemStatus', itemStatus);
-      formData.append('itemCount', itemCount);
-      formData.append('itemCategory', itemCategory);
-
-      // 파일이 필요하지 않을 경우, 파일 처리를 생략하거나 빈 배열로 처리할 수 있습니다.
-      // formData.append('files', new Blob([])); // 필요 시 사용
-
-      const response = await request.post({
-          url: `${BASE_URL}`,
-          data: formData,
-          headers: {
-              'Content-Type': 'multipart/form-data'
-          },
+      const itemData = JSON.stringify({
+          itemName,
+          itemPrice,
+          itemDetails,
+          itemStatus,
+          itemCount: parseInt(itemCount, 10),
+          itemCategory
       });
 
+      console.log('JSON으로 변환된 itemData:', itemData);
+      formData.append('item', new Blob([itemData], { type: 'application/json' }));
+
+      if (Array.isArray(files) && files.length > 0) {
+          files.forEach((file, index) => {
+              console.log(`FormData에 추가된 파일 [${index}]:`, file);
+              formData.append('files', file);
+          });
+      }
+
+      console.log('FormData 내용:', Array.from(formData.entries()));
+
+      const response = await request.post({
+          url: '/items',
+          data: formData,
+          headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      console.log('서버 응답:', response.data);
       return response.data;
   } catch (error) {
       console.error('상품 등록 중 오류 발생:', error.response?.data || error.message);
+      console.error('에러 응답:', error.response);
       throw error;
   }
 };
