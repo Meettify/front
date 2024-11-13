@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import useNotificationStore from '../stores/useNotificationStore';
 import { useAuth } from './useAuth';
 
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+const BASE_URL = 'https://meettify.store/api/v1';
 
 const useNotificationSSE = () => {
   const addNotification = useNotificationStore((state) => state.addNotification);
@@ -25,7 +25,10 @@ const useNotificationSSE = () => {
 
     // 토큰과 이메일을 URL 매개변수로 전달
     // const eventSource = new EventSource(`${BASE_URL}/notification/subscribe?token=${token}&email=${user.memberEmail}`);
-    const eventSource = new EventSource(`${BASE_URL}/notification/subscribe`);
+    const eventSource = new EventSource(`${BASE_URL}/notification/subscribe`, { withCredentials: true });
+    // const eventSource = new EventSource("http://localhost:8080/api/sse-endpoint", { withCredentials: true });
+
+
 
     eventSource.onopen = () => {
       console.log('SSE 연결이 성공적으로 열렸습니다.');

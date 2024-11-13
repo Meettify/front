@@ -13,8 +13,14 @@ const ShopPage = () => {
 
     useEffect(() => {
         const fetchItems = async () => {
-            const items = await getItemList(); // 상품 목록 조회
-            setItemList(items);
+            try {
+                const items = await getItemList(); // 상품 목록 조회
+                // 컨펌된 상품만 필터링
+                const confirmedItems = items.filter(item => item.itemStatus === 'SELL');
+                setItemList(confirmedItems);
+            } catch (error) {
+                console.error('상품 목록을 가져오는 중 오류 발생:', error);
+            }
         };
         fetchItems();
     }, []);
@@ -30,9 +36,9 @@ const ShopPage = () => {
             <div className="flex-1 pl-8">
                 <div className="flex justify-between items-center mb-4">
                     <div className="text-3xl font-bold">상품 살펴보기.</div>
-                    <button onClick={goToShopAdd} className="text-blue-500">
+                    {/* <button onClick={goToShopAdd} className="text-blue-500">
                         상품 등록 신청하기 &gt;
-                    </button>
+                    </button> */}
                 </div>
 
                 <InfiniteScroll

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createItem } from '../../api/shopAPI';
+import { createItem } from '../../api/adminAPI';
 
 const ShopAdd = () => {
     const [itemName, setItemName] = useState(''); // 빈 문자열로 초기화
@@ -9,28 +9,32 @@ const ShopAdd = () => {
     const [itemCategory, setItemCategory] = useState('SPORTS');
     const [files, setFiles] = useState([]);
 
-
     const handleFileChange = (e) => {
-        setFiles(Array.from(e.target.files));
+        const selectedFiles = Array.from(e.target.files);
+        console.log('선택된 파일:', selectedFiles);
+        setFiles(selectedFiles);
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const itemStatus = 'wait'; // 상태 고정
+
+        // files가 배열이 아닌 경우 빈 배열로 초기화
+        const fileArray = Array.isArray(files) ? files : [];
 
         try {
             const response = await createItem(
                 itemName,
                 parseFloat(itemPrice),
                 itemDetails,
-                itemStatus,
+                'WAIT', // 상태 고정
                 parseInt(itemCount, 10),
                 itemCategory,
-                files
+                fileArray // 항상 배열로 전달
             );
             console.log('상품 등록 성공:', response);
             alert('상품이 등록되었습니다.');
-            // 필요한 경우 초기화
+            // 필요한 경우 상태 초기화
             setItemName('');
             setItemPrice('');
             setItemDetails('');

@@ -20,18 +20,30 @@ const useAdminStore = create((set) => ({
         }
     },    
 
-    // **상품 목록 조회 함수**
+    // // **상품 목록 조회 함수**
+    // fetchItemList: async (page = 1, size = 10) => {
+    //     set({ loading: true });
+    //     try {
+    //         const items = await getItemList(page, size);
+    //         set({ itemList: items, loading: false });
+    //     } catch (error) {
+    //         set({ error: error.message, loading: false });
+    //     }
+    // },
+
     fetchItemList: async (page = 1, size = 10) => {
         set({ loading: true });
         try {
             const items = await getItemList(page, size);
-            set({ itemList: items, loading: false });
+            const sellItems = items.filter(item => item.itemStatus === 'SELL'); // SELL 상태의 상품만 필터링
+            set({ itemList: sellItems, loading: false });
         } catch (error) {
             set({ error: error.message, loading: false });
         }
     },
+    
 
-     // 상품 상세 조회 함수
+    // 상품 상세 조회 함수
      fetchItemDetail: async (itemId) => {
         set({ loading: true, itemDetail: null }); // 초기화 및 로딩 시작
         try {
