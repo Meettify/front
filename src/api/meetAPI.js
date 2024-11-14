@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 export const postMeetInsert = async (data) => {
     try {
         const response = await request.post({
-            url: `${BASE_URL}/meets`,
+            url: `${BASE_URL}/api/v1/search`,
             data,
         });
         return response; // 전체 응답 객체를 반환
@@ -65,7 +65,6 @@ export const deleteMeet = async (meetId) => {
         }
     }
 };
-
 
 // 소모임 리스트 조회 API
 export const getMeetList = async (page = 0, size = 10, sort = "meetName", category = "") => {
@@ -262,18 +261,75 @@ export const updateMemberRole = async (meetId, meetMemberId, newRole) => {
     }
 };
 
+// // 전체 검색 API
+// export const searchMeets = async (totalKeyword) => {
+//     try {
+//         const response = await request.get({
+//             url: `${BASE_URL}/search`, // URL은 실제 API 엔드포인트에 맞게 수정해야 합니다.
+//             params: { totalKeyword }
+//         });
+//         return response.data; // 응답 데이터를 반환
+//     } catch (error) {
+//         console.error('검색 오류:', error);
+//         if (error.response) {
+//             return error.response.data; // 에러 응답 데이터 반환
+//         } else {
+//             return {
+//                 status: 500,
+//                 message: '서버에 연결할 수 없습니다.',
+//             };
+//         }
+//     }
+// };
+
+// export const searchMeets = async (totalKeyword) => {
+//     try {
+//         if (!totalKeyword || totalKeyword.trim() === "") {
+//             return { meetSummaryDTOList: [] }; // 빈 검색어인 경우 빈 결과 반환
+//         }
+
+//         const response = await request.get({
+//             url: `${BASE_URL}/search`, // URL은 실제 API 엔드포인트에 맞게 수정해야 합니다.
+//             params: {
+//                 totalKeyword,   // 서버에서 사용하는 파라미터 이름에 맞게
+//                 page: 0,         // 페이지 번호를 추가할 수도 있음 (기본값 0)
+//                 size: 10,        // 한 번에 가져올 항목 수 (기본값 10)
+//             }
+//         });
+
+//         return response.data; // 응답 데이터 반환
+//     } catch (error) {
+//         console.error('검색 오류:', error);
+//         if (error.response) {
+//             return error.response.data; // 에러 응답 데이터 반환
+//         } else {
+//             return {
+//                 status: 500,
+//                 message: '서버에 연결할 수 없습니다.',
+//             };
+//         }
+//     }
+// };
+
 // 전체 검색 API
 export const searchMeets = async (totalKeyword) => {
     try {
+        // 검색어가 비어있거나 유효하지 않으면 빈 결과 반환
+        if (!totalKeyword || totalKeyword.trim() === "") {
+            return { meetSummaryDTOList: [] };  // 빈 검색어 처리
+        }
+
+        // 소모임 검색 API 호출
         const response = await request.get({
-            url: `${BASE_URL}/search`, // URL은 실제 API 엔드포인트에 맞게 수정해야 합니다.
-            params: { totalKeyword }
+            url: `${BASE_URL}/search`,  // 실제 소모임 검색 API 엔드포인트
+            params: { totalKeyword: totalKeyword.trim() }  // 검색어 전달 (trim 적용)
         });
-        return response.data; // 응답 데이터를 반환
+
+        return response.data;  // 응답 데이터 반환
     } catch (error) {
         console.error('검색 오류:', error);
         if (error.response) {
-            return error.response.data; // 에러 응답 데이터 반환
+            return error.response.data;  // 에러 응답 데이터 반환
         } else {
             return {
                 status: 500,
@@ -282,3 +338,4 @@ export const searchMeets = async (totalKeyword) => {
         }
     }
 };
+
