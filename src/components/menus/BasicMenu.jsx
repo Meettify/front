@@ -46,6 +46,12 @@ const BasicMenu = () => {
         setIsSearchOpen(prev => !prev);
     };
 
+    const closeSearch = () => {
+        setIsSearchOpen(false);  // 검색창을 닫음
+        setSearchTerm('');  // 검색어 초기화
+    };
+
+
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             if (searchTerm && location.pathname !== '/chat') {
@@ -124,7 +130,7 @@ const BasicMenu = () => {
 
             {/* SearchBar 드롭다운 */}
             <div className={`absolute top-full left-0 w-full transition-all duration-300 ${isSearchOpen ? 'block' : 'hidden'}`}>
-                <SearchBar setSearchTerm={setSearchTerm} />
+                <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} closeSearch={closeSearch} />
             </div>
         </nav>
     );
