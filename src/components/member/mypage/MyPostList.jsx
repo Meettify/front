@@ -1,110 +1,50 @@
-import React, { useEffect, useState } from 'react';
-
-const mockGetMyPostList = async () => {
-  return [
-    {
-      boardId: 1,
-      title: "React 상태 관리 기법",
-      regTime: "2023-08-10T14:25:00",
-    },
-    {
-      boardId: 5,
-      title: "JavaScript 클로저 이해하기",
-      regTime: "2023-07-20T09:12:00",
-    },
-    {
-      boardId: 3,
-      title: "TailwindCSS로 반응형 디자인 구현",
-      regTime: "2023-06-15T17:45:00",
-    },
-    {
-      boardId: 4,
-      title: "Node.js와 Express로 API 서버 만들기",
-      regTime: "2023-05-05T08:30:00",
-    },
-    {
-      boardId: 2,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-    {
-      boardId: 9,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-    {
-      boardId: 6,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-    {
-      boardId: 7,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-    {
-      boardId: 8,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-    {
-      boardId: 10,
-      title: "Java 기초 문법 정리",
-      regTime: "2023-04-01T11:00:00",
-    },
-  ];
-};
+import React from 'react';
+import { useMyPage } from '../../../hooks/useMypage';
+import useNavigation from '../../../hooks/useNavigation';
 
 const MyPostList = () => {
-  const [posts, setPosts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const { posts, currentPage, totalPages, setCurrentPage } = useMyPage();
+  const { goToCommDetail } = useNavigation();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await mockGetMyPostList();
-        const sortedPosts = response.sort((a, b) => b.boardId - a.boardId);
-        setPosts(sortedPosts);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-    fetchPosts();
-  }, [currentPage]);
+  const handlePageClick = (pageNum) => {
+    setCurrentPage(pageNum);
+  };
 
-  const handleDetailClick = (postId) => {
-    console.log("글 디테일", postId);
+  const handleDetailClick = (boardId) => {
+    goToCommDetail(boardId);
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getFullYear()}.
-        ${date.getMonth()+1 >= 10 ? (date.getMonth()+1) : '0'+ (date.getMonth()+1)}.
-        ${date.getDate() >= 10 ? (date.getDate()) : '0'+(date.getDate()+1)}`;
+    return `
+      ${date.getFullYear()}.
+      ${date.getMonth() + 1 >= 10 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)}.
+      ${date.getDate() >= 10 ? date.getDate() : "0" + date.getDate()}`;
   };
 
   return (
-    <div className='ml-5'>
+    <div className="ml-5">
       <h2 className="text-2xl font-semibold mb-10 text-left">내가 작성한 글</h2>
       <div className="overflow-hidden">
-        <table className="w-4/5 h-[555px] bg-white border border-gray-200">
+        <table className="w-4/5 bg-white border border-gray-200">
           <thead>
-            <tr>
-              <th className="w-1/6 px-6 py-3 border-b bg-gray-50 text-center text-sm font-medium text-gray-500">No</th>
-              <th className="w-3/5 px-6 py-3 border-b bg-gray-50 text-center text-sm font-medium text-gray-500">제목</th>
-              <th className="w-full px-6 py-3 border-b bg-gray-50 text-center text-sm font-medium text-gray-500">작성일</th>
+            <tr className="border-b">
+              <th className="w-1/6 px-6 py-3 bg-gray-50 text-center text-sm font-medium text-gray-500">No</th>
+              <th className="w-3/5 px-6 py-3 border-r border-l bg-gray-50 text-center text-sm font-medium text-gray-500">제목</th>
+              <th className="w-full px-6 py-3 bg-gray-50 text-center text-sm font-medium text-gray-500">작성일</th>
             </tr>
           </thead>
-          <tbody>
-            {posts.length > 0 ? (
+          <tbody className="min-h-[512px]">
+            {posts && posts.length > 0 ? (
               posts.map((post, index) => (
-                <tr key={post.boardId} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 border-b text-gray-700 text-sm">{posts.length - index}</td>
-                  <td className="px-6 py-4 border-b text-blue-500 text-sm  text-left" >
-                    <p className='cursor-pointer w-fit' onClick={() => handleDetailClick(post.boardId)}>{post.title}</p>
+                <tr key={post.boardId} className="border-b hover:bg-gray-100">
+                  <td className="px-6 py-4 text-gray-700 text-sm">
+                    {index + 1 + (currentPage - 1) * 10}
                   </td>
-                  <td className="px-6 py-4 border-b text-gray-700 text-sm">{formatDate(post.regTime)}</td>
+                  <td className="px-6 py-4 text-blue-500 text-sm text-left">
+                    <p className="cursor-pointer w-fit" onClick={() => handleDetailClick(post.boardId)}>{post.title}</p>
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 text-sm">{formatDate(post.regTime)}</td>
                 </tr>
               ))
             ) : (
@@ -118,19 +58,15 @@ const MyPostList = () => {
         </table>
       </div>
       <div className="flex justify-center mt-4 space-x-2 w-4/5">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 text-gray-500 rounded-md hover:bg-gray-300 disabled:opacity-50"
-        >
-          이전 페이지
-        </button>
-        <button
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          다음 페이지
-        </button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageClick(index + 1)}
+            className={`px-4 py-2 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
     </div>
   );
