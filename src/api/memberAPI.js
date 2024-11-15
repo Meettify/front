@@ -123,3 +123,105 @@ export const getMember = async (memberId) => {
         }
     }
 }
+
+// 마이페이지 가입한 모임 리스트 API
+export const getMeetJoinList = async () => {
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/meets/my-meet`,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('가입한 모임 리스트 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+}
+
+// 마이페이지 모임탈퇴 API
+export const putLeaveMeet = async (meetId, meetMemberId) => {
+    try {
+        const response = await request.put({
+            url: `${BASE_URL}/meets/${meetId}/${meetMemberId}`,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('가입한 모임 탈퇴 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
+
+// 마이페이지 모임취소 API / 수정해야됨
+export const putCancelMeet = async () => {
+    try {
+        const response = await request.put({
+            url: `${BASE_URL}/meets/`, // 수정해야됨
+        });
+        return response.data;
+    } catch (error) {
+        console.error('모임신청 취소 에러', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
+
+// 마이페이지 내가 작성한 커뮤니티 글
+export const getMyCommunityList = async (page = 0, size = 10, sort = 'desc') => {
+    try {
+      const response = await request.get({
+        url: `${BASE_URL}/community/my-community`,
+        params: { page: page+1, size, sort },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('getMyCommunityList Error', error);
+      if (error.response) {
+        return error.response;
+      } else {
+        return {
+          status: 500,
+          message: '서버에 연결할 수 없습니다.',
+        };
+      }
+    }
+  };
+
+  // 마이페이지 내가 작성한 문의
+  export const getMyInquiryList = async (page = 0, size = 10, sort = 'desc') => {
+    try {
+      const response = await request.get({
+        url: `${BASE_URL}/questions/my-questions`,
+        params: { page: page+1, size, sort },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('getMyInquiryList Error', error);
+      if (error.response) {
+        return error.response;
+      } else {
+        return {
+          status: 500,
+          message: '서버에 연결할 수 없습니다.',
+        };
+      }
+    }
+  };

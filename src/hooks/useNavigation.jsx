@@ -35,6 +35,14 @@ const useNavigation = () => {
         navigate(`/comm/detail/${id}`);
     };
 
+    const goToShopList = () => {
+        navigate('/shop/list');
+    };
+
+    const goToShop = () => {
+        navigate('/shop');
+    };
+
     const goToHome = () => {
         navigate('/');
     };
@@ -83,7 +91,13 @@ const useNavigation = () => {
         navigate('/mypage');
     };
 
+    const goToSupport = () => {
+        navigate('/support');
+    }
+
     return {
+        goToShopList,
+        goToShop,
         goToHome,
         goToMeetInsert,
         goToMeetDetail,
@@ -104,6 +118,7 @@ const useNavigation = () => {
         goToMemList,
         goToCart,
         goToShopAdd,
+        goToSupport,
     };
 };
 
