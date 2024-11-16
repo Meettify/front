@@ -1,0 +1,30 @@
+/* 슬라이드 간 간격 설정 */
+.slick-slide {
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+.slick-prev {
+  margin-left: 5px;
+}
+
+.slick-prev::before {
+  color: black;
+  margin-left: 10px;
+}
+
+.slick-next {
+  margin-right: 14px;
+}
+
+.slick-next::before {
+  color: black;
+}
+
+.slick-list {
+  height: 200px;
+}
+
+.slick-track {
+  height: 200px;
+}

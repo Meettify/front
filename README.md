@@ -148,3 +148,9 @@ npm install ws
 ```bash
 npm install react-infinite-scroll-component
 ```
+
+### react-slick 라이브러리
+
+```bash
+npm install react-slick
+```
