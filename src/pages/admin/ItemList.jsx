@@ -17,10 +17,14 @@ const ItemList = () => {
         navigate(`/admin/itemDetail/${itemId}`);
     };
 
-
     useEffect(() => {
         fetchItemList();  // 페이지 로드 시 상품 목록 조회
     }, [fetchItemList]);
+
+    // 상태 변경을 추적하는 useEffect 추가
+    useEffect(() => {
+        console.log('Rendered itemList in ItemList component:', itemList);
+    }, [itemList]);
 
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>오류 발생: {error}</p>;

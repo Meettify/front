@@ -19,15 +19,19 @@ const ItemConfirm = () => {
         fetchPendingItems();
     }, []);
 
+
+
     const handleConfirmItem = async (itemId) => {
         try {
-            await confirmItem(itemId); // 상품 상태를 'SELL'로 변경하는 API 호출
+            const response = await confirmItem(itemId); // 상품 상태를 'SELL'로 변경하는 API 호출
+            console.log('Confirm response:', response); // 응답 확인
             setPendingItems((prevItems) => prevItems.filter((item) => item.itemId !== itemId)); // 대기 중인 목록에서 제거
-            fetchItemList(); // 상태 변경 후 ItemList 갱신
+            await fetchItemList(); // 상태 변경 후 ItemList 갱신 (async 보장)
         } catch (error) {
             console.error('상품 상태 변경 중 오류 발생:', error);
         }
     };
+
 
     if (pendingItems.length === 0) {
         return <p>등록된 상품이 없습니다.</p>;
