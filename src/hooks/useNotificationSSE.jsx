@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import useNotificationStore from '../stores/useNotificationStore';
 import { useAuth } from './useAuth';
+import axios from 'axios';
 
 const BASE_URL = 'https://meettify.store/api/v1';
 
@@ -20,46 +21,56 @@ const useNotificationSSE = () => {
       return;
     }
 
+    // JWT 유효성 검사
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    if (decodedToken.exp * 1000 < Date.now()) {
+      console.error('토큰이 만료되었습니다.');
+      return;
+    }
+
     console.log('SSE 연결을 시작합니다. 사용자 이메일:', user.memberEmail);
-    console.log('SSE 연결을 위한 토큰:', token);
 
-    // 토큰과 이메일을 URL 매개변수로 전달
-    // const eventSource = new EventSource(`${BASE_URL}/notification/subscribe?token=${token}&email=${user.memberEmail}`);
-    const eventSource = new EventSource(`${BASE_URL}/notification/subscribe`, { withCredentials: true });
-    // const eventSource = new EventSource("http://localhost:8080/api/sse-endpoint", { withCredentials: true });
+    // SSE 연결을 위한 프록시 엔드포인트
+    axios
+      .get(`${BASE_URL}/notification/subscribe`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'text',
+      })
+      .then(() => {
+        console.log('SSE 인증이 완료되었습니다. SSE 연결 시작.');
 
+        // EventSource 초기화 (별도의 인증 없이 서버에서 인증됨)
+        const eventSource = new EventSource(`${BASE_URL}/notification/subscribe`);
 
+        eventSource.onopen = () => {
+          console.log('SSE 연결이 성공적으로 열렸습니다.');
+        };
 
-    eventSource.onopen = () => {
-      console.log('SSE 연결이 성공적으로 열렸습니다.');
-    };
+        eventSource.onmessage = (event) => {
+          console.log('SSE 알림 수신 (raw data):', event.data);
+          try {
+            const notificationData = JSON.parse(event.data);
+            addNotification(notificationData);
+          } catch (err) {
+            console.error('알림 JSON 파싱 중 오류 발생:', err);
+          }
+        };
 
-    eventSource.onmessage = (event) => {
-      console.log('SSE 알림 수신 (raw data):', event.data);
-      try {
-        const notificationData = JSON.parse(event.data);
-        console.log('SSE 알림 수신 (parsed):', notificationData);
+        eventSource.onerror = (error) => {
+          console.error('SSE 오류 발생:', error);
+          eventSource.close();
+        };
 
-        addNotification(notificationData); // 알림을 상태에 추가
-        console.log('알림이 상태에 추가되었습니다:', notificationData);
-      } catch (err) {
-        console.error('알림 JSON 파싱 중 오류 발생:', err);
-      }
-    };
-
-    eventSource.onerror = (error) => {
-      console.error('SSE 오류 발생:', error);
-      fetch(`${BASE_URL}/notification/subscribe`)
-        .then(response => response.text())
-        .then(text => console.log('응답 본문:', text))
-        .catch(err => console.error('Fetch 에러:', err));
-      eventSource.close();
-    };
-
-    return () => {
-      console.log('SSE 연결이 해제되었습니다.');
-      eventSource.close();
-    };
+        return () => {
+          console.log('SSE 연결 종료.');
+          eventSource.close();
+        };
+      })
+      .catch((error) => {
+        console.error('SSE 인증 요청 실패:', error);
+      });
   }, [user, addNotification]);
 
   return null;
