@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import useMypageStore from '../stores/useMypageStore';
-import { getMeetJoinList, getMyCommunityList } from '../api/memberAPI';
+import { getMeetJoinList, getMyCommunityList, getMyInquiryList } from '../api/memberAPI';
 
 export const useMyPage = () => {
     const { 
@@ -12,7 +12,18 @@ export const useMyPage = () => {
         setCurrentPage, 
         totalPages, 
         setTotalPages,
-        setTotalPostCount
+        setTotalPostCount,
+        inquirys,
+        inquiryTotalPages,
+        inquiryCurrentPage,
+        totalInquiryCount,
+        totalInquiryOkCount,
+        setInquirys,
+        setInquiryTotalPages,
+        setInquiryCurrentPage,
+        setTotalInquiryCount,
+        setTotalInquiryOkCount,
+
     } = useMypageStore();
 
     let totalPostCount = 0;
@@ -60,10 +71,15 @@ export const useMyPage = () => {
     const fetchPosts = async (page = 0, size = 10, sortOrder = 'desc') => {
         try {
             const response = await getMyCommunityList(page, size, sortOrder);
-            if (page === 0) setPosts(response.communities);
-            else setPosts((prevPosts) => [...prevPosts, ...response.communities]);
 
-            setTotalPages(response.totalPage);
+            if (!response || !Array.isArray(response.communities)) {
+                setPosts([]);
+                return;
+            } else{
+                setPosts(response.communities);
+                setTotalPages(response.totalPage);
+            }
+            
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
@@ -77,7 +93,7 @@ export const useMyPage = () => {
                 allPosts.push(...response.communities);
             }
             const count = allPosts.length;
-            setTotalPostCount(count); // 상태에 저장
+            setTotalPostCount(count);
             return count;
         } catch (error) {
             console.error("Error calculating total posts:", error);
@@ -85,18 +101,74 @@ export const useMyPage = () => {
     };
 
     useEffect(() => {
-        fetchPosts(currentPage - 1);
+        if (currentPage > 0) {
+            fetchPosts(currentPage - 1);
+        }
     }, [currentPage]);
 
     useEffect(() => {
         const updateTotalPostCount = async () => {
             if (totalPages > 0) {
                 const count = await calculateTotalPosts();
-                setTotalPostCount(count); // 상태에 저장
+                setTotalPostCount(count);
             }
         };
         updateTotalPostCount();
     }, [totalPages]);
+
+    const fetchInquirys = async (page = 0, size = 10, sortOrder = 'desc') => {
+        try {
+            const response = await getMyInquiryList(page, size, sortOrder);
+            if (!response || !Array.isArray(response.contents)) {
+                setInquirys([]);
+                return;
+            } else{
+                setInquirys(response.contents);
+                setInquiryTotalPages(response.totalPage);
+            }            
+
+        } catch (error) {
+            console.error("Error fetching inquirys:", error);
+        }
+    };
+
+    const calculateTotalInquirys = async () => {
+        try {
+            const allInquirys = [];
+            const completedCount = 0
+            for (let page = 0; page < totalPages; page++) {
+                const response = await getMyInquiryList(page, 10, 'desc');
+                allInquirys.push(...response.contents);
+                completedCount += response.contents.filter(inquiry => inquiry.replyStatus === true).length;
+            }
+            const result = {
+                all : allInquirys.length,
+                ok : completedCount
+            }
+            setTotalInquiryCount(result.all);
+            setTotalInquiryOkCount(result.ok);
+            return result;
+        } catch (error) {
+            console.error("Error calculating total posts:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (inquiryCurrentPage > 0) {
+            fetchInquirys(inquiryCurrentPage - 1);
+        }
+    }, [inquiryCurrentPage]);
+
+    useEffect(() => {
+        const updateTotalInquiryCount = async () => {
+            if (inquiryTotalPages > 0) {
+                const result = await calculateTotalInquirys();
+                setTotalInquiryCount(result.all);
+                setTotalInquiryOkCount(result.ok);
+            }
+        };
+        updateTotalInquiryCount();
+    }, [inquiryTotalPages]);
 
     return { 
         meetJoinList,
@@ -104,7 +176,11 @@ export const useMyPage = () => {
         currentPage,
         totalPages, 
         setCurrentPage,
-        fetchPosts,
         totalPostCount,
+        setPosts,
+        inquirys,
+        totalInquiryCount,
+        totalInquiryOkCount,
+        setInquiryCurrentPage
     };
 };

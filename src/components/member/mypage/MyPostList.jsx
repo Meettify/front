@@ -3,11 +3,12 @@ import { useMyPage } from '../../../hooks/useMypage';
 import useNavigation from '../../../hooks/useNavigation';
 
 const MyPostList = () => {
-  const { posts, currentPage, totalPages, setCurrentPage } = useMyPage();
+  const { posts, currentPage, totalPages, setCurrentPage, setPosts } = useMyPage();
   const { goToCommDetail } = useNavigation();
 
   const handlePageClick = (pageNum) => {
     setCurrentPage(pageNum);
+    setPosts([]);
   };
 
   const handleDetailClick = (boardId) => {
