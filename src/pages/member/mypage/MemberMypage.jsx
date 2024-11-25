@@ -23,7 +23,7 @@ const MemberMypage = () => {
     const { user } = useAuthStore();
     const { meetJoinList }= useMyPage();
     const cartCnt = useCartStore((state) => state.cartItems).length;
-    const {totalPostCount} = useMypageStore();
+    const {totalPostCount, totalInquiryCount, totalInquiryOkCount} = useMypageStore();
 
     const sliderSettings = {
         dots: false, // 슬라이드 하단의 점 표시 여부
@@ -130,9 +130,13 @@ const MemberMypage = () => {
                         </div>
                     </div> {/* 상단 */}
                     <hr className='mt-10 mb-10 border-gray-300 border-4 rounded-lg'/>
+
                     {/* 슬라이드 */}
                     <div>
-                        <p className='text-left ml-[1px] mb-2 text-xl font-bold'>나의 모임</p>
+                        <p className='flex text-left ml-[1px] mb-2 text-xl font-bold'>나의 모임
+                            <span className='ml-auto text-[14px] mt-2 mr-3 underline text-gray-400 font-normal cursor-pointer transition-colors duration-200 hover:text-gray-700'>
+                                <Link to={'/mypage/meetJoinList'}>자세히 보기</Link></span>
+                        </p>
                         {meetJoinList.length === 0 ? (
                             <div className="flex items-center justify-center h-[200px] border border-gray-300 rounded-md">
                                 <p className="text-gray-500">가입된 모임이 없습니다.</p>
@@ -214,10 +218,10 @@ const MemberMypage = () => {
                             <hr className='border-gray-300 border-1 mt-4 mb-4'/>
                             <p className='flex text-left mb-5 mt-8'>
                                 <span>작성한 문의</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>건</p>
+                                <span className='ml-auto mr-1 font-bold text-[16px]'>{totalInquiryCount}</span>건</p>
                             <p className='flex text-left'>
                                 <span>답변완료</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>건</p>
+                                <span className='ml-auto mr-1 font-bold text-[16px]'>{totalInquiryOkCount}</span>건</p>
                             <button
                                 className='w-4/5 mt-8 p-2 text-gray-500 border border-gray-400 transition-colors duration-200 hover:bg-gray-700 hover:text-gray-300'
                                 onClick={() => goToSupport()}

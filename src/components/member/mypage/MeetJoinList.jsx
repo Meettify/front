@@ -1,6 +1,6 @@
 import React from 'react';
 import useNavigation from '../../../hooks/useNavigation';
-import { useMyPage } from '../../../hooks/useMypage'; // useMyPage 훅 임포트
+import { useMyPage } from '../../../hooks/useMypage';
 import { putLeaveMeet, putCancelMeet } from '../../../api/memberAPI';
 
 const MeetJoinList = () => {

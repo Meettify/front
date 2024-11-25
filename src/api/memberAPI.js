@@ -225,3 +225,23 @@ export const getMyCommunityList = async (page = 0, size = 10, sort = 'desc') => 
       }
     }
   };
+
+  export const getMyOrderList = async (page = 0, size = 10, sort = 'desc') => {
+    try {
+      const response = await request.get({
+        url: `${BASE_URL}/orders/my-order`,
+        params: { page: page+1, size, sort },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('getMyOrderList Error', error);
+      if (error.response) {
+        return error.response;
+      } else {
+        return {
+          status: 500,
+          message: '서버에 연결할 수 없습니다.',
+        };
+      }
+    }
+  };

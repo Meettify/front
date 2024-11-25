@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import useNavigation from '../../../hooks/useNavigation';
-import { getMyInquiryList } from '../../../api/memberAPI';
+import { useMyPage } from '../../../hooks/useMypage';
 
 const MyInquiryList = () => {
-  const [questions, setQuestions] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
-  const sort = 'desc';
   const { goToHome } = useNavigation();
+  const {inquirys, inquiryTotalPages, inquiryCurrentPage, setInquirys, setInquiryCurrentPage,  } = useMyPage();
 
-
-  const fetchQuestions = async (page = 0, size = 10, sortOrder = 'desc') => {
-    try {
-      const response = await getMyInquiryList(page, size, sortOrder);
-      setQuestions(response.contents);
-      setTotalPages(response.totalPage);
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchQuestions(currentPage -1, pageSize, sort);
-  }, [currentPage])
+  const handlePageClick = (pageNum) => {
+    setInquiryCurrentPage(pageNum);
+    setInquirys([]);
+  }
 
   const handleDetailClick = (questionId) => {
-    console.log("문의 디테일", questionId);
+    goToHome(); // 수정해야됨
   };
 
   const formatDate = (dateString) => {
@@ -51,10 +37,10 @@ const MyInquiryList = () => {
             </tr>
           </thead>
           <tbody>
-            {questions.length > 0 ? (
-              questions.map((question, index) => (
+            {inquirys && inquirys.length > 0 ? (
+              inquirys.map((question, index) => (
                 <tr key={question.questionId} className="border-b hover:bg-gray-100">
-                  <td className="px-6 py-4 text-gray-700 text-sm">{questions.length - index}</td>
+                  <td className="px-6 py-4 text-gray-700 text-sm">{index + 1 + (inquiryCurrentPage - 1) * 10}</td>
                   <td className="px-6 py-4 text-blue-500 text-sm  text-left" >
                     <p className='cursor-pointer w-fit' onClick={() => handleDetailClick(question.questionId)}>{question.title}</p>
                   </td>
@@ -75,14 +61,13 @@ const MyInquiryList = () => {
         </table>
       </div>
       <div className="flex justify-center mt-4 space-x-2 w-4/5">
-        {Array.from({ length: totalPages }, (_, index) => (
+        {Array.from({ length: inquiryTotalPages }, (_, index) => (
           <button
             key={index + 1}
             onClick={() => handlePageClick(index + 1)}
-            className={`px-4 py-2 rounded-md ${
-              currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
-            }`}
-          >
+            className={`px-4 py-2 rounded-md 
+              ${inquiryCurrentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+            }`}>
             {index + 1}
           </button>
         ))}
