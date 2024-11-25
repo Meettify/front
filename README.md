@@ -154,3 +154,9 @@ npm install react-infinite-scroll-component
 ```bash
 npm install react-slick
 ```
+
+### event-source-polyfill
+
+```
+npm install event-source-polyfill
+```
