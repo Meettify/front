@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { useAuth } from "./useAuth";
 
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+const BASE_URL = 'https://meettify.store/api/v1';
 
 const useNotificationSSE = () => {
   const { user } = useAuth(); // 사용자 인증 정보 가져오기
@@ -30,12 +30,13 @@ const useNotificationSSE = () => {
     console.log("[SSE] SSE 연결 시도 중...");
     sseRef.current = new EventSourcePolyfill(`${BASE_URL}/notify/subscribe`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
+        "Content-Type": "text/event-stream",
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
       },
       fetchOptions: {
-        mode: "cors", // 명시적으로 CORS 설정
+        mode: "cors", // CORS 모드
+        credentials: "include", // 쿠키 기반 인증 활성화
+        withCredentials: true,
       },
     });
 
@@ -67,10 +68,24 @@ const useNotificationSSE = () => {
     sseRef.current.onerror = (error) => {
       console.error("[SSE] 연결 오류 발생:", error);
 
+      // `readyState`를 통해 상태 확인
+      const readyState = sseRef.current?.readyState;
+      console.error("[SSE] 연결 상태 (readyState):", readyState);
+
+      // 네트워크 요청 및 응답에 대한 정보 출력
+      console.error("[SSE] EventSource 오류 정보: ", error);
+
+      // CORS 관련 추가 디버깅 로그
+      console.warn(
+        "[SSE] CORS 문제일 경우, 서버에서 적절한 CORS 헤더를 반환해야 합니다. 브라우저 네트워크 탭에서 요청/응답 확인하세요."
+      );
+
       // 연결 종료 처리
-      console.log("[SSE] 연결을 닫습니다.");
-      sseRef.current.close();
-      setConnected(false);
+      if (sseRef.current) {
+        console.log("[SSE] 연결을 닫습니다.");
+        sseRef.current.close();
+        setConnected(false);
+      }
 
       // 재연결 시도
       if (retryCountRef.current < 3) {
@@ -97,10 +112,10 @@ const useNotificationSSE = () => {
 
     return () => {
       console.log("[SSE] useEffect 정리 함수 호출됨.");
-      console.log("[SSE] 기존 SSE 연결 닫기 시도 중...");
       if (sseRef.current) {
-        console.log("[SSE] 기존 연결 닫기.");
+        console.log("[SSE] 기존 SSE 연결 닫기 시도 중...");
         sseRef.current.close();
+        sseRef.current = null; // 연결 객체 초기화
       } else {
         console.log("[SSE] 닫을 SSE 연결이 없습니다.");
       }
