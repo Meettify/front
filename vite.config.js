@@ -7,9 +7,14 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://meettify.store',  // 배포된 백엔드의 HTTPS URL
+        target: 'https://meettify.store', // 백엔드 URL
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false,
+        ws: true,
+        headers: {
+          Connection: 'keep-alive',
+        },
+        rewrite: (path) => path.replace(/^\/api/, ''), // 프록시 경로 재작성
       },
     },
   },
