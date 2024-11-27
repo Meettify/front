@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useNotificationStore = create((set) => ({
-  notifications: [], // 알림 데이터를 저장할 배열
+  notifications: [],
 
   // 알림 추가
   addNotification: (notification) =>
@@ -10,12 +10,12 @@ const useNotificationStore = create((set) => ({
     })),
 
   // 특정 알림 제거
-  removeNotification: (index) =>
+  removeNotification: (id) =>
     set((state) => ({
-      notifications: state.notifications.filter((_, i) => i !== index),
+      notifications: state.notifications.filter((notification) => notification.id !== id),
     })),
 
-  // 모든 알림 제거
+  // 모든 알림 초기화
   clearNotifications: () =>
     set(() => ({
       notifications: [],

@@ -1,75 +1,83 @@
 import { create } from 'zustand';
 import * as cartAPI from '../api/cartAPI';
+import * as shopAPI from '../api/adminAPI';
 
 const useCartStore = create((set, get) => ({
-    cartItems: [], // 장바구니 항목
+    shopItems: [], // ShopPage에서 가져오는 상품 데이터
+    cartItems: [], // 장바구니 데이터
 
-    // 서버에서 장바구니 항목 불러오기
-    fetchCartItems: async (cartId) => {
+    // 상품 데이터 로드
+    fetchShopItems: async () => {
         try {
-            console.log('장바구니 항목 불러오기 요청:', cartId);
-
-            const cartItems = await cartAPI.getCartById(cartId); // 백엔드 API 호출
-            console.log('장바구니 항목 불러오기 응답:', cartItems);
-
-            set({ cartItems }); // 상태를 업데이트
+            const items = await shopAPI.getItemList();
+            const confirmedItems = items.filter(item => item.itemStatus === 'SELL');
+            set({ shopItems: confirmedItems });
         } catch (error) {
-            console.error('장바구니 항목 불러오기 실패:', error);
+            console.error('상품 데이터 로드 실패:', error);
         }
     },
-    
-    // 장바구니에 상품 추가
-    addToCart: async (memberEmail, item) => {
-        if (!memberEmail) {
-            console.error('사용자 정보가 없습니다.');
-            return;
-        }
 
-        // 프론트엔드에서 중복 확인
-        const existingItem = get().cartItems.find((i) => i.itemId === item.itemId);
-        if (existingItem) {
-            console.log('이미 장바구니에 추가된 상품입니다.');
-            return; // 중복 추가 방지
-        }
-
+    // 장바구니 데이터 로드
+    fetchAllCartItems: async () => {
         try {
-            console.log('장바구니에 상품 추가 시도:', { memberEmail, item });
-
-            await cartAPI.addItemToCart(memberEmail, item.itemId, 1);
-            console.log('장바구니에 상품 추가 완료:', item);
-
-            set((state) => {
-                const newCartItems = [...state.cartItems, { ...item, quantity: 1 }];
-                return { cartItems: newCartItems };
+            const cartData = await cartAPI.getCartItems();
+            set({
+                cartItems: cartData.map(item => ({
+                    cartItemId: item.cartItemId,
+                    itemId: item.item.itemId,
+                    quantity: item.itemCount,
+                })),
             });
         } catch (error) {
-            if (error.response?.status === 400 && error.response?.data?.message.includes('기존에 장바구니에 담았습니다')) {
-                console.error('이미 장바구니에 추가된 상품입니다.');
-            } else {
-                console.error('장바구니에 상품 추가 중 오류 발생:', error);
-            }
+            console.error('장바구니 데이터 로드 실패:', error);
         }
     },
+
+    // 장바구니에 상품 추가
+    addToCart: async (itemId, quantity = 1) => {
+        try {
+            await cartAPI.addItemToCart(itemId, quantity);
+            await get().fetchAllCartItems(); // 장바구니 데이터 재로드
+        } catch (error) {
+            console.error('장바구니 추가 실패:', error);
+        }
+    },
+
+    updateCartItemQuantity: async (cartItemId, newQuantity) => {
+        try {
+            const { cartItems } = get();
+            const cartId = cartItems.find(item => item.cartItemId === cartItemId)?.cartId; // cartId 가져오기
+            if (!cartId) throw new Error('장바구니 ID를 찾을 수 없습니다.');
+    
+            // 수정 요청 데이터 생성
+            const updatedItems = cartItems.map(item => ({
+                itemId: item.itemId,
+                itemCount: item.cartItemId === cartItemId ? newQuantity : item.quantity,
+            }));
+    
+            await cartAPI.updateCartItems(cartId, updatedItems); // API 호출
+            await get().fetchAllCartItems(); // 최신 장바구니 데이터 가져오기
+        } catch (error) {
+            console.error('수량 업데이트 실패:', error);
+        }
+    },    
 
     // 장바구니에서 상품 제거
-    removeFromCart: async (itemId) => {
+    removeFromCart: async (cartItemId) => {
         try {
-            console.log('장바구니에서 상품 제거 시도:', itemId);
-
-            await cartAPI.removeCartItem(itemId);
-            console.log('장바구니에서 상품 제거 완료:', itemId);
-
-            set((state) => ({
-                cartItems: state.cartItems.filter((item) => item.itemId !== itemId),
+            await cartAPI.removeCartItem(cartItemId);
+            set(state => ({
+                cartItems: state.cartItems.filter(item => item.cartItemId !== cartItemId),
             }));
         } catch (error) {
-            console.error('장바구니에서 상품 제거 중 오류 발생:', error);
+            console.error('장바구니 제거 실패:', error);
         }
     },
 
-    // 상품이 장바구니에 있는지 확인하여 별표 상태 관리
+    // 별표 활성 상태 확인
     isFavorite: (itemId) => {
-        return get().cartItems.some((item) => item.itemId === itemId);
+        const { cartItems } = get();
+        return cartItems.some(item => item.itemId === itemId);
     },
 }));
 

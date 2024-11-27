@@ -1,21 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useNotificationStore from "../../stores/useNotificationStore";
 import useModalStore from "../../stores/useModalStore";
-import useNotificationSSE from "../../hooks/useNotificationSSE";
 
 const NotificationModal = () => {
-  const { notifications, connected } = useNotificationSSE(); // SSE를 통한 알림 데이터와 상태 가져오기
-  const { modals, closeModal } = useModalStore();
-  const addNotification = useNotificationStore((state) => state.addNotification);
+  const { notifications } = useNotificationStore(); // 알림 상태
+  const { modals, closeModal } = useModalStore(); // 모달 상태
 
-  // SSE 알림 데이터를 상태에 동기화
-  useEffect(() => {
-    if (notifications.length > 0) {
-      notifications.forEach((notification) => addNotification(notification));
-    }
-  }, [notifications, addNotification]);
+  console.log("모달에서 읽은 알림 상태:", notifications); // 상태 디버깅
 
-  if (!modals["notification"]) return null; // 모달이 열릴 때만 렌더링
+  if (!modals["notification"]) return null; // 모달이 열리지 않으면 렌더링하지 않음
 
   return (
     <div
@@ -24,17 +17,15 @@ const NotificationModal = () => {
     >
       <div
         className="bg-white rounded-lg p-5 shadow-lg"
-        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 처리
+        onClick={(e) => e.stopPropagation()} // 모달 외부 클릭 시 닫히지 않도록 방지
       >
         <h2 className="text-lg font-bold mb-4">알림</h2>
-        <p className="text-sm text-gray-500 mb-2">
-          SSE 상태: {connected ? "연결됨" : "연결 끊김"}
-        </p>
         {notifications.length > 0 ? (
           <ul>
             {notifications.map((notification, index) => (
-              <li key={index} className="mb-2">
-                {notification.message || notification}
+              <li key={notification.id || index} className="mb-2">
+                <p className="font-medium">{notification.message}</p>
+                <p className="text-sm text-gray-500">{notification.timestamp}</p>
               </li>
             ))}
           </ul>
