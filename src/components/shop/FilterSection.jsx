@@ -23,7 +23,7 @@ const FilterSection = () => {
                 <RangeSlider />
             </div>
 
-            <div className="mb-4 pb-4">
+            {/* <div className="mb-4 pb-4">
                 <h3 className="text-left text-md font-bold mb-5">카테고리</h3>
                 <div className="grid grid-cols-1 gap-4">
                     <label className="flex items-center space-x-2">
@@ -59,7 +59,7 @@ const FilterSection = () => {
                         <span>반려동물</span>
                     </label>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };
