@@ -2,7 +2,7 @@ import React from "react";
 import useNotificationStore from "../../stores/useNotificationStore";
 import useModalStore from "../../stores/useModalStore";
 
-const NotificationModal = () => {
+const NotificationModal = ({ buttonPosition, onClose }) => {
   const { notifications } = useNotificationStore(); // 알림 상태
   const { modals, closeModal } = useModalStore(); // 모달 상태
 
@@ -34,17 +34,26 @@ const NotificationModal = () => {
       .catch((error) => console.error("알림 요청 오류:", error));
   };
 
-  if (!modals["notification"]) return null; // 모달이 열리지 않으면 렌더링하지 않음
+  // 모달이 열리지 않은 상태에서는 렌더링하지 않음
+  if (!modals["notification"]) return null;
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10"
-      onClick={() => closeModal("notification")}
+      className="fixed inset-0 bg-black bg-opacity-10"
+      style={{ zIndex: 999 }} // InfoModal과 동일한 z-index
+      onClick={onClose || (() => closeModal("notification"))} // 배경 클릭 시 닫기
     >
       <div
-        className="bg-white rounded-lg p-5 shadow-lg"
-        onClick={(e) => e.stopPropagation()} // 모달 외부 클릭 시 닫히지 않도록 방지
+        className="absolute bg-white rounded-lg p-5 shadow-lg w-72"
+        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 닫기 방지
+        style={{
+          top: `${buttonPosition.top}px`, // 아이콘 바로 아래
+          left: `${buttonPosition.left}px`, // 아이콘 가로 중심
+          zIndex: 1000, // 최상위 레이어
+        }}
       >
+
+
         <h2 className="text-lg font-bold mb-4">알림</h2>
         {notifications.length > 0 ? (
           <ul>
@@ -59,7 +68,7 @@ const NotificationModal = () => {
           <p>알림이 없습니다.</p>
         )}
 
-        {/* 알림 테스트 버튼 추가 */}
+        {/* 알림 테스트 버튼 */}
         <button
           onClick={handleSendTestNotification}
           className="mt-3 p-2 bg-blue-500 text-white rounded"
