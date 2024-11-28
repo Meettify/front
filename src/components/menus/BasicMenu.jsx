@@ -33,14 +33,17 @@ const BasicMenu = () => {
     };
 
     const handleNotificationClick = () => {
-        const buttonRect = notificationButtonRef.current.getBoundingClientRect();
-        setButtonPosition({
-            top: buttonRect.bottom + window.scrollY,
-            left: buttonRect.left + window.scrollX - 50
-        });
-        openModal('notification');
-    };
+        if (notificationButtonRef.current) {
+            const buttonRect = notificationButtonRef.current.getBoundingClientRect();
+            const modalWidth = 288; // 모달의 가로 너비 (Tailwind w-72 = 18rem = 288px)
 
+            setButtonPosition({
+                top: buttonRect.bottom + window.scrollY + 10, // 아이콘 바로 아래 위치
+                left: buttonRect.left + window.scrollX + (buttonRect.width / 2) - (modalWidth / 2), // 버튼 가로 중심 정렬
+            });
+            openModal('notification');
+        }
+    };
 
     const toggleSearchBar = () => {
         setIsSearchOpen(prev => !prev);
