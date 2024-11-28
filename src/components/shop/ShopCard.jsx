@@ -15,7 +15,7 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
             // 장바구니에서 제거
             try {
                 if (cartItem) {
-                    await removeFromCart(cartItem.cartItemId); // 정확한 cartItemId 전달
+                    await removeFromCart(cartItem.cartItemId);
                     console.log(`아이템 ${itemId} 제거 완료`);
                 } else {
                     console.error(`장바구니에 ${itemId}가 없습니다.`);
@@ -26,11 +26,6 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
         } else {
             // 장바구니에 추가
             try {
-                const parsedPrice = Number(price.replace(/[^0-9.-]+/g, ''));
-                if (isNaN(parsedPrice)) {
-                    console.error('유효하지 않은 가격:', price);
-                    return;
-                }
                 await addToCart(itemId, 1);
                 console.log(`아이템 ${itemId} 추가 완료`);
             } catch (error) {
