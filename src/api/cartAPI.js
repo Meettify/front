@@ -55,27 +55,26 @@ export const getCartItems = async () => {
     }
 };
   
-  // **장바구니 상품 수정 (PUT)**
-  export const updateCartItems = async (cartId, items) => {
-    try {
-      const requestBody = JSON.stringify(items);
-      console.log('장바구니 수정 요청 데이터:', requestBody);
-  
+export const updateCartItems = async (cartId, items) => {
+  try {
+      console.log(`장바구니(${cartId}) 수정 요청 데이터:`, items);
+
       const response = await request.put({
-        url: `${BASE_URL}/${cartId}`,
-        data: requestBody,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+          url: `/carts/${cartId}`,
+          data: items, // JSON 형식 데이터
+          headers: {
+              'Content-Type': 'application/json',
+          },
       });
-  
-      console.log('장바구니 수정 응답:', response.data);
+
+      console.log('장바구니 수정 성공 응답:', response.data);
       return response.data;
-    } catch (error) {
-      console.error('장바구니 수정 중 오류 발생:', error.response?.data || error.message);
+  } catch (error) {
+      console.error('장바구니 수정 실패:', error.response?.data || error.message);
       throw error;
-    }
-  };
+  }
+};
+
   
   export const removeCartItem = async (cartItemId) => {
     try {

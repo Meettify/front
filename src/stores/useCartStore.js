@@ -17,21 +17,23 @@ const useCartStore = create((set, get) => ({
         }
     },
 
-    // 장바구니 데이터 로드
     fetchAllCartItems: async () => {
         try {
             const cartData = await cartAPI.getCartItems();
+            console.log('응답 데이터:', cartData); // 디버깅 로그
+    
             set({
                 cartItems: cartData.map(item => ({
-                    cartItemId: item.cartItemId,
-                    itemId: item.item.itemId,
-                    quantity: item.itemCount,
+                    cartItemId: item.cartItemId || null,
+                    itemId: item.item?.itemId || null,
+                    quantity: item.itemCount || 0,
+                    cartId: item.cart?.cartId || null, // cartId 명확히 추가
                 })),
             });
         } catch (error) {
             console.error('장바구니 데이터 로드 실패:', error);
         }
-    },
+    },     
 
     // 장바구니에 상품 추가
     addToCart: async (itemId, quantity = 1) => {
@@ -46,8 +48,12 @@ const useCartStore = create((set, get) => ({
     updateCartItemQuantity: async (cartItemId, newQuantity) => {
         try {
             const { cartItems } = get();
-            const cartId = cartItems.find(item => item.cartItemId === cartItemId)?.cartId; // cartId 가져오기
-            if (!cartId) throw new Error('장바구니 ID를 찾을 수 없습니다.');
+            
+            // cartItemId로 해당 cartItem을 찾기
+            const targetItem = cartItems.find(item => item.cartItemId === cartItemId);
+            if (!targetItem || !targetItem.cartId) {
+                throw new Error('장바구니 ID를 찾을 수 없습니다.');
+            }
     
             // 수정 요청 데이터 생성
             const updatedItems = cartItems.map(item => ({
@@ -55,13 +61,13 @@ const useCartStore = create((set, get) => ({
                 itemCount: item.cartItemId === cartItemId ? newQuantity : item.quantity,
             }));
     
-            await cartAPI.updateCartItems(cartId, updatedItems); // API 호출
+            await cartAPI.updateCartItems(targetItem.cartId, updatedItems); // API 호출
             await get().fetchAllCartItems(); // 최신 장바구니 데이터 가져오기
         } catch (error) {
-            console.error('수량 업데이트 실패:', error);
+            console.error('장바구니 수량 업데이트 실패:', error);
         }
     },    
-
+    
     // 장바구니에서 상품 제거
     removeFromCart: async (cartItemId) => {
         try {
