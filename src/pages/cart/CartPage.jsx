@@ -99,9 +99,7 @@ const CartPage = () => {
                                     </div>
                                     <div className="flex items-center">
                                         <button
-                                            onClick={() =>
-                                                updateCartItemQuantity(cartItem.itemId, cartItem.quantity - 1)
-                                            }
+                                            onClick={() => updateCartItemQuantity(cartItem.cartItemId, cartItem.quantity - 1)}
                                             className="px-2 py-1 border rounded-l bg-gray-200"
                                             disabled={cartItem.quantity <= 1}
                                         >
@@ -109,13 +107,12 @@ const CartPage = () => {
                                         </button>
                                         <p className="px-4">{cartItem.quantity}</p>
                                         <button
-                                            onClick={() =>
-                                                updateCartItemQuantity(cartItem.itemId, cartItem.quantity + 1)
-                                            }
+                                            onClick={() => updateCartItemQuantity(cartItem.cartItemId, cartItem.quantity + 1)}
                                             className="px-2 py-1 border rounded-r bg-gray-200"
                                         >
                                             +
                                         </button>
+
                                     </div>
                                     <div className="flex items-center">
                                         <p className="mr-4">
