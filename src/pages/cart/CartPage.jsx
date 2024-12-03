@@ -1,28 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 import
+import { useNavigate } from 'react-router-dom';
 import useCartStore from '../../stores/useCartStore';
+import { useAuth } from '../../hooks/useAuth';
+import { getCartId } from '../../api/cartAPI';
 
 const CartPage = () => {
     const {
         shopItems,
         cartItems,
-        fetchAllCartItems,
         fetchShopItems,
+        fetchAllCartItems,
+        fetchCartById,
         removeFromCart,
         updateCartItemQuantity,
     } = useCartStore();
 
+    const { user } = useAuth();
     const [selectedItems, setSelectedItems] = useState([]);
-    const navigate = useNavigate(); // 페이지 이동을 위한 훅
+    const [cartId, setCartId] = useState(null); // cartId를 상태로 관리
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchShopItems(); // 상품 데이터 로드
-        fetchAllCartItems(); // 장바구니 데이터 로드
-    }, []);
+        if (!user?.memberEmail) {
+            console.error('유효한 이메일이 없습니다. 사용자 정보:', user);
+            return;
+        }
+
+        // 상품 데이터 로드
+        fetchShopItems();
+
+        // 장바구니 ID 가져오기 및 데이터 로드
+        const loadCartData = async () => {
+            try {
+                const fetchedCartId = await getCartId();
+                console.log('가져온 장바구니 ID:', fetchedCartId);
+                setCartId(fetchedCartId);
+
+                if (fetchedCartId) {
+                    await fetchCartById(fetchedCartId);
+                } else {
+                    throw new Error('장바구니 ID를 가져오는 데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('장바구니 데이터를 가져오는 데 실패했습니다.', error);
+            }
+        };
+
+        loadCartData();
+    }, [user]); // user가 변경될 때마다 실행
 
     const getItemDetails = (itemId) => {
         const item = shopItems.find(item => item.itemId === itemId);
-        return item || {};
+        return item || { stock: 0 };  // stock 추가
     };
 
     const calculateTotalPrice = () => {
@@ -45,7 +74,6 @@ const CartPage = () => {
 
     const handleOrder = () => {
         if (selectedItems.length === 0) {
-            console.log('주문 불가: 선택된 상품이 없습니다.'); // 디버깅 로그
             alert('선택된 상품이 없습니다.');
             return;
         }
@@ -53,18 +81,25 @@ const CartPage = () => {
         const selectedCartItems = selectedItems.map(itemId => {
             const cartItem = cartItems.find(item => item.itemId === itemId);
             const itemDetails = getItemDetails(itemId);
-            console.log('선택된 상품 디테일:', { cartItem, itemDetails }); // 디버깅 로그
             return {
                 ...cartItem,
                 ...itemDetails,
             };
         });
 
-        console.log('최종 주문 데이터:', selectedCartItems); // 디버깅 로그
-        // OrderPage로 이동하면서 주문 데이터를 전달
         navigate('/order', { state: { selectedCartItems } });
     };
 
+    const handleQuantityChange = (cartItemId, increment) => {
+        const targetItem = cartItems.find(item => item.cartItemId === cartItemId);
+        if (targetItem) {
+            const newQuantity = targetItem.quantity + increment;
+            if (newQuantity > 0) {
+                // 장바구니 항목의 수량만 수정하는 API 호출
+                updateCartItemQuantity(cartItemId, newQuantity);
+            }
+        }
+    };
 
     return (
         <div className="max-w-3xl mx-auto mt-12">
@@ -99,7 +134,7 @@ const CartPage = () => {
                                     </div>
                                     <div className="flex items-center">
                                         <button
-                                            onClick={() => updateCartItemQuantity(cartItem.cartItemId, cartItem.quantity - 1)}
+                                            onClick={() => handleQuantityChange(cartItem.cartItemId, -1)} // 수량 감소
                                             className="px-2 py-1 border rounded-l bg-gray-200"
                                             disabled={cartItem.quantity <= 1}
                                         >
@@ -107,12 +142,11 @@ const CartPage = () => {
                                         </button>
                                         <p className="px-4">{cartItem.quantity}</p>
                                         <button
-                                            onClick={() => updateCartItemQuantity(cartItem.cartItemId, cartItem.quantity + 1)}
+                                            onClick={() => handleQuantityChange(cartItem.cartItemId, 1)} // 수량 증가
                                             className="px-2 py-1 border rounded-r bg-gray-200"
                                         >
                                             +
                                         </button>
-
                                     </div>
                                     <div className="flex items-center">
                                         <p className="mr-4">
