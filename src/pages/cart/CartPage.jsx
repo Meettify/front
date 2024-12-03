@@ -101,7 +101,6 @@ const CartPage = () => {
         }
     };
 
-
     return (
         <div className="max-w-3xl mx-auto mt-12">
             <h2 className="text-2xl font-bold mb-6">장바구니</h2>
