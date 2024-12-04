@@ -160,3 +160,16 @@ npm install react-slick
 ```
 npm install event-source-polyfill
 ```
+
+### toss payments
+
+```
+npm install @tosspayments/payment-widget-sdk
+```
+
+### dotenv
+
+```
+npm install dotenv
+
+```
