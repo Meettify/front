@@ -13,7 +13,9 @@
     "invalidate": "aws cloudfront create-invalidation --profile=sample-s3 --distribution-id E31OAEMQAW3G63 --paths /*"
   },
   "dependencies": {
+    "@tosspayments/payment-widget-sdk": "^0.12.0",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.7",
     "event-source-polyfill": "^1.0.31",
     "i": "^0.3.7",
     "quill": "^2.0.2",
