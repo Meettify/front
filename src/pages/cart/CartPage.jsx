@@ -33,7 +33,7 @@ const CartPage = () => {
         const loadCartData = async () => {
             try {
                 const fetchedCartId = await getCartId();
-                console.log('가져온 장바구니 ID:', fetchedCartId);
+                console.log('가져온 장바구니 ID:', fetchedCartId);  // 5가 출력되어야 함
                 setCartId(fetchedCartId);
 
                 if (fetchedCartId) {
@@ -49,10 +49,6 @@ const CartPage = () => {
         loadCartData();
     }, [user]); // user가 변경될 때마다 실행
 
-    const getItemDetails = (itemId) => {
-        const item = shopItems.find(item => item.itemId === itemId);
-        return item || { stock: 0 };  // stock 추가
-    };
 
     const calculateTotalPrice = () => {
         return selectedItems.reduce((total, itemId) => {
@@ -63,6 +59,7 @@ const CartPage = () => {
             return total + parsedPrice * (cartItem.quantity || 0);
         }, 0);
     };
+
 
     const toggleSelectItem = (itemId) => {
         if (selectedItems.includes(itemId)) {
@@ -89,17 +86,37 @@ const CartPage = () => {
 
         navigate('/order', { state: { selectedCartItems } });
     };
+    const getItemDetails = (itemId) => {
+        const item = shopItems.find(item => item.itemId === itemId);
+        if (!item) {
+            console.warn(`Item with ID ${itemId} not found.`);
+            return { stock: 0, itemPrice: 0, itemName: 'Unknown', files: [] };
+        }
+        return item;
+    };
 
     const handleQuantityChange = (cartItemId, increment) => {
         const targetItem = cartItems.find(item => item.cartItemId === cartItemId);
         if (targetItem) {
+            const { stock } = getItemDetails(targetItem.itemId);
             const newQuantity = targetItem.quantity + increment;
-            if (newQuantity > 0) {
-                // 장바구니 항목의 수량만 수정하는 API 호출
-                updateCartItemQuantity(cartItemId, newQuantity);
+
+            if (newQuantity > stock) {
+                alert(`재고를 초과할 수 없습니다. 현재 재고: ${stock}`);
+                return;
             }
+
+            if (newQuantity < 1) {
+                alert('수량은 최소 1개 이상이어야 합니다.');
+                return;
+            }
+
+            updateCartItemQuantity(cartItemId, newQuantity);
+        } else {
+            console.error(`Cart item with ID ${cartItemId} not found.`);
         }
     };
+
 
     return (
         <div className="max-w-3xl mx-auto mt-12">
@@ -136,7 +153,7 @@ const CartPage = () => {
                                         <button
                                             onClick={() => handleQuantityChange(cartItem.cartItemId, -1)} // 수량 감소
                                             className="px-2 py-1 border rounded-l bg-gray-200"
-                                            disabled={cartItem.quantity <= 1}
+                                            disabled={cartItem.quantity <= 1} // 수량이 1 이하로 감소하지 않도록 제한
                                         >
                                             -
                                         </button>
@@ -144,9 +161,11 @@ const CartPage = () => {
                                         <button
                                             onClick={() => handleQuantityChange(cartItem.cartItemId, 1)} // 수량 증가
                                             className="px-2 py-1 border rounded-r bg-gray-200"
+                                            disabled={cartItem.quantity >= getItemDetails(cartItem.itemId).stock} // 재고 초과 방지
                                         >
                                             +
                                         </button>
+
                                     </div>
                                     <div className="flex items-center">
                                         <p className="mr-4">

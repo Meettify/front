@@ -2,16 +2,21 @@ import request from './request';
 
 const BASE_URL = '/carts';
 
+// 장바구니 ID를 가져오는 함수 (예시)
 export const getCartId = async () => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/id`,
     });
-    return response.data; // 응답 데이터 반환
+    const cartId = response.data; // 응답 데이터에서 cartId 추출
+    console.log("장바구니 ID:", cartId);
+    return cartId;
   } catch (error) {
+    console.error("장바구니 ID를 가져오는 데 실패했습니다.", error);
     throw error; // 오류 전파
   }
 };
+
 
 export const getCartById = async (cartId) => {
   try {
@@ -61,6 +66,13 @@ export const getCartItems = async () => {
 };
   
 export const updateCartItems = async (cartId, items) => {
+  
+  // cartId가 유효하지 않으면 요청을 보내지 않음
+  if (!cartId) {
+    console.error("장바구니 ID가 유효하지 않습니다.");
+    return;
+  }
+
   try {
     const updatedItems = items.map(item => ({
       itemId: item.itemId,
@@ -73,8 +85,10 @@ export const updateCartItems = async (cartId, items) => {
       headers: { 'Content-Type': 'application/json' },
     });
 
+    console.log("장바구니 업데이트 성공:", response.data);
     return response.data; // 응답 데이터 반환
   } catch (error) {
+    console.error("장바구니 업데이트 실패:", error);
     throw error; // 오류 전파
   }
 };
