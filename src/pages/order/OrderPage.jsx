@@ -13,82 +13,102 @@ const OrderPage = () => {
 
     const handlePayment = () => {
         console.log('결제 시도:', { selectedCartItems, user }); // 디버깅 로그
-        // 결제 로직 추가
         alert('결제가 완료되었습니다!');
-        // 결제 완료 후 원하는 페이지로 이동
-        navigate('/main');
+        navigate('/main'); // 메인 페이지로 이동
     };
 
     return (
-        <div className="max-w-3xl mx-auto mt-12">
-            <h2 className="text-2xl font-bold mb-6">주문 내역</h2>
+        <div className="max-w-2xl mx-auto mt-16 p-4"> {/* border border-gray-200 rounded-md shadow-sm */}
+            {/* 배송 정보 */}
+            <div className="mb-8">
+                <h2 className="text-lg font-bold mb-4 text-left">배송 정보</h2>
+                <div className="text-sm text-gray-600 text-left">
+                    <p>주문자명: {user?.memberName || '정보 없음'}</p>
+                    <p>주문자 핸드폰 번호: {user?.memberPhone || '정보 없음'}</p>
+                    <p>
+                        주문자 주소: {user?.memberAddr
+                            ? `${user.memberAddr.memberAddr || ''} ${user.memberAddr.memberAddrDetail || ''} (${user.memberAddr.memberZipCode || ''})`
+                            : '주소 정보 없음'}
+                    </p>
+                </div>
+            </div>
 
-            {selectedCartItems.length === 0 ? (
-                <p>주문한 상품이 없습니다.</p>
-            ) : (
-                <>
-                    <ul>
-                        {selectedCartItems.map(item => (
-                            <li key={item.cartItemId} className="flex justify-between items-center mb-4">
-                                <div className="flex items-center">
-                                    <img
-                                        src={item.files?.[0] || 'https://via.placeholder.com/150'}
-                                        alt={item.itemName || '상품 이미지'}
-                                        className="w-16 h-16 object-cover rounded-md mr-4"
-                                    />
-                                    <div>
-                                        <p className="font-semibold">{item.itemName || '상품 제목 없음'}</p>
-                                        <p className="text-sm">₩{item.itemPrice}</p>
-                                        <p className="text-sm">수량: {item.quantity}</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>합계: ₩{item.itemPrice * item.quantity}</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+            {/* 주문 상품 */}
+            <div className="mb-8">
+                <h2 className="text-lg font-bold mb-4 text-left">주문 상품</h2>
+                {selectedCartItems.length === 0 ? (
+                    <p className="text-sm text-gray-600 text-left">주문한 상품이 없습니다.</p>
+                ) : (
+                    <table className="w-full text-sm border-t border-b border-gray-200">
+                        <thead>
+                            <tr className="bg-gray-50">
+                                <th className="py-2 px-4 text-left">상품 이미지</th>
+                                <th className="py-2 px-4 text-left">상품명</th>
+                                <th className="py-2 px-4 text-center">수량</th>
+                                <th className="py-2 px-4 text-right">가격</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {selectedCartItems.map((item) => (
+                                <tr key={item.cartItemId} className="border-t">
+                                    <td className="py-2 px-4">
+                                        <img
+                                            src={item.files?.[0] || 'https://via.placeholder.com/150'}
+                                            alt={item.itemName || '상품 이미지'}
+                                            className="w-12 h-12 object-cover rounded"
+                                        />
+                                    </td>
+                                    <td className="py-2 px-4">{item.itemName || '상품 제목 없음'}</td>
+                                    <td className="py-2 px-4 text-center">{item.quantity}</td>
+                                    <td className="py-2 px-4 text-right">₩{item.itemPrice * item.quantity}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
 
-                    <div className="mb-8 p-4 bg-gray-100 rounded-md">
-                        <h3 className="text-xl font-semibold">주문자 정보</h3>
-                        <p>이름: {user?.memberName || '정보 없음'}</p>
-                        <p>이메일: {user?.memberEmail || '정보 없음'}</p>
-                        <p>
-                            주소: {user?.memberAddr
-                                ? `${user.memberAddr.memberAddr || ''} ${user.memberAddr.memberAddrDetail || ''} (${user.memberAddr.memberZipCode || ''})`
-                                : '주소 정보 없음'}
-                        </p>
-                    </div>
+            {/* 결제 수단 */}
+            <div className="mb-8">
+                <h2 className="text-lg font-bold mb-4 text-left">결제 수단</h2>
+                <div className="flex items-center space-x-4 text-left">
+                    <label>
+                        <input type="radio" name="payment" className="mr-2" />
+                        신용/체크카드
+                    </label>
+                    <label>
+                        <input type="radio" name="payment" className="mr-2" />
+                        토스페이
+                    </label>
+                    <label>
+                        <input type="radio" name="payment" className="mr-2" />
+                        무통장입금
+                    </label>
+                </div>
+            </div>
 
-                    <div className="text-right mt-8">
-                        <h3 className="text-xl font-bold">
-                            총 합계: ₩{selectedCartItems.reduce((total, item) => total + item.itemPrice * item.quantity, 0)}
-                        </h3>
-
-                        {/* 버튼 그룹 */}
-                        <div className="mt-4 space-x-4">
-                            <button
-                                onClick={() => {
-                                    console.log('돌아가기 버튼 클릭'); // 디버깅 로그
-                                    navigate('/cart');
-                                }} // Cart 페이지로 이동
-                                className="px-6 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                            >
-                                돌아가기
-                            </button>
-                            <button
-                                onClick={handlePayment} // 결제 로직
-                                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                결제하기
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
+            {/* 결제 금액 및 버튼 */}
+            <div className="text-right">
+                <h3 className="text-xl font-bold">
+                    결제 금액: ₩{selectedCartItems.reduce((total, item) => total + item.itemPrice * item.quantity, 0)}
+                </h3>
+                <div className="mt-4 space-x-4">
+                    <button
+                        onClick={() => navigate('/cart')}
+                        className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                    >
+                        돌아가기
+                    </button>
+                    <button
+                        onClick={handlePayment}
+                        className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        결제하기
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
-
 
 export default OrderPage;
