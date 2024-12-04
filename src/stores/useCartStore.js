@@ -5,6 +5,7 @@ import * as shopAPI from '../api/adminAPI';
 const useCartStore = create((set, get) => ({
   shopItems: [], // 상점 상품 데이터
   cartItems: [], // 장바구니 데이터
+  cartId: null,
   
 
   // **상점 상품 로드**
@@ -71,41 +72,49 @@ const useCartStore = create((set, get) => ({
 
   updateCartItemQuantity: async (cartItemId, newQuantity) => {
     try {
-        const { cartItems } = get();
-        const targetItem = cartItems.find(item => item.cartItemId === cartItemId);
+        const { cartItems, shopItems } = get(); // 현재 상태에서 데이터 가져오기
+        const targetCartItem = cartItems.find(item => item.cartItemId === cartItemId);
+        const targetShopItem = shopItems.find(item => item.itemId === targetCartItem.itemId);
 
-        if (!targetItem) {
-            throw new Error('유효한 장바구니 항목을 찾을 수 없습니다.');
+        if (!targetCartItem || !targetShopItem) {
+            throw new Error('유효한 장바구니 항목 또는 상품 데이터를 찾을 수 없습니다.');
         }
 
-        const updatedItems = cartItems.map(item =>
-            item.cartItemId === cartItemId
-                ? { ...item, quantity: newQuantity }  // 수량만 수정
-                : item
-        );
+        // 재고 확인 로직
+        if (newQuantity > targetShopItem.itemCount) {
+            alert(`재고를 초과할 수 없습니다. 현재 재고: ${targetShopItem.itemCount}`);
+            return;
+        }
+
+        if (newQuantity < 1) {
+            alert('수량은 최소 1개 이상이어야 합니다.');
+            return;
+        }
 
         // API 호출
-        const response = await cartAPI.updateCartItems(targetItem.cartId, updatedItems);
-        set({
-            cartItems: updatedItems,  // 수정된 항목으로 상태 업데이트
-        });
+        await cartAPI.updateCartItems(targetCartItem.cartId, [
+            { itemId: targetShopItem.itemId, itemCount: newQuantity },
+        ]);
 
+        // 상태 업데이트 및 최신 데이터 가져오기
+        await get().fetchAllCartItems();
+        await get().fetchShopItems(); // 최신 상품 데이터 동기화
     } catch (error) {
-        console.error('장바구니 수량 수정 실패:', error);
+        console.error('장바구니 수량 업데이트 실패:', error);
+        alert('장바구니 수량 업데이트 중 문제가 발생했습니다. 다시 시도해주세요.');
     }
 },
   
-  // **장바구니에서 상품 제거**
-  removeFromCart: async (cartItemId) => {
+removeFromCart: async (cartItemId) => {
     try {
-      await cartAPI.removeCartItem(cartItemId);
-      set(state => ({
-        cartItems: state.cartItems.filter(item => item.cartItemId !== cartItemId),
-      }));
+        await cartAPI.removeCartItem(cartItemId);
+        set(state => ({
+            cartItems: state.cartItems.filter(item => item.cartItemId !== cartItemId),
+        }));
     } catch (error) {
-      console.error('장바구니 상품 제거 실패:', error);
+        console.error('장바구니 상품 제거 실패:', error);
     }
-  },
+},
 
   // **상품 즐겨찾기 확인**
   isFavorite: (itemId) => {
