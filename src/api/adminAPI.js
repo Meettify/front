@@ -57,18 +57,25 @@ export const getItemList = async (page = 1, size = 10) => {
 };
 
 export const getItemDetail = async (itemId) => {
-    try {
-        console.log(`Fetching item detail for ID: ${itemId}`); // 디버깅용 로그
-        const response = await request.get({
-            url: `${BASE_URL}/${itemId}`,
-        });
-        console.log('API Response:', response.data); // 응답 로그
-        return response.data;
-    } catch (error) {
-        console.error('상품 상세 조회 중 오류 발생:', error);
-        throw error;
-    }
+  try {
+      console.log(`Fetching item detail for ID: ${itemId}`); // 디버깅용 로그: itemId 확인
+      if (!itemId) {
+          console.error('아이템 ID가 전달되지 않았습니다.'); // itemId가 없을 경우 경고
+          return;
+      }
+
+      const response = await request.get({
+          url: `${BASE_URL}/${itemId}`,
+      });
+
+      console.log('API Response:', response.data); // 응답 로그
+      return response.data;
+  } catch (error) {
+      console.error('상품 상세 조회 중 오류 발생:', error);
+      throw error;
+  }
 };
+
 
 // 상품 상태 변경 (컨펌)
 export const confirmItem = async (itemId) => {

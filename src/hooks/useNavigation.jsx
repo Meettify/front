@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 const useNavigation = () => {
     const navigate = useNavigate();
 
+    const goToShopDetail = (id) => {
+        navigate(`/shop/detail/${id}`);
+    };
+
     const goToShopAdd = () => {
         navigate('/shop/add');
     };
@@ -119,6 +123,7 @@ const useNavigation = () => {
         goToCart,
         goToShopAdd,
         goToSupport,
+        goToShopDetail,
     };
 };
 

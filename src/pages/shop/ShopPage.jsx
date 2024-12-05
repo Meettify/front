@@ -41,8 +41,13 @@ const ShopPage = () => {
     }, []);
 
     const handleNavigateToDetail = (itemId) => {
+        if (typeof itemId !== 'string') {
+            itemId = String(itemId);  // itemId를 문자열로 변환
+        }
+        console.log("Navigating to item detail with ID:", itemId);
         navigate(`/shop/detail/${itemId}`);
     };
+
 
     // 카테고리 필터링된 아이템
     const filteredItems = selectedCategory === 'all'
@@ -96,7 +101,7 @@ const ShopPage = () => {
                                 description={item.itemDetails}
                                 price={`₩${item.itemPrice}`}
                                 imageUrl={item.files?.[0] ? `https://example.com/${item.files[0]}` : 'https://via.placeholder.com/150'}
-                                onClick={handleNavigateToDetail}
+                                onClick={() => handleNavigateToDetail(item.itemId)} // itemId가 제대로 전달되는지 확인
                             />
                         ))}
                     </div>
