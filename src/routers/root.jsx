@@ -77,7 +77,7 @@ const root = createBrowserRouter([
             ...meetRouter(),
             ...memberRouter(),
             ...commRouter(),
-        ]
+        ],
     },
     {
         path: "signup",
@@ -87,6 +87,12 @@ const root = createBrowserRouter([
         path: "signupsuccess",
         element: <Suspense fallback={<Loading />}><SignupSuccess /></Suspense>,
     },
-]);
+],
+    {
+        future: {
+            v7_relativeSplatPath: true, // v7에서의 상대 경로 처리 방식 활성화
+        },
+    }
+);
 
 export default root;

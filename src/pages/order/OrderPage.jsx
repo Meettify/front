@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import paymentAPI from '../../api/paymentApi';
 import usePaymentStore from '../../stores/usePaymentStore';
+import PaymentWidget from '../../components/payment/PaymentWidget';
 
 const OrderPage = () => {
     const location = useLocation();
@@ -11,14 +12,14 @@ const OrderPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const [paymentMethod, setPaymentMethod] = useState(''); // 결제 수단 상태
-    const { isLoading, setLoading, setPaymentResult } = usePaymentStore(); // Zustand 스토어
-
-    console.log('주문 페이지 로드 - 전달된 상태:', { selectedCartItems, user });
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');  // Error message state
+    const { isLoading, setLoading, setPaymentResult } = usePaymentStore();
 
     const handlePayment = async () => {
+        console.log('[OrderPage] 결제 버튼 클릭됨');
         if (!paymentMethod) {
-            alert('결제 수단을 선택해주세요.');
+            setErrorMessage('결제 수단을 선택해주세요.');  // Set error message state
             return;
         }
 
@@ -47,50 +48,65 @@ const OrderPage = () => {
             },
         };
 
-        console.log('결제 요청 데이터:', requestData);
+        // 디버깅용: 결제 요청 데이터 확인
+        console.log('[OrderPage] 결제 요청 데이터:', requestData);
 
         try {
             setLoading(true);
-            const result = await paymentAPI.iamportConfirm(requestData);
-            console.log('결제 성공 응답 데이터:', result);
+            let result;
+            console.log('[OrderPage] 결제 수단:', paymentMethod);
 
-            // 결제 상태 확인
+            if (paymentMethod === 'toss') {
+                console.log('[OrderPage] Toss 결제 API 호출 시작');
+                result = await paymentAPI.tossPayConfirm(requestData);
+            } else if (paymentMethod === 'iamport') {
+                console.log('[OrderPage] Iamport 결제 API 호출 시작');
+                result = await paymentAPI.iamportConfirm(requestData);
+            } else {
+                throw new Error('잘못된 결제 수단입니다.');
+            }
+
+            console.log('[OrderPage] 결제 성공 응답 데이터:', result);
             await checkPaymentStatus(orderUid, paymentMethod);
-
             setPaymentResult(result);
             alert('결제가 완료되었습니다!');
             navigate('/main');
         } catch (error) {
-            console.error('결제 실패:', error);
+            console.error('[OrderPage] 결제 실패:', error);
             alert('결제 처리 중 오류가 발생했습니다.');
         } finally {
+            console.log('[OrderPage] 결제 처리 완료');
             setLoading(false);
         }
     };
 
     const checkPaymentStatus = async (orderUid, paymentMethod) => {
+        console.log('[OrderPage] 결제 상태 조회 시작');
+        console.log('[OrderPage] 주문 UID:', orderUid);
+        console.log('[OrderPage] 결제 수단:', paymentMethod);
+
         try {
             let status;
             if (paymentMethod === 'toss') {
+                console.log('[OrderPage] Toss 결제 상태 조회 호출');
                 status = await paymentAPI.tossPayStatus(orderUid);
             } else if (paymentMethod === 'iamport') {
+                console.log('[OrderPage] Iamport 결제 상태 조회 호출');
                 status = await paymentAPI.iamportStatus(orderUid);
             } else {
                 throw new Error('잘못된 결제 수단입니다.');
             }
 
-            console.log('결제 상태:', status.data); // 응답 데이터 로그
+            console.log('[OrderPage] 결제 상태 조회 응답 데이터:', status.data);
             alert(`결제 상태 조회 성공: ${JSON.stringify(status.data)}`);
         } catch (error) {
-            console.error('결제 상태 조회 실패:', error);
+            console.error('[OrderPage] 결제 상태 조회 실패:', error);
             alert('결제 상태 조회 중 오류가 발생했습니다.');
         }
     };
 
-
     return (
         <div className="max-w-2xl mx-auto mt-16 p-4">
-            {/* 배송 정보 */}
             <div className="mb-8">
                 <h2 className="text-lg font-bold mb-4 text-left">배송 정보</h2>
                 <div className="text-sm text-gray-600 text-left">
@@ -99,20 +115,16 @@ const OrderPage = () => {
                     <p>
                         주문자 주소:{' '}
                         {user?.memberAddr
-                            ? `${user.memberAddr.memberAddr || ''} ${user.memberAddr.memberAddrDetail || ''
-                            } (${user.memberAddr.memberZipCode || ''})`
+                            ? `${user.memberAddr.memberAddr || ''} ${user.memberAddr.memberAddrDetail || ''} (${user.memberAddr.memberZipCode || ''})`
                             : '주소 정보 없음'}
                     </p>
                 </div>
             </div>
 
-            {/* 주문 상품 */}
             <div className="mb-8">
                 <h2 className="text-lg font-bold mb-4 text-left">주문 상품</h2>
                 {selectedCartItems.length === 0 ? (
-                    <p className="text-sm text-gray-600 text-left">
-                        주문한 상품이 없습니다.
-                    </p>
+                    <p className="text-sm text-gray-600 text-left">주문한 상품이 없습니다.</p>
                 ) : (
                     <table className="w-full text-sm border-t border-b border-gray-200">
                         <thead>
@@ -125,10 +137,7 @@ const OrderPage = () => {
                         </thead>
                         <tbody>
                             {selectedCartItems.map((item) => (
-                                <tr
-                                    key={item.cartItemId}
-                                    className="border-t"
-                                >
+                                <tr key={item.cartItemId} className="border-t">
                                     <td className="py-2 px-4">
                                         <img
                                             src={item.files?.[0] || 'https://via.placeholder.com/150'}
@@ -146,7 +155,6 @@ const OrderPage = () => {
                 )}
             </div>
 
-            {/* 결제 수단 */}
             <div className="mb-8">
                 <h2 className="text-lg font-bold mb-4 text-left">결제 수단</h2>
                 <div className="flex items-center space-x-4 text-left">
@@ -173,7 +181,8 @@ const OrderPage = () => {
                 </div>
             </div>
 
-            {/* 결제 금액 및 버튼 */}
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}  {/* Error message display */}
+
             <div className="text-right">
                 <h3 className="text-xl font-bold">
                     결제 금액: ₩
@@ -197,14 +206,7 @@ const OrderPage = () => {
                     >
                         {isLoading ? '처리 중...' : '결제하기'}
                     </button>
-                    <button
-                        onClick={() => checkPaymentStatus(`order-${Date.now()}`, paymentMethod)} // orderUid는 실제 데이터로 대체 필요
-                        className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
-                        결제 상태 조회
-                    </button>
                 </div>
-
             </div>
         </div>
     );
