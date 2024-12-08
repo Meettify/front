@@ -154,3 +154,9 @@ npm install react-infinite-scroll-component
 ```bash
 npm install react-slick
 ```
+
+### react-intersection-observer 라이브러리
+
+```bash
+npm install react-intersection-observer
+```

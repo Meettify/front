@@ -1,6 +1,14 @@
 import { useEffect } from 'react';
 import useMypageStore from '../stores/useMypageStore';
-import { getMeetJoinList, getMyCommunityList, getMyInquiryList } from '../api/memberAPI';
+import { 
+    getMeetJoinList, 
+    getMyCommunityList,
+    getMyInquiryList,
+    getMyCommunityListCount, 
+    getMyInquiryListCount,
+    getMyOrderList,
+    getMyOrderCount,
+} from '../api/memberAPI';
 
 export const useMyPage = () => {
     const { 
@@ -12,6 +20,7 @@ export const useMyPage = () => {
         setCurrentPage, 
         totalPages, 
         setTotalPages,
+        totalPostCount,
         setTotalPostCount,
         inquirys,
         inquiryTotalPages,
@@ -23,11 +32,18 @@ export const useMyPage = () => {
         setInquiryCurrentPage,
         setTotalInquiryCount,
         setTotalInquiryOkCount,
+        myOrderCurrentPage,
+        myOrderListCount,
+        myOrderList,
+        myOrdertotalPages,
+        setMyOrderList,
+        setMyOrdertotalPages,
+        setMyOrderCurrentPage,
+        setMyOrderListCount,
 
     } = useMypageStore();
 
-    let totalPostCount = 0;
-
+    // 마이페이지 모임 - S
     useEffect(() => {
         const fetchMeets = async () => {
             try {
@@ -67,7 +83,9 @@ export const useMyPage = () => {
         };
         fetchMeets();
     }, []);
+    // 마이페이지 모임 - E
 
+    // 마이페이지 커뮤니티 - S
     const fetchPosts = async (page = 0, size = 10, sortOrder = 'desc') => {
         try {
             const response = await getMyCommunityList(page, size, sortOrder);
@@ -85,37 +103,28 @@ export const useMyPage = () => {
         }
     };
 
-    const calculateTotalPosts = async () => {
-        try {
-            const allPosts = [];
-            for (let page = 0; page < totalPages; page++) {
-                const response = await getMyCommunityList(page, 10, 'desc');
-                allPosts.push(...response.communities);
-            }
-            const count = allPosts.length;
-            setTotalPostCount(count);
-            return count;
-        } catch (error) {
-            console.error("Error calculating total posts:", error);
+    const fetchPostCount = async () => {
+        try{
+            const response = await getMyCommunityListCount();
+            setTotalPostCount(response)
+
+        } catch (error){
+            console.error("Error fetching PostCount: ", error);
         }
-    };
+    }
+
+    useEffect(() => {
+        fetchPostCount();
+    }, [totalPostCount])
 
     useEffect(() => {
         if (currentPage > 0) {
             fetchPosts(currentPage - 1);
         }
     }, [currentPage]);
+    // 마이페이지 커뮤니티 - E
 
-    useEffect(() => {
-        const updateTotalPostCount = async () => {
-            if (totalPages > 0) {
-                const count = await calculateTotalPosts();
-                setTotalPostCount(count);
-            }
-        };
-        updateTotalPostCount();
-    }, [totalPages]);
-
+    // 마이페이지 문의 - S
     const fetchInquirys = async (page = 0, size = 10, sortOrder = 'desc') => {
         try {
             const response = await getMyInquiryList(page, size, sortOrder);
@@ -132,26 +141,15 @@ export const useMyPage = () => {
         }
     };
 
-    const calculateTotalInquirys = async () => {
-        try {
-            const allInquirys = [];
-            const completedCount = 0
-            for (let page = 0; page < totalPages; page++) {
-                const response = await getMyInquiryList(page, 10, 'desc');
-                allInquirys.push(...response.contents);
-                completedCount += response.contents.filter(inquiry => inquiry.replyStatus === true).length;
-            }
-            const result = {
-                all : allInquirys.length,
-                ok : completedCount
-            }
-            setTotalInquiryCount(result.all);
-            setTotalInquiryOkCount(result.ok);
-            return result;
-        } catch (error) {
-            console.error("Error calculating total posts:", error);
+    const fetchInquirysCount = async () => {
+        try{
+            const response = await getMyInquiryListCount();
+            setTotalInquiryCount(response.totalQuestions);
+            setTotalInquiryOkCount(response.completedReplies);
+        } catch (error){
+            console.error("Error fetching InquirysCount: ", error);
         }
-    };
+    }
 
     useEffect(() => {
         if (inquiryCurrentPage > 0) {
@@ -160,15 +158,48 @@ export const useMyPage = () => {
     }, [inquiryCurrentPage]);
 
     useEffect(() => {
-        const updateTotalInquiryCount = async () => {
-            if (inquiryTotalPages > 0) {
-                const result = await calculateTotalInquirys();
-                setTotalInquiryCount(result.all);
-                setTotalInquiryOkCount(result.ok);
+        fetchInquirysCount();
+    },[totalInquiryCount])
+    // 마이페이지 문의 - E
+
+    // 마이페이지 상품 - S
+    const fetchOrders = async (page = 0, size = 10, sortOrder = 'desc') => {
+        try {
+            const response = await getMyOrderList(page, size, sortOrder);
+
+            if (!response || !Array.isArray(response.contents)) {
+                setMyOrderList([]);
+                return;
+            } else{
+                setMyOrderList(response.contents);
+                setMyOrdertotalPages(response.totalPage);
             }
-        };
-        updateTotalInquiryCount();
-    }, [inquiryTotalPages]);
+            
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        }
+    };
+
+    const fetchOrderCount = async () => {
+        try{
+            const response = await getMyOrderCount();
+            setMyOrderListCount(response)
+
+        } catch (error){
+            console.error("Error fetching OrderCount: ", error);
+        }
+    }
+
+    useEffect(() => {
+        if (myOrderCurrentPage > 0) {
+            fetchOrders(myOrderCurrentPage - 1);
+        }
+    }, [myOrderCurrentPage]);
+
+    useEffect(() => {
+        fetchOrderCount();
+    }, [myOrderListCount]);
+    // 마이페이지 상품 - E
 
     return { 
         meetJoinList,
@@ -181,6 +212,13 @@ export const useMyPage = () => {
         inquirys,
         totalInquiryCount,
         totalInquiryOkCount,
-        setInquiryCurrentPage
+        setInquiryCurrentPage,
+        inquiryTotalPages,
+        myOrderList,
+        myOrdertotalPages,
+        myOrderCurrentPage,
+        setMyOrderList,
+        setMyOrderCurrentPage,
+        fetchOrders
     };
 };
