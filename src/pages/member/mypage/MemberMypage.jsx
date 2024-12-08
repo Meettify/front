@@ -18,12 +18,23 @@ import '../../../styles/MemberMypageSlider.css';
 
 const MemberMypage = () => {
     const location = useLocation();
-    const { goToCart, goToMeetDetail, goToComm, goToShop, goToSupport } = useNavigation();
+    const {
+        goToCart,
+        goToMeetDetail,
+        goToComm,
+        goToShop,
+        goToSupport
+    } = useNavigation();
 
     const { user } = useAuthStore();
     const { meetJoinList }= useMyPage();
     const cartCnt = useCartStore((state) => state.cartItems).length;
-    const {totalPostCount, totalInquiryCount, totalInquiryOkCount} = useMypageStore();
+    const {
+        totalPostCount, 
+        totalInquiryCount, 
+        totalInquiryOkCount,
+        myOrderListCount,
+    } = useMypageStore();
 
     const sliderSettings = {
         dots: false, // 슬라이드 하단의 점 표시 여부
@@ -179,17 +190,14 @@ const MemberMypage = () => {
                                     <Link to='/mypage/orderList'>더보기</Link></span>
                             </p>
                             <hr className='border-gray-300 border-1 mt-4 mb-4'/>
-                            <p className='flex text-left mb-5 mt-8'>
-                                <span>구매한 상품</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>건</p>
-                            <p className='flex text-left'>
+                            <p className='flex text-left mb-5 mt-[54px]'>
                                 <span>구매 완료</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>건</p>
+                                <span className='ml-auto mr-1 font-bold text-[16px]'>{myOrderListCount}</span>건</p>
                             <button
                                 className='w-4/5 mt-8 p-2 text-gray-500 border border-gray-400 transition-colors duration-200 hover:bg-gray-700 hover:text-gray-300'
                                 onClick={() => goToShop()}
                                 >
-                                상품 목록
+                                상품 둘러보기
                             </button>
                         </div>
                         <div className="flex-1 p-4 border border-gray-300 rounded-md">
