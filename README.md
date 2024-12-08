@@ -157,19 +157,24 @@ npm install react-slick
 
 ### event-source-polyfill
 
-```
+```bash
 npm install event-source-polyfill
 ```
 
 ### toss payments
 
-```
+```bash
 npm install @tosspayments/payment-widget-sdk
 ```
 
 ### dotenv
 
-```
+```bash
 npm install dotenv
+```
 
+### react-intersection-observer 라이브러리
+
+```bash
+npm install react-intersection-observer
 ```
