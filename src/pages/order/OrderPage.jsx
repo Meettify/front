@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import CheckoutPage from '../../components/payment/CheckoutPage';
+import { CheckoutPage } from '../../components/payment/CheckoutPage';
 
 const OrderPage = () => {
     const location = useLocation();
