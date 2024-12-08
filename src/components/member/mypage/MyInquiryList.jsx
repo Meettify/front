@@ -46,7 +46,7 @@ const MyInquiryList = () => {
                   </td>
                   <td className="px-6 py-4 text-gray-700 text-sm">{formatDate(question.regTime)}</td>
                   <td className={`px-6 py-4 ${question.replyStatus ? 'text-green-500' : 'text-gray-500'} text-left`}>
-                    {question.replyStatus ? '답변완료' : '답변대기'}
+                    {question.replyStatus === '답글 완료' ? '답변완료' : '답변대기'}
                   </td>
                 </tr>
               ))
