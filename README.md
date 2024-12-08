@@ -165,6 +165,7 @@ npm install event-source-polyfill
 
 ```
 npm install @tosspayments/payment-widget-sdk
+npm install @tanstack/react-query
 ```
 
 ### dotenv
