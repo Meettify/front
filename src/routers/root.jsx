@@ -22,6 +22,9 @@ const Signup = lazy(() => import("../pages/member/signup/SignupPage"))
 const SignupSuccess = lazy(() => import("../pages/member/signup/SignupSuccessPage"))
 const Cart = lazy(() => import("../pages/cart/CartPage"))
 const Order = lazy(() => import("../pages/order/OrderPage"))
+const Success = lazy(() => import("../pages/payment/SuccessPage"))
+const Fail = lazy(() => import("../pages/payment/FailPage"))
+
 
 const root = createBrowserRouter([
     {
@@ -72,6 +75,14 @@ const root = createBrowserRouter([
             {
                 path: "order",
                 element: <Suspense fallback={<Loading />}><Order /></Suspense>,
+            },
+            {
+                path: "success",
+                element: <Suspense fallback={<Loading />}><Success /></Suspense>,
+            },
+            {
+                path: "fail",
+                element: <Suspense fallback={<Loading />}><Fail /></Suspense>,
             },
             ...shopRouter(),
             ...meetRouter(),

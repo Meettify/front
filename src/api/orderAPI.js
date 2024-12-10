@@ -2,28 +2,38 @@ import request from './request';
 
 const BASE_URL = '/orders';
 
-// 임시 주문 생성
 export const createTempOrder = async (orders, address) => {
   try {
     const requestBody = {
-      orders,
-      address,
+      orders: orders.map(order => ({
+        itemId: order.itemId, // 상품 ID
+        itemCount: order.itemCount, // 상품 수량
+      })),
+      address: {
+        memberAddr: address.memberAddr, // 주소
+        memberAddrDetail: address.memberAddrDetail, // 상세 주소
+        memberZipCode: address.memberZipCode, // 우편번호
+      },
     };
 
     console.log('임시 주문 요청 데이터:', requestBody);
 
     const response = await request.post({
-      url: `${BASE_URL}/tempOrder`,
+      url: `${BASE_URL}/tempOrder`, // 임시 주문 엔드포인트
       data: requestBody,
     });
 
     console.log('임시 주문 생성 완료:', response.data);
     return response.data;
   } catch (error) {
-    console.error('임시 주문 생성 중 오류 발생:', error.response?.data || error.message);
+    console.error(
+      '임시 주문 생성 중 오류 발생:',
+      error.response?.data || error.message,
+    );
     throw error;
   }
 };
+
 
 // 모든 주문 조회
 export const getAllOrders = async (page = 0, size = 10, sort = ['desc']) => {

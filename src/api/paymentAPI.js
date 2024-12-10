@@ -17,9 +17,7 @@ const paymentAPI = {
                 approvedAt: data.approvedAt,
                 orderUid: data.orderUid,
                 orderName: data.orderName,
-                orders: data.orders,
-                successUrl: data.successUrl,
-                failUrl: data.failUrl,
+                orders: data.orders, // 이 부분의 데이터 형식 검토 필요
             },
             address: {
                 memberAddr: data.memberAddr,
@@ -27,7 +25,7 @@ const paymentAPI = {
                 memberZipCode: data.memberZipCode,
             },
         };
-
+    
         try {
             // 요청 보내기
             const response = await request.post({
@@ -44,7 +42,7 @@ const paymentAPI = {
             console.error('Toss 결제 확인 API 오류:', error);  // 오류 로그
             throw new Error(`Toss 결제 확인 API 호출 실패: ${error.message}`);
         }
-    },
+    },    
 
     tossPayCancel: async (data) => {
         console.log('Toss 취소 API 요청 데이터:', data);  // 요청 데이터 로그
