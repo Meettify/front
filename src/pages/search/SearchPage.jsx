@@ -203,7 +203,7 @@ const SearchPage = () => {
 
             <MainSection
                 title={<SectionText title="최신모임." subtitle="따끈따끈한 모임이야기." />}
-                items={filteredMeets.slice(0, 10)}  // 필터된 소모임 데이터를 보여줌
+                items={filteredMeets.slice(0, 12)}  // 필터된 소모임 데이터를 보여줌
                 renderItem={(meet) => {
                     return (
                         <MeetCard 

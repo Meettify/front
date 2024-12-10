@@ -39,11 +39,11 @@ const MeetCategory = () => {
             <div className="container mx-auto w-full flex">
                 <div className="w-5/6 bg-gray-100 flex flex-wrap p-2">
                     <div className="w-full justify-start">
-                        <MeetListSearch 
+                        {/* <MeetListSearch 
                             onChange={(value) => setSearchTerm(value)} 
                             value={searchTerm} 
                             className="w-full"
-                        />
+                        /> */}
                     </div>
                     <div className='flex flex-wrap justify-start w-full mt-4'>
                         {filteredCategoryData.length > 0 ? (

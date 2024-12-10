@@ -7,7 +7,10 @@ const MeetDetail = lazy(() => import("../pages/meet/MeetDetail"));
 const MeetUpdate = lazy(() => import("../pages/meet/MeetUpdate"));
 const MeetInsert = lazy(() => import("../pages/meet/MeetInsert"));
 const MeetAccept = lazy(() => import("../components/meet/MeetAccept")); // 이미 존재하는 컴포넌트
-const MeetPost = lazy(() => import("../pages/meet/MeetComm"));
+const MeetBoard = lazy(() => import("../pages/meet/MeetBoard"));
+const MeetBoardDetail = lazy(()=>import("../pages/meet/MeetBoardDetail")); 
+const MeetBoardAdd = lazy(()=>import("../pages/meet/MeetBoardAdd")); 
+
 
 const meetRouter = () => {
   return [
@@ -16,8 +19,15 @@ const meetRouter = () => {
       element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
     },
     {
-      path: "/meet/post",
-      element: <Suspense fallback={<Loading />}><MeetPost /></Suspense>,
+      path: "/meetBoards/list/:meetId", // 모임 게시판 목록 조회
+      element: <Suspense fallback={<Loading />}><MeetBoard /></Suspense>,
+    },
+    {
+      path: "/meetBoards/:meetBoardId", // 모임 게시판 상세보기
+      element: <Suspense fallback={<Loading />}><MeetBoardDetail /></Suspense>,
+    },{
+      path: "/meetBoards", // 모임 게시판 글작성
+      element: <Suspense fallback={<Loading />}><MeetBoardAdd /></Suspense>,
     },
     {
       path: "/meet/detail/:meetId",  // 경로 통일

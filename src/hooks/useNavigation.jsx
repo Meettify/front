@@ -60,16 +60,24 @@ const useNavigation = () => {
     };
 
     const goToPostWrite = () => {
-        navigate('/meet/post/write');
+        navigate('/meetBoards');  // 게시물 등록
     };
-
-    const goToPostDetail = (pageId) => {
-        navigate(`/meet/post/detail/${pageId}`);
+    
+    const goToPostDetail = (meetBoardId) => {
+        navigate(`/meetBoards/${meetBoardId}`);  // 게시물 상세 보기
     };
-
-    const goToPostList = () => {
-        navigate('/meet/post');
+    
+    const goToPostEdit = (meetBoardId) => {
+        navigate(`/meetBoards/${meetBoardId}`);  // 게시물 수정
     };
+    
+    const goToPostList = (meetId) => {
+        navigate(`/meetBoards/list/${meetId}?page=${currentPage}&size=10&sort=${sortOrder}`);  // 'currentPage', 'sortOrder' 상태가 필요
+    };
+    
+    const goToPostListAfterDelete = (meetId) => {
+        navigate(`/meetBoards/${meetId}/${meetBoardId}`);  // 게시물 삭제 후 게시판 리스트로 이동
+    };          
 
     const goToSignup = () => {
         navigate('/signup');
@@ -104,6 +112,8 @@ const useNavigation = () => {
         goToMemList,
         goToCart,
         goToShopAdd,
+        goToPostEdit,
+        goToPostListAfterDelete,
     };
 };
 

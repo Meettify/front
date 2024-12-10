@@ -11,6 +11,7 @@ const MeetDetail = () => {
   const navigate = useNavigate();
   const [meeting, setMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { goToPostList } = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +81,9 @@ const MeetDetail = () => {
   const handleMemberAccept = () => {
     navigate(`/meets/${meetId}/members`); // 회원 조회 페이지로 이동
   };
+  const handleMeetComm = () => {
+    navigate(`/meetBoards/list/${meetId}`);
+  }
 
   return (
     <div className="bg-gray-100 flex-1 h-full">
@@ -132,6 +136,10 @@ const MeetDetail = () => {
             {/* 회원 조회 버튼 */}
             <RoundedButton onClick={handleMemberAccept} className="w-1/4 bg-green-500 hover:bg-green-600">
               회원 조회
+            </RoundedButton>
+            {/* 모임커뮤니티 버튼 */}
+            <RoundedButton onClick={handleMeetComm} className="w-1/4 bg-green-500 hover:bg-green-600">
+              모임 커뮤니티
             </RoundedButton>
           </div>
         </div>
