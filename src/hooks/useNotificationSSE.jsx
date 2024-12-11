@@ -62,11 +62,11 @@ const useNotificationSSE = () => {
       if (sseRef.current) {
         sseRef.current.close();
       }
-      // 재연결 시도
-      setTimeout(() => {
-        console.log("[SSE] 재연결 시도 중...");
-        connectToSSE();
-      }, 3000);
+      // // 재연결 시도
+      // setTimeout(() => {
+      //   console.log("[SSE] 재연결 시도 중...");
+      //   connectToSSE();
+      // }, 3000);
     };
   };
 

@@ -7,7 +7,7 @@ const ItemList = lazy(() => import("../pages/admin/ItemList"));
 const ItemModify = lazy(() => import("../pages/admin/ItemModify"));
 const ItemAdd = lazy(() => import("../pages/admin/ItemAdd"));
 const MemList = lazy(() => import("../pages/admin/MemList"));
-
+const QuestionsList = lazy(() => import("../pages/admin/QuestionsList"));
 
 const adminRouter = () => {
     return [
@@ -34,6 +34,10 @@ const adminRouter = () => {
         {
             path: "memList",
             element: <Suspense fallback={<Loading />}><MemList /></Suspense>,
+        },
+        {
+            path: "questionsList",
+            element: <Suspense fallback={<Loading />}><QuestionsList /></Suspense>,
         },
     ];
 };
