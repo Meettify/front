@@ -17,7 +17,7 @@ const MeetBoard = () => {
 
     const goToMeetBoardWrite = () => {
         console.log('글쓰기 페이지로 이동합니다.');
-        navigate('/meetBoards');
+        navigate('/meetBoards', { state: { meetId } });
     };
 
     // 게시판 데이터 불러오기
