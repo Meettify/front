@@ -19,7 +19,7 @@ const useMeetBoardStore = create((set) => ({
   fetchPosts: async (page = 0, size = 1, sort = 'desc', meetId) => {
     set({ loading: true, posts: [] }); // 이전 상태 초기화
     try {
-        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}`);
+        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}, meetId : ${meetId}`);
         
         // MeetBoardList 호출하여 데이터를 받아옴
         const response = await MeetBoardList(meetId, page, size, sort);
@@ -68,17 +68,29 @@ fetchPostDetail: async (meetBoardId) => {
   }
 },
   
-  // 게시물 생성
-  createPost: async (formData) => {
+  // 게시글 생성
+//   createPost: async (formData, meetId) => {
+//     try {
+//       console.log("게시글 생성 시 meetId:", meetId);  // meetId 값 확인
+//       const response = await postMeetBoardInsert(formData); 
+//       set({ posts: [...response], loading: false });  // 새로운 게시글 리스트로 상태 업데이트
+//   } catch (error) {
+//       console.error('게시글 작성 오류:', error);
+//       set({ error, loading: false });  // 오류 상태 업데이트
+//   }
+// },
+  createPost: async (formData, meetId) => {
+    set({ loading: true });
     try {
-        const response = await postMeetBoardInsert(formData);  // `postMeetBoardInsert` 호출
-        return response;  // 응답 반환
+        await postMeetBoardInsert(formData);
+        // 로컬 상태에서 게시글 추가
+        set({ posts: [...posts, formData] });
     } catch (error) {
-        console.error('게시글 작성 오류:', error);
-        throw error;
+        set({ error: error.message });
+    } finally {
+        set({ loading: false });
     }
   },
-
 
   // 게시물 수정
   updatePost: async (meetBoardId, title, content, images, remainImgId = [], files = []) => {
