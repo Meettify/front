@@ -122,17 +122,14 @@ export const getMeetingDetail = async (meetId) => {
 export const updateMeet = async (meetId, updateMeetDTO, newImages = []) => {
     try {
         const formData = new FormData();
-        
         // UpdateMeetDTO를 JSON 문자열로 변환하여 추가
         formData.append('updateMeetDTO', new Blob([JSON.stringify(updateMeetDTO)], {
             type: 'application/json'
         }));
-
         // 새 이미지 처리
         newImages.forEach((image) => {
             formData.append('images', image); // 'images'라는 이름으로 추가
         });
-
         const response = await request.put({
             url: `${BASE_URL}/meets/${meetId}`,
             data: formData,
@@ -230,12 +227,30 @@ export const searchMeets = async (totalKeyword) => {
     }
 };
 
+// 로그인된 사용자의 인증 토큰 (JWT 등)을 헤더에 포함시킬 필요가 있음
+const getAuthToken = () => {
+    const token = `${sessionStorage.getItem('accessToken')}`;
+    if (token) {
+        console.log('Access Token:', token);// 토큰이 존재하면 사용 (예: API 요청 헤더에 포함)
+        return token;
+        } else {
+            console.log('토큰이 존재하지 않습니다.');
+            return null;
+        };
+};
 
-// 모임 게시판 리스트 API 수정 (axios 사용)
+
+// 모임 게시판 리스트 API (axios 사용)
 export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') => {
     try {
         if (!meetId || isNaN(meetId)) {
             throw new Error('Invalid meetId');
+        }
+        // 인증 토큰 가져오기
+        const authToken = `${sessionStorage.getItem('accessToken')}`;  
+        //console.log('Auth Token in MeetBoardList:', authToken);  // 여기서도 토큰 값 확인
+        if (!authToken) {
+            throw new Error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
         }
         // API 호출: meetId, page, size를 쿼리 파라미터로 전달
         const url = `${BASE_URL}/meetBoards/list/${meetId}`;
@@ -245,8 +260,10 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
                 size,      // 페이지 크기
                 sort,      // 정렬 방식 (기본값: 'desc')
             },
+            headers: {
+                'Authorization': `Bearer ${authToken}`,  // 인증 토큰 헤더에 포함
+            }
         });
-
         // 응답 데이터가 없으면 '게시글이 존재하지 않습니다.' 반환
         if (!response.data || !response.data.meetBoards || response.data.meetBoards.length === 0) {
             return { content: [], totalPages: 0, message: '게시글이 존재하지 않습니다.' };
@@ -266,13 +283,12 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
                 message: error.response.data.message || '서버에서 오류가 발생했습니다.',
             };
         } else if (error.request) {
-            // 요청이 서버로 전달되지 않은 경우 처리
+            
             return {
                 status: 500,
                 message: '서버에 요청이 전달되지 않았습니다.',
             };
         } else {
-            // 기타 오류 발생 시
             return {
                 status: 500,
                 message: error.message || '알 수 없는 오류가 발생했습니다.',
@@ -281,21 +297,15 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
     }
 };
 
-// 로그인된 사용자의 인증 토큰 (JWT 등)을 헤더에 포함시킬 필요가 있음
-const getAuthToken = () => {
-    // 예시로 로컬 스토리지에서 토큰을 가져오는 방식입니다. 실제 사용에 맞게 수정
-    return localStorage.getItem('authToken');  // 예시: JWT 토큰
-};
 // 모임 게시판 상세 조회 API
 export const getMeetBoardDetail = async (meetBoardId) => {
     try {
-        const authToken = getAuthToken();  // 인증 토큰 가져오기
-
         const response = await axios.get({
             url:`${BASE_URL}/meetBoards/${meetBoardId}`,
             headers: {
-                'Authorization': `Bearer ${authToken}`,  // 인증 토큰 헤더에 포함
+                'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,  // 인증 토큰 헤더에 포함
                 'accept': '*/*',
+                "Content-Type": "application/json",
             }
         });
         return response.data;  // 응답 데이터 반환
@@ -306,7 +316,6 @@ export const getMeetBoardDetail = async (meetBoardId) => {
             // 서버에서 반환한 오류 응답 처리
             return error.response.data;
         } else if (error.request) {
-            // 요청이 서버로 전달되지 않은 경우 처리
             return {
                 status: 500,
                 message: '서버에 연결할 수 없습니다.',
@@ -322,31 +331,47 @@ export const getMeetBoardDetail = async (meetBoardId) => {
 };
 
 // 모임 게시판 글쓰기 API
-export const postMeetBoardInsert =async (formData) => {
+export const postMeetBoardInsert = async (formData, meetId) => {
     try {
-        // formData에 meetBoard라는 객체로 데이터를 묶어 전송
         const meetBoardData = new FormData();
-        // meetBoard 데이터 객체에 필수 데이터를 넣기
-        meetBoardData.append('meetBoard', JSON.stringify({
-            title: formData.title,
-            content: formData.content,
-        }));
-        // 첨부파일도 같이 보내야 하므로 files 추가
-        formData.files.forEach(file => {
-            meetBoardData.append('files', file);  // 첨부 파일은 'files'로 전송
+        meetBoardData.append('title', formData.title);
+        meetBoardData.append('content', formData.content);
+        meetBoardData.append('meetId', meetId);
+        meetBoardData.append('meetBoard', JSON.stringify(formData));  // meetBoard 필드 추가 (예시)
+
+        console.log('MeetBoardData : ', meetBoardData);
+
+        // 파일이 있을 경우 FormData에 추가
+        if (formData.files && formData.files.length > 0) {
+            formData.files.forEach(file => {
+                meetBoardData.append('files', file);
+            });
+        }
+        // 인증 토큰 (예: 로컬스토리지에서 가져오기)
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('토큰이 존재하지 않습니다.');
+        }
+
+        // 요청 헤더 설정 (토큰 추가)
+        const headers = {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,  // Authorization 헤더에 토큰 추가
+        };
+
+        // API 호출
+        const response = await axios.post(`${BASE_URL}/meetBoards`, meetBoardData, { 
+            headers: { 'Authorization': `Bearer ${token}` }
         });
-        // axios로 데이터 전송
-        const response = await axios.post(`${BASE_URL}/meetBoards`, meetBoardData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return response.data;
+        console.log('Response:', response);
+
+        return response.data; // API 응답 반환
     } catch (error) {
         console.error('게시글 작성 오류:', error);
-        throw error;
+        throw error; // 에러 발생시 던져서 외부에서 처리
     }
-};  
+};
+
 
 // 게시글 수정 API 함수
 export const updateMeetBoard = async (meetBoardId, title, content, images) => {
@@ -392,6 +417,33 @@ export const deleteMeetBoard = async (meetId, meetBoardId) => {
         return response.data;  // 삭제 성공 시 응답 데이터
     } catch (error) {
         console.error('게시글 삭제 중 오류 발생:', error.response?.data || error);
+        throw error;  // 오류 발생 시 예외 처리
+    }
+};
+
+// 추천 상품을 가져오는 함수
+export const getRecommendedItems = async () => {
+    const token = `${sessionStorage.getItem('accessToken')}`;  // 인증 토큰 가져오기
+    if (!token) {
+        console.error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
+        //window.location.href = '/login';  // 로그인 페이지로 리다이렉트 (경로는 실제 로그인 경로에 맞게 수정)
+        return;
+    }
+    try {
+        const response = await axios.get(`${BASE_URL}/items/recommend-items`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,  // Authorization 헤더에 토큰 포함
+                'Accept': '*/*',  // Accept 헤더 추가
+            },
+        });
+        return response.data;  // 추천 상품 데이터 반환
+    } catch (error) {
+        // 오류 처리
+        if (error.response) {
+            console.error('API 호출 오류:', error.response.data.message || error.message);
+        } else {
+            console.error('네트워크 오류:', error.message);
+        }
         throw error;  // 오류 발생 시 예외 처리
     }
 };

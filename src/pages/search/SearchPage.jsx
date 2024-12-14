@@ -142,6 +142,7 @@ const SearchPage = () => {
     const totalKeyword = searchParams.get("totalKeyword") || "";
     const [filteredMeets, setFilteredMeets] = useState([]);
     const [allMeets, setAllMeets] = useState([]);
+    const { goToMeetDetail } = useNavigation();
     
     useEffect(() => {
         const fetchData = async () => {

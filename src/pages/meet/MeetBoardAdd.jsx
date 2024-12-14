@@ -5,7 +5,7 @@ import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useMeetBoardStore from '../../stores/useMeetBoardStore';  // 상태 관리 스토어
 import useAuthStore from '../../stores/useAuthStore';  // 인증 스토어
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Quill 툴바 설정
 const modules = {
@@ -31,7 +31,8 @@ const MeetBoardAdd = () => {
     const [contentError, setContentError] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
 
-    const { meetId } = useParams();
+    const location = useLocation();
+    const { meetId } = location.state || {};  // `state`로 전달된 `meetId`를 받음
     const { createPost } = useMeetBoardStore();  // useMeetBoardStore에서 createPost 함수 사용
     const { user } = useAuthStore();
     const navigate = useNavigate();
@@ -56,7 +57,7 @@ const MeetBoardAdd = () => {
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]);  // 기존 파일에 새로운 파일 추가
-    };
+    };    
 
     const handleFileRemove = (index) => {
         setFiles(files.filter((_, i) => i !== index));
@@ -65,7 +66,7 @@ const MeetBoardAdd = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let hasError = false;
-    
+        
         if (!title.trim()) {
             setTitleError(true);
             hasError = true;
@@ -78,31 +79,30 @@ const MeetBoardAdd = () => {
     
         if (hasError) return;
     
-        // FormData 객체 생성
         const formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
+        formData.append('meetId', meetId);
     
-        // 첨부파일이 있다면 formData에 추가
-        files.forEach(file => {
-            formData.append('files', file);  // 'files'는 서버에서 처리할 파일 필드 이름입니다.
-        });
-
-        // 첨부파일이 있다면 formData에 추가
+        // 파일이 있을 경우, formData에 파일 추가
         if (files.length > 0) {
             files.forEach(file => {
-                formData.append('files', file);  // 'files'는 서버에서 처리할 파일 필드 이름입니다.
+                formData.append('files', file);  // 서버에서 처리할 파일 필드 이름
             });
-        }
-    
+        } 
         try {
+            // `meetId`를 확인하고 API 호출
+            if (!meetId) {
+                console.error("meetId가 없습니다.");
+                return;
+            }
             // 수정된 API 호출
-            await createPost(formData);
+            await createPost(formData, meetId);
             navigate(`/meetBoards/list/${meetId}`);  // 게시글 작성 후 목록으로 이동
         } catch (error) {
             console.error('게시글 작성 중 오류:', error);
         }
-    };
+    };    
     
     const handleCancel = () => {
         setTitle('');
