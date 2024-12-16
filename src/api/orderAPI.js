@@ -1,89 +1,81 @@
 import request from './request';
+import { getCartItems } from './cartAPI';
 
-const BASE_URL = '/orders';
+const BASE_URL = '/orders';  // 주문 관련 API URL
 
-export const createTempOrder = async (orders, address) => {
+export const createTempOrder = async (address = {}) => {
   try {
+    // 장바구니 상품 조회
+    const cartItems = await getCartItems(); // API를 호출하여 장바구니 아이템 가져오기
+    console.log("장바구니 상품 데이터:", cartItems);
+
+    if (!cartItems || cartItems.length === 0) {
+      throw new Error('장바구니에 상품이 없습니다.');
+    }
+
+    const orders = cartItems.map(item => ({
+      itemId: item.item?.itemId,
+      itemCount: item.itemCount,
+      itemName: item.item?.itemName,
+    }));
+
     const requestBody = {
-      orders: orders.map(order => ({
-        itemId: order.itemId, // 상품 ID
-        itemCount: order.itemCount, // 상품 수량
-      })),
+      orders: orders,
       address: {
-        memberAddr: address.memberAddr, // 주소
-        memberAddrDetail: address.memberAddrDetail, // 상세 주소
-        memberZipCode: address.memberZipCode, // 우편번호
-      },
-    };
+        memberAddr: address.memberAddr,
+        memberAddrDetail: address.memberAddrDetail,
+        memberZipCode: address.memberZipCode
+      }
+    };       
+    
+    // 4. 디버깅 로그
+    console.log('임시 주문 요청 데이터:', JSON.stringify(requestBody));
 
-    console.log('임시 주문 요청 데이터:', requestBody);
-
+    // 5. 임시 주문 요청
     const response = await request.post({
-      url: `${BASE_URL}/tempOrder`, // 임시 주문 엔드포인트
+      url: `${BASE_URL}/tempOrder`,
       data: requestBody,
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    console.log('임시 주문 생성 완료:', response.data);
+    if (!response.data?.orderId) {
+      throw new Error('임시 주문 생성에 실패했습니다.');
+    }
+
+    console.log('서버 응답:', response);
+    console.log('Request body for temp order:', requestBody);
+    console.log('임시 주문 성공:', response.data);
     return response.data;
   } catch (error) {
-    console.error(
-      '임시 주문 생성 중 오류 발생:',
-      error.response?.data || error.message,
-    );
-    throw error;
-  }
-};
-
-
-// 모든 주문 조회
-export const getAllOrders = async (page = 0, size = 10, sort = ['desc']) => {
-  try {
-    console.log(`모든 주문 조회 요청 - Page: ${page}, Size: ${size}, Sort: ${sort}`);
-
-    const response = await request.get({
-      url: `${BASE_URL}`,
-      params: { page, size, sort },
-    });
-
-    console.log('모든 주문 조회 결과:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('모든 주문 조회 중 오류 발생:', error.response?.data || error.message);
+    console.error('임시 주문 생성 오류:', error);
     throw error;
   }
 };
 
 // 내 주문 조회
-export const getMyOrders = async (page = 0, size = 10, sort = ['desc']) => {
+export const getMyOrders = async () => {
   try {
-    console.log(`내 주문 조회 요청 - Page: ${page}, Size: ${size}, Sort: ${sort}`);
-
     const response = await request.get({
       url: `${BASE_URL}/my-order`,
-      params: { page, size, sort },
+      headers: { 'Content-Type': 'application/json' },
     });
-
-    console.log('내 주문 조회 결과:', response.data);
     return response.data;
   } catch (error) {
-    console.error('내 주문 조회 중 오류 발생:', error.response?.data || error.message);
+    console.error('내 주문 조회 오류:', error);
     throw error;
   }
 };
 
-// 모든 주문 수 조회
-export const getOrderCount = async () => {
+// 모든 주문 조회
+export const getAllOrders = async () => {
   try {
-    console.log('모든 주문 수 조회 요청');
-
     const response = await request.get({
-      url: `${BASE_URL}/count-order`,
+      url: `${BASE_URL}`,
+      headers: { 'Content-Type': 'application/json' },
     });
-
-    console.log('모든 주문 수:', response.data);
     return response.data;
   } catch (error) {
-    console.error('모든 주문 수 조회 중 오류 발생:', error.response?.data || error.message);
+    console.error('모든 주문 조회 오류:', error);
     throw error;
   }
 };
@@ -91,16 +83,27 @@ export const getOrderCount = async () => {
 // 내 주문 수 조회
 export const getMyOrderCount = async () => {
   try {
-    console.log('내 주문 수 조회 요청');
-
     const response = await request.get({
       url: `${BASE_URL}/count-my-order`,
+      headers: { 'Content-Type': 'application/json' },
     });
-
-    console.log('내 주문 수:', response.data);
     return response.data;
   } catch (error) {
-    console.error('내 주문 수 조회 중 오류 발생:', error.response?.data || error.message);
+    console.error('내 주문 수 조회 오류:', error);
+    throw error;
+  }
+};
+
+// 모든 주문 수 조회
+export const getAllOrderCount = async () => {
+  try {
+    const response = await request.get({
+      url: `${BASE_URL}/count-order`,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('모든 주문 수 조회 오류:', error);
     throw error;
   }
 };

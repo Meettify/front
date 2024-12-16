@@ -1,34 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import useAnswerStore from '../../stores/useAnswerStore';
 import { LuList } from 'react-icons/lu';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
+import useAdminQuestionsStore from '../../stores/useAdminQuestionsStore';
 
 const QuestionsList = () => {
-  const { questions, fetchQuestions, loading, error } = useAnswerStore();
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [sortOrder, setSortOrder] = useState('desc');
+  const {
+    questions,
+    totalPages,
+    loading,
+    error,
+    fetchQuestions,
+  } = useAdminQuestionsStore(); // zustand store에서 상태와 함수 가져오기
+
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [sortOrder, setSortOrder] = React.useState('desc');
 
   useEffect(() => {
-    const loadAnswers = async () => {
-      const total = await fetchQuestions(currentPage, 10, sortOrder);
-      setTotalPages(total);
-    };
-    loadAnswers();
-  }, [currentPage, sortOrder]);
+    fetchQuestions(currentPage, 10, sortOrder); // zustand의 fetchQuestions 호출
+  }, [currentPage, sortOrder, fetchQuestions]);
 
   const handleSortChange = (event) => {
     setSortOrder(event.target.value);
-    setCurrentPage(0);
+    setCurrentPage(0); // 정렬 변경 시 페이지를 첫 페이지로 리셋
   };
 
   const handlePageChange = (page) => {
-    if (page >= 0 && page < totalPages) setCurrentPage(page);
+    if (page >= 0 && page < totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p>Error: {error.message || '문제가 발생했습니다.'}</p>;
 
   return (
     <div className="max-w-5xl mx-auto mt-12 px-4">
@@ -59,22 +63,23 @@ const QuestionsList = () => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(questions) && questions.map((question, index) => (
-            <tr key={question.id} className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="p-2 text-center">{index + 1 + currentPage * 10}</td>
-              <td className="p-2 text-left">
-                <Link to={`/admin/questions/${question.id}`} className="text-black hover:underline">
-                  {question.content}
-                </Link>
-              </td>
-              <td className="p-2 text-left">
-                {question.answered ? '답변 완료' : '미답변'}
-              </td>
-              <td className="p-2 text-center">
-                {new Date(question.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
-          ))}
+          {Array.isArray(questions) &&
+            questions.map((question, index) => (
+              <tr key={question.id} className="border-b border-gray-200 hover:bg-gray-100">
+                <td className="p-2 text-center">{index + 1 + currentPage * 10}</td>
+                <td className="p-2 text-left">
+                  <Link to={`/admin/questions/${question.id}`} className="text-black hover:underline">
+                    {question.content}
+                  </Link>
+                </td>
+                <td className="p-2 text-left">
+                  {question.answered ? '답변 완료' : '미답변'}
+                </td>
+                <td className="p-2 text-center">
+                  {new Date(question.createdAt).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
 

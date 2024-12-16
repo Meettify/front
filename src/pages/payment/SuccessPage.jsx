@@ -1,34 +1,69 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate로 변경
-import PaymentAPI from "../../api/paymentAPI";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SuccessPage = () => {
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // URL 쿼리 파라미터에서 값 가져오기
+  const queryParams = new URLSearchParams(location.search);
+  const paymentKey = queryParams.get("paymentKey");
+  const orderId = queryParams.get("orderId");
+  const amount = queryParams.get("amount");
+
+  // state로 받은 값들
+  const { items, address, successMessage } = location.state || {};
+
+  console.log("orderId:", orderId);  // 확인용 로그
+  console.log("paymentKey:", paymentKey);  // 확인용 로그
+  console.log("address:", address);  // 확인용 로그
+  console.log("items:", items);  // 확인용 로그
 
   useEffect(() => {
-    console.log("Payment API 호출 시작");
     const confirmPayment = async () => {
+      console.log("결제 API 호출 시작");
+
+      const requestedAt = new Date().toISOString();
+      const approvedAt = new Date().toISOString();
+
       try {
-        const orderId = new URLSearchParams(window.location.search).get("orderId"); // paymentId -> orderId로 변경
-        const response = await PaymentAPI.tossPayConfirm({
-          orderId: orderId,  // 변경된 값 전달
+        const response = await fetch('https://meettify.store/api/v1/payment/toss/confirm', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paymentKey,
+            orderId,
+            amount,
+            requestedAt,
+            approvedAt,
+            orders: items || [],  // 빈 배열로 기본값 설정
+            address: address || {},  // 빈 객체로 기본값 설정
+          }),
         });
-        console.log("Payment API 응답:", response); // API 응답을 콘솔에 출력
-        if (response.status === "success") {
-          setPaymentDetails(response.data);
-        } else {
-          setErrorMessage(response.errorMessage || "알 수 없는 오류가 발생했습니다.");
+
+        if (!response.ok) {
+          throw new Error("결제 확인 실패");
         }
+
+        const data = await response.json();
+        console.log("결제 성공:", data);
+        setPaymentDetails(data);
       } catch (error) {
-        console.log("결제 처리 오류:", error); // 에러 발생 시 출력
-        setErrorMessage("결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+        console.error("결제 처리 오류:", error);
+        setErrorMessage("결제를 처리하는 중 오류가 발생했습니다.");
       }
     };
 
-    confirmPayment();
-  }, []);
+    if (orderId && paymentKey) {
+      confirmPayment();
+    } else {
+      setErrorMessage("필수 정보가 부족합니다.");
+    }
+  }, [orderId, paymentKey, amount, items, address]);
 
   if (errorMessage) {
     return (
@@ -45,7 +80,7 @@ const SuccessPage = () => {
       <h1>결제 성공</h1>
       {paymentDetails ? (
         <div>
-          <p>결제가 성공적으로 완료되었습니다!</p>
+          <p>{successMessage}</p>
           <p>주문번호: {paymentDetails.orderId}</p>
           <p>결제 금액: {paymentDetails.amount}</p>
           <button onClick={() => navigate("/order/summary")}>주문 내역 보기</button>
