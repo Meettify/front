@@ -178,3 +178,9 @@ npm install dotenv
 ```bash
 npm install react-intersection-observer
 ```
+
+### npm install recharts 라이브러리
+
+```bash
+npm install recharts
+```
