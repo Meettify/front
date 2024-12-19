@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import useAdminMainStore from '../../stores/useAdminMainStore';
-import { deleteMember } from '../../api/memberAPI';
+import { removeMember } from '../../api/adminMainAPI';
 import MemberDetailModal from '../../components/admin/MemberDetailModal';
+import { HttpStatusCode } from "axios";
 
 const MemList = () => {
-    const { allMemberLists, totalMemberListsPage } = useAdminMainStore();
+    const { allMemberLists, totalMemberListsPage, setAllMemberLists } = useAdminMainStore();
     const [displayedMembers, setDisplayedMembers] = useState([]);
     const [sortOrder, setSortOrder] = useState('old');
     const [page, setPage] = useState(1);
@@ -54,18 +55,23 @@ const MemList = () => {
         const loadMoreData = async () => {
             setLoading(true);
 
-            const sortedMembers = getSortedMembers();
-            const nextPageData = sortedMembers.slice((page - 1) * 10, page * 10);
-
-            // 중복 제거 로직
-            const filteredData = nextPageData.filter(
-                (newMember) =>
-                    !displayedMembers.some((existingMember) => existingMember.memberId === newMember.memberId)
-            );
-
             // 데이터 로드에 1초 지연 적용
             setTimeout(() => {
-                setDisplayedMembers((prev) => [...prev, ...filteredData]);
+                const sortedMembers = getSortedMembers();
+                const nextPageData = sortedMembers.slice((page - 1) * 10, page * 10);
+
+                // 중복 제거 로직
+                const filteredData = nextPageData.filter(
+                    (newMember) =>
+                        !displayedMembers.some((existingMember) => existingMember.memberId === newMember.memberId)
+                );
+                setDisplayedMembers((prev) => {
+                    const newData = filteredData.filter(
+                        (newMember) => !prev.some((existingMember) => existingMember.memberId === newMember.memberId)
+                    );
+                    
+                    return [...prev, ...newData];
+                });
 
                 if (filteredData.length < 10 || page >= totalMemberListsPage) {
                     setHasMore(false); // 더 이상 불러올 데이터가 없을 때
@@ -75,7 +81,7 @@ const MemList = () => {
             }, 1000);
         };
 
-        loadMoreData();
+        loadMoreData();      
     }, [page, getSortedMembers, hasMore, totalMemberListsPage, loading, displayedMembers]);
 
     // 스크롤 이벤트 감지
@@ -85,15 +91,20 @@ const MemList = () => {
         }
     }, [inView, hasMore, loading]);
 
-    const handleDelete = async(memberId) => {
-        console.log(`삭제: ${memberId}`);
+    const handleDelete = async (memberId) => {
         const confirmation = window.confirm("회원을 삭제하시겠습니까?");
-        if(confirmation) {
-            const response = await deleteMember(memberId);
-            if(response.status === 200){
-                alert("회원이 삭제되었습니다.");
-            }else{
-                alert("회원 삭제에 실패하였습니다.")
+        if (confirmation) {
+            try {
+                const response = await removeMember(memberId);
+                if (response.status === HttpStatusCode.Ok) {
+                    alert("회원이 삭제되었습니다.");
+                    window.location.reload();
+                } else {
+                    alert("회원 삭제에 실패하였습니다.");
+                }
+            } catch (error) {
+                console.error("삭제 요청 중 에러:", error);
+                alert("삭제 중 문제가 발생했습니다.");
             }
         }
     };
