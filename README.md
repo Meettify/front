@@ -179,3 +179,9 @@ npm install dotenv
 ```bash
 npm install react-intersection-observer
 ```
+
+###  챗봇라이브러리
+
+``` bash
+npm install @channel.io/channel-web-sdk-loader
+```
