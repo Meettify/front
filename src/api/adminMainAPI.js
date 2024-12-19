@@ -122,3 +122,23 @@ export const getAllItemsCount = async () => {
         }
     }
 };
+
+// 관리자 회원 추방 /admin/{memberId}
+export const removeMember = async (memberId) => {
+    try {
+        const response = await request.del({
+            url: `/admin/${memberId}`,
+        });
+        return response;
+    } catch (error) {
+        console.error('removeMember Error', error);
+        if (error.response) {
+            return error.response;
+        } else {
+            return {
+                status: 500,
+                message: '서버에 연결할 수 없습니다.',
+            };
+        }
+    }
+};
