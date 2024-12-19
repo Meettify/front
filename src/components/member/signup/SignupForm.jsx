@@ -83,6 +83,14 @@ const SignupForm = () => {
     if (result.status === HttpStatusCode.Ok){
       goToSignupSuccess();
     }else{
+      const resultMessage = result.data.message;
+      const message = resultMessage.slice(0, resultMessage.indexOf("회원 이메일")).trim();
+      const email = resultMessage.slice(resultMessage.indexOf("회원 이메일 :") + "회원 이메일 :".length).trim();
+
+      if (message === "추방된 회원입니다."){
+        alert(`'${email}' 은(는) 추방된 이메일 입니다.\n다른 이메일을 사용해 주세요`)
+      }
+
       console.error('회원가입 실패:', result);
     }
   };
