@@ -185,3 +185,9 @@ npm install react-intersection-observer
 ```bash
 npm install recharts
 ```
+
+###  챗봇라이브러리
+
+``` bash
+npm install @channel.io/channel-web-sdk-loader
+```
