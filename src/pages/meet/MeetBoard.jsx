@@ -5,6 +5,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { LuList } from "react-icons/lu"; // LuList 아이콘 임포트
 import useMeetBoardStore from "../../stores/useMeetBoardStore";
 import { MeetBoardList } from "../../api/meetAPI";
+import ChannelIOWidget from '../../components/chatbot/ChannelIOWidget';
 
 const MeetBoard = () => {
     const { meetId } = useParams();
@@ -14,6 +15,7 @@ const MeetBoard = () => {
     const [totalPage, setTotalPage] = useState(1);
     const [sortOrder, setSortOrder] = useState("최신순"); // 정렬 상태 유지
     const navigate = useNavigate();
+    const pluginKey = '6fec18e9-6d40-4de2-85f6-77d6e598c79b';
 
     const goToMeetBoardWrite = () => {
         console.log('글쓰기 페이지로 이동합니다.');
@@ -130,6 +132,7 @@ const MeetBoard = () => {
             </tbody>
             </table>
             <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
+            <ChannelIOWidget pluginKey={pluginKey} />
         </div>
     );
 };

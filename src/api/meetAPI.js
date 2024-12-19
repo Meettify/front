@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 export const postMeetInsert = async (data) => {
     try {
         const response = await request.post({
-            url: `${BASE_URL}/api/v1/search`,
+            url: `${BASE_URL}/meets`,
             data,
         });
         return response; // 전체 응답 객체를 반환
@@ -330,41 +330,29 @@ export const getMeetBoardDetail = async (meetBoardId) => {
     }
 };
 
-// 모임 게시판 글쓰기 API
+//모임 게시판 글 작성 API
 export const postMeetBoardInsert = async (formData, meetId) => {
     try {
-        const meetBoardData = new FormData();
-        meetBoardData.append('title', formData.title);
-        meetBoardData.append('content', formData.content);
-        meetBoardData.append('meetId', meetId);
-        meetBoardData.append('meetBoard', JSON.stringify(formData));  // meetBoard 필드 추가 (예시)
-
-        console.log('MeetBoardData : ', meetBoardData);
-
-        // 파일이 있을 경우 FormData에 추가
-        if (formData.files && formData.files.length > 0) {
-            formData.files.forEach(file => {
-                meetBoardData.append('files', file);
-            });
-        }
-        // 인증 토큰 (예: 로컬스토리지에서 가져오기)
-        const token = getAuthToken();
+        formData.append('meetId', meetId);
+        const token = getAuthToken(); 
         if (!token) {
             throw new Error('토큰이 존재하지 않습니다.');
         }
 
-        // 요청 헤더 설정 (토큰 추가)
         const headers = {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,  // Authorization 헤더에 토큰 추가
+            'Authorization': `Bearer ${token}`,  // 토큰 추가
         };
 
         // API 호출
-        const response = await axios.post(`${BASE_URL}/meetBoards`, meetBoardData, { 
-            headers: { 'Authorization': `Bearer ${token}` }
+        const response = await axios.post(`${BASE_URL}/meetBoards`, formData, {
+            headers: { 
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            }
         });
-        console.log('Response:', response);
 
+        console.log('Response:', response.data);  // 서버의 응답 데이터 확인
         return response.data; // API 응답 반환
     } catch (error) {
         console.error('게시글 작성 오류:', error);
