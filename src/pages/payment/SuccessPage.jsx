@@ -51,6 +51,18 @@ const SuccessPage = () => {
 
         const data = await response.json();
         console.log("결제 성공:", data);
+
+        // 응답 데이터 구조 출력
+        console.log("API 응답 데이터:");
+        console.log("orderId:", data.orderId);
+        console.log("amount:", data.amount);
+        console.log("paymentKey:", data.paymentKey);
+        console.log("requestedAt:", data.requestedAt);
+        console.log("approvedAt:", data.approvedAt);
+        console.log("orderUid:", data.orderUid);
+        console.log("orders:", data.orders);
+        console.log("address:", data.address);
+
         setPaymentDetails(data);
       } catch (error) {
         console.error("결제 처리 오류:", error);
