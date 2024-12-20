@@ -1,11 +1,5 @@
-// useAdminQuestions.js
 import { create } from 'zustand';
-import {
-  getAdminQuestions,
-  addAnswer,
-  updateAnswer,
-  deleteAnswer,
-} from '../api/adminQuestionsAPI'; // adminAPI 경로 조정
+import { getAdminQuestions, addAnswer, updateAnswer, deleteAnswer } from '../api/adminQuestionsAPI';
 
 const useAdminQuestionsStore = create((set) => ({
   questions: [],
@@ -14,19 +8,19 @@ const useAdminQuestionsStore = create((set) => ({
   error: null,
 
   // 문의글 목록 조회
-  fetchQuestions: async (page = 0, size = 10, sort = 'desc') => {
+  fetchQuestions: async (page = 0, size = 10, sort = 'desc', replyStatus) => {
     set({ loading: true, questions: [] }); // 초기화
     try {
-      const response = await getAdminQuestions(page, size, sort);
-      const { questions, totalPages } = response;
+      const response = await getAdminQuestions(page, size, sort, replyStatus);
+      const { contents, totalPage } = response; // contents로 질문 데이터 할당
 
       set({
-        questions,
-        totalPages,
+        questions: contents, // contents를 questions에 할당
+        totalPages: totalPage, // totalPage로 totalPages 할당
         loading: false,
       });
 
-      return totalPages;
+      return totalPage;
     } catch (error) {
       console.error('문의글 목록 조회 실패:', error);
       set({ error, loading: false });
@@ -41,9 +35,7 @@ const useAdminQuestionsStore = create((set) => ({
       await addAnswer(questionId, comment);
       set({ loading: false });
     } catch (error) {
-      console.error('답변 추가 실패:', error);
-      set({ error, loading: false });
-      throw error;
+      set({ error: error.response?.data || error.message, loading: false });
     }
   },
 
@@ -54,9 +46,7 @@ const useAdminQuestionsStore = create((set) => ({
       await updateAnswer(questionId, answerId, comment);
       set({ loading: false });
     } catch (error) {
-      console.error('답변 수정 실패:', error);
-      set({ error, loading: false });
-      throw error;
+      set({ error: error.response?.data || error.message, loading: false });
     }
   },
 
@@ -67,9 +57,7 @@ const useAdminQuestionsStore = create((set) => ({
       await deleteAnswer(questionId, answerId);
       set({ loading: false });
     } catch (error) {
-      console.error('답변 삭제 실패:', error);
-      set({ error, loading: false });
-      throw error;
+      set({ error: error.response?.data || error.message, loading: false });
     }
   },
 }));
