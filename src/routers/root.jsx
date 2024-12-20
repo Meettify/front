@@ -24,7 +24,7 @@ const Cart = lazy(() => import("../pages/cart/CartPage"))
 const Order = lazy(() => import("../pages/order/OrderPage"))
 const Success = lazy(() => import("../pages/payment/SuccessPage"))
 const Fail = lazy(() => import("../pages/payment/FailPage"))
-
+const Contact = lazy(() => import("../pages/support/ContactPage"))
 
 const root = createBrowserRouter([
     {
@@ -83,6 +83,10 @@ const root = createBrowserRouter([
             {
                 path: "fail",
                 element: <Suspense fallback={<Loading />}><Fail /></Suspense>,
+            },
+            {
+                path: "contact",
+                element: <Suspense fallback={<Loading />}><Contact /></Suspense>,
             },
             ...shopRouter(),
             ...meetRouter(),
