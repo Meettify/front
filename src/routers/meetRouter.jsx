@@ -10,6 +10,7 @@ const MeetAccept = lazy(() => import("../components/meet/MeetAccept")); // 이�
 const MeetBoard = lazy(() => import("../pages/meet/MeetBoard"));
 const MeetBoardDetail = lazy(()=>import("../pages/meet/MeetBoardDetail")); 
 const MeetBoardAdd = lazy(()=>import("../pages/meet/MeetBoardAdd")); 
+const MeetBoardEdit = lazy(()=>import("../pages/meet/MeetBoardEdit")); 
 
 
 const meetRouter = () => {
@@ -25,7 +26,12 @@ const meetRouter = () => {
     {
       path: "/meetBoards/:meetBoardId", // 모임 게시판 상세보기
       element: <Suspense fallback={<Loading />}><MeetBoardDetail /></Suspense>,
-    },{
+    },
+    {
+      path: "/meetBoards/:meetBoardId/edit", // 모임 게시판 수정
+      element: <Suspense fallback={<Loading />}><MeetBoardEdit /></Suspense>,
+    },
+    {
       path: "/meetBoards", // 모임 게시판 글작성
       element: <Suspense fallback={<Loading />}><MeetBoardAdd /></Suspense>,
     },
