@@ -8,7 +8,8 @@ import { MeetBoardList } from "../../api/meetAPI";
 import ChannelIOWidget from '../../components/chatbot/ChannelIOWidget';
 
 const MeetBoard = () => {
-    const { meetId } = useParams();
+    const { meetId } = useParams(); // URL에서 meetId를 가져옵니다.
+    const { setMeetId } = useMeetBoardStore(); 
     const [boardList, setBoardList] = useState([]); // 게시판 리스트 상태
     const { posts, fetchPosts, loading, error } = useMeetBoardStore();
     const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +25,7 @@ const MeetBoard = () => {
 
     // 게시판 데이터 불러오기
     useEffect(() => {
+        console.log(`Current meetId from useParams: ${meetId}`);
         const fetchPageData = async () => {
             try {
                 const sort = sortOrder === "최신순" ? "desc" : "asc";
@@ -37,21 +39,22 @@ const MeetBoard = () => {
                     setBoardList(response.content);  // 게시판 리스트 상태 업데이트
                     setTotalPage(response.totalPages); // 전체 페이지 수 설정
                 } else {
-                    // 응답 데이터가 없거나 예상과 다른 형식일 경우 처리
                     console.error("응답 형식이 잘못되었습니다.", response);
-                    setBoardList([]); // 빈 배열로 초기화
+                    setBoardList([]);  // 빈 배열로 초기화
                     setTotalPage(0);  // 전체 페이지 수를 0으로 설정
                 }
             } catch (error) {
                 console.error("페이지 데이터 가져오기 실패:", error);
-                setBoardList([]); // 오류 발생 시 빈 배열로 초기화
+                setBoardList([]);  // 오류 발생 시 빈 배열로 초기화
                 setTotalPage(0);  // 오류 발생 시 전체 페이지 수 0으로 설정
             }
         };
     
         fetchPageData();
-    }, [currentPage, sortOrder, meetId]); // `meetId`, `sortOrder` 변경 시마다 데이터 갱신
-
+        setMeetId(meetId);
+        fetchPosts(currentPage, 10, sortOrder, meetId);
+    }, [meetId, currentPage, sortOrder, setMeetId, fetchPosts]);
+    
     const handleSortChange = (event) => {
         setSortOrder(event.target.value); // 정렬 상태 변경
         setCurrentPage(1); // 정렬 변경 시 첫 페이지로 이동
@@ -115,7 +118,7 @@ const MeetBoard = () => {
                     <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
                     <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
                     <td className="p-2 text-left">
-                        <Link to={`/meetBoards/${post.boardId}`} className="text-black hover:underline">
+                        <Link to={`/meetBoards/${post.meetBoardId}`} className="text-black hover:underline">
                         {post.title}
                         </Link>
                     </td>
@@ -136,7 +139,6 @@ const MeetBoard = () => {
         </div>
     );
 };
-
 
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
     return (

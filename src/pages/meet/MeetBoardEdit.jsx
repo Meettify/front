@@ -6,7 +6,7 @@ import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useMeetBoardStore from '../../stores/useMeetBoardStore';
 import useAuthStore from '../../stores/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
-
+/*meetBoardId가 넘어가면서 meetId로 전달되는 오류.,,*/
 const modules = {
     toolbar: {
         container: [
@@ -23,7 +23,7 @@ const modules = {
 };
 
 const MeetBoardEdit = () => {
-    const { id } = useParams();
+    const { meetId } = useMeetBoardStore();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [existingFiles, setExistingFiles] = useState([]); // 기존 이미지 상태
@@ -32,7 +32,7 @@ const MeetBoardEdit = () => {
     const [contentError, setContentError] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
 
-    const { fetchPostDetail, updatePost, postDetail } = useMeetBoardStore();
+    const { fetchPostDetail, updatePost } = useMeetBoardStore();
     const { user } = useAuthStore();
     const navigate = useNavigate();
     const quillRef = useRef(null);
@@ -41,20 +41,20 @@ const MeetBoardEdit = () => {
         if (!user || !user.memberEmail) {
             navigate('/');
         } else {
-            fetchPostDetail(parseInt(id));
+            fetchPostDetail(parseInt(meetId));
         }
-    }, [id, user, navigate, fetchPostDetail]);
+    }, [meetId, user, navigate, fetchPostDetail]);
 
     useEffect(() => {
-        if (postDetail) {
-            console.log('게시글 세부 정보:', postDetail);
-            setTitle(postDetail.title);
-            setContent(postDetail.content);
-            setExistingFiles(postDetail.images || []);
+        if (fetchPostDetail) {
+            console.log('게시글 세부 정보:', fetchPostDetail);
+            setTitle(fetchPostDetail.title);
+            setContent(fetchPostDetail.content);
+            setExistingFiles(fetchPostDetail.images || []);
             // 수정시 기존 이미지가 있을 때는 newFiles 초기화하지 않음
             setNewFiles([]); // 이미지를 추가하지 않을 경우 새로운 이미지 초기화
         }
-    }, [postDetail]);
+    }, [fetchPostDetail]);
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -108,7 +108,7 @@ const MeetBoardEdit = () => {
         // API 요청에 따라 형식 변경
         try {
             // newFiles가 비어있을 경우에는 추가하지 않음
-            await updatePost(id, title, content, remainImgId, newFiles.length > 0 ? newFiles : undefined);
+            await updatePost(meetId, title, content, remainImgId, newFiles.length > 0 ? newFiles : undefined);
             navigate(`/meetBoard/list/${meetId}`);
         } catch (error) {
             console.error('게시글 수정 중 오류:', error);
