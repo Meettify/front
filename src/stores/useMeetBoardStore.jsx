@@ -21,31 +21,42 @@ const useMeetBoardStore = create((set) => ({
   setLoading: (loading) => set({ loading }),
 
   fetchPosts: async (page = 0, size = 1, sort = 'desc', meetId) => {
-      set({ loading: true, posts: [] });
-      try {
-          console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}, meetId : ${meetId}`);
 
-          // MeetBoardList 호출하여 데이터를 받아옴
-          const response = await MeetBoardList(meetId, page, size, sort);
+    set({ loading: true, posts: [] });
+    try {
+        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}, meetId : ${meetId}`);
 
-          // 응답 데이터를 content와 totalPages로 분리
-          const content = response.content || [];
-          const totalPages = response.totalPages || 0;
+        // MeetBoardList 호출하여 데이터를 받아옴
+        const response = await MeetBoardList(meetId, page, size, sort);
 
-          console.log('API Response:', response);
+        // 응답 데이터를 content와 totalPages로 분리
+        const content = response.content || [];
+        const totalPages = response.totalPages || 0;
 
-          // 상태 업데이트
-          set({
-              posts: content,
-              totalPages: totalPages,   // totalPages 상태 업데이트
-              loading: false,
-          });
+        // console.log('API Response from fetchPosts:', response);
+        // console.log('Fetched Content:', content);
+        // console.log('Total Pages:', totalPages);
 
-          // content와 totalPages 반환
-          return {
-              content,
-              totalPages
-          };
+        // 응답이 정상적인지, content와 totalPages 존재 여부 확인
+        if (content && totalPages !== undefined) {
+            set({
+                posts: content,  // 게시글 목록
+                totalPages,  // 전체 페이지 수
+                loading: false,
+            });
+        } else {
+            console.error("응답 형식이 잘못되었습니다.", response);
+            set({
+                posts: [],
+                totalPages: 0,
+                loading: false,
+            });
+        }
+        // content와 totalPages 반환
+        return {
+            content: content,
+            totalPages: totalPages
+        };
       } catch (error) {
           console.error('페이지 데이터 가져오기 실패:', error);
           set({ error, loading: false });
@@ -81,7 +92,33 @@ const useMeetBoardStore = create((set) => ({
       throw error;
     }
   },
-
+  
+  //게시글 작성
+  createPost: async (formData, meetId) => {
+    set({ loading: true });
+    try {
+        const response = await postMeetBoardInsert(formData, meetId);
+        console.log('API 응답:', response);  // 응답 내용 확인
+        console.log('response.success:', response.success);
+        console.log('response.data:', response.data);
+        // 응답에서 success와 data를 정확히 확인
+        if (response.success && response.data) {
+            console.log('게시글 작성 성공:', response.data);
+            set((state) => ({
+                posts: [...state.posts, response.data]  // 새 게시글 추가
+            }));
+            return response;  // 정상적으로 반환
+        } else {
+            throw new Error('게시글 작성에 실패했습니다. 응답에 문제가 있습니다.');
+        }
+    } catch (error) {
+        set({ error: error.message });
+        console.error('게시글 작성 오류:', error.message);
+        throw error;  // 에러 던지기
+    } finally {
+        set({ loading: false });
+    }
+  },
 
   
   //게시글 작성
