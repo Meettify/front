@@ -120,34 +120,6 @@ const useMeetBoardStore = create((set) => ({
     }
   },
 
-  
-  // //게시글 작성
-  // createPost: async (formData, meetId) => {
-  //   set({ loading: true });
-  //   try {
-  //       const response = await postMeetBoardInsert(formData, meetId);
-  //       console.log('API 응답:', response);  // 응답 내용 확인
-  //       console.log('response.success:', response.success);
-  //       console.log('response.data:', response.data);
-  //       // 응답에서 success와 data를 정확히 확인
-  //       if (response.success && response.data) {
-  //           console.log('게시글 작성 성공:', response.data);
-  //           set((state) => ({
-  //               posts: [...state.posts, response.data]  // 새 게시글 추가
-  //           }));
-  //           return response;  // 정상적으로 반환
-  //       } else {
-  //           throw new Error('게시글 작성에 실패했습니다. 응답에 문제가 있습니다.');
-  //       }
-  //   } catch (error) {
-  //       set({ error: error.message });
-  //       console.error('게시글 작성 오류:', error.message);
-  //       throw error;  // 에러 던지기
-  //   } finally {
-  //       set({ loading: false });
-  //   }
-  // },
-
   // 게시물 수정
   updatePost: async (meetId, title, content, remainImgId = [], files = []) => {
     set({ loading: true });
