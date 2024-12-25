@@ -81,7 +81,7 @@ const MeetBoardDetail = () => {
     
     // 게시물 수정 처리
     const handleEdit = () => {
-        navigate(`/meetBoards/${meetBoardId}/edit`);
+        navigate(`/meetBoards/${meetBoardId}/edit`,  { state: { meetId } });
         /*meetBoardId가 넘어가면서 meetId로 전달되는 오류.,,*/
     };
 
