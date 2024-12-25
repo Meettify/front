@@ -6,7 +6,7 @@ import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useMeetBoardStore from '../../stores/useMeetBoardStore';
 import useAuthStore from '../../stores/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
-/*meetBoardId가 넘어가면서 meetId로 전달되는 오류.,,*/
+
 const modules = {
     toolbar: {
         container: [
@@ -37,22 +37,29 @@ const MeetBoardEdit = () => {
     const navigate = useNavigate();
     const quillRef = useRef(null);
 
+    const { meetBoardId } = useParams(); // URL에서 meetBoardId를 가져옵니다.
+
+    // 게시글 상세 정보 불러오기
     useEffect(() => {
         if (!user || !user.memberEmail) {
             navigate('/');
         } else {
-            fetchPostDetail(parseInt(meetId));
+            fetchPostDetail(parseInt(meetBoardId));
         }
-    }, [meetId, user, navigate, fetchPostDetail]);
+    }, [meetBoardId, user, navigate, fetchPostDetail]);
 
+    // 게시글 상세 정보 상태 업데이트
     useEffect(() => {
         if (fetchPostDetail) {
             console.log('게시글 세부 정보:', fetchPostDetail);
-            setTitle(fetchPostDetail.title);
-            setContent(fetchPostDetail.content);
-            setExistingFiles(fetchPostDetail.images || []);
-            // 수정시 기존 이미지가 있을 때는 newFiles 초기화하지 않음
-            setNewFiles([]); // 이미지를 추가하지 않을 경우 새로운 이미지 초기화
+
+            // 실제 데이터 구조에 맞춰서 값을 추출합니다.
+            const meetBoardDetails = fetchPostDetail.meetBoardDetailsDTO || {};
+
+            setTitle(meetBoardDetails.title || '');
+            setContent(meetBoardDetails.content || '');
+            setExistingFiles(meetBoardDetails.images || []);
+            setNewFiles([]); // 새로 추가된 파일 초기화
         }
     }, [fetchPostDetail]);
 
@@ -84,7 +91,6 @@ const MeetBoardEdit = () => {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -104,11 +110,13 @@ const MeetBoardEdit = () => {
 
         // 기존 이미지 ID 배열 생성
         const remainImgId = existingFiles.map(file => file.boardId);
+        // 이미지 URL 배열 생성 (기존 이미지 URL)
+        const existingImgUrls = existingFiles.map(file => file.uploadImgUrl);
 
         // API 요청에 따라 형식 변경
         try {
-            // newFiles가 비어있을 경우에는 추가하지 않음
-            await updatePost(meetId, title, content, remainImgId, newFiles.length > 0 ? newFiles : undefined);
+            // 새로 추가된 이미지가 있다면, `newFiles`로 전달
+            await updatePost(meetBoardId, title, content, remainImgId, newFiles, existingImgUrls);
             navigate(`/meetBoard/list/${meetId}`);
         } catch (error) {
             console.error('게시글 수정 중 오류:', error);

@@ -21,36 +21,46 @@ const useMeetBoardStore = create((set) => ({
   setLoading: (loading) => set({ loading }),
 
   fetchPosts: async (page = 0, size = 1, sort = 'desc', meetId) => {
-      set({ loading: true, posts: [] });
-      try {
-          console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}, meetId : ${meetId}`);
+    set({ loading: true, posts: [] });
+    try {
+        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}, meetId : ${meetId}`);
 
-          // MeetBoardList 호출하여 데이터를 받아옴
-          const response = await MeetBoardList(meetId, page, size, sort);
+        // MeetBoardList 호출하여 데이터를 받아옴
+        const response = await MeetBoardList(meetId, page, size, sort);
 
-          // 응답 데이터를 content와 totalPages로 분리
-          const content = response.content || [];
-          const totalPages = response.totalPages || 0;
+        // 응답 데이터를 content와 totalPages로 분리
+        const content = response.content || [];
+        const totalPages = response.totalPages || 0;
 
-          console.log('API Response:', response);
+        // console.log('API Response from fetchPosts:', response);
+        // console.log('Fetched Content:', content);
+        // console.log('Total Pages:', totalPages);
 
-          // 상태 업데이트
-          set({
-              posts: content,
-              totalPages: totalPages,   // totalPages 상태 업데이트
-              loading: false,
-          });
-
-          // content와 totalPages 반환
-          return {
-              content,
-              totalPages
-          };
-      } catch (error) {
-          console.error('페이지 데이터 가져오기 실패:', error);
-          set({ error, loading: false });
-          throw error;
-      }
+        // 응답이 정상적인지, content와 totalPages 존재 여부 확인
+        if (content && totalPages !== undefined) {
+            set({
+                posts: content,  // 게시글 목록
+                totalPages,  // 전체 페이지 수
+                loading: false,
+            });
+        } else {
+            console.error("응답 형식이 잘못되었습니다.", response);
+            set({
+                posts: [],
+                totalPages: 0,
+                loading: false,
+            });
+        }
+        // content와 totalPages 반환
+        return {
+            content: content,
+            totalPages: totalPages
+        };
+    } catch (error) {
+        console.error('페이지 데이터 가져오기 실패:', error);
+        set({ error, loading: false });
+        throw error;
+    }
   },
 
 

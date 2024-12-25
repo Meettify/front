@@ -246,6 +246,7 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
         if (!meetId || isNaN(meetId)) {
             throw new Error('Invalid meetId');
         }
+
         const authToken = `${sessionStorage.getItem('accessToken')}`;
         if (!authToken) {
             throw new Error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
@@ -263,13 +264,28 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
             },
         });
 
-        //API 응답 데이터에서 meetBoardPage를 반환하고, totalPages도 수정
-        const content = response.data.meetBoardPage || [];
-        const totalPages = response.data.totalPages || 0;
+        // API 응답 데이터에서 필요한 정보 추출
+        const { 
+            meetBoardPage = [], 
+            totalPages = 0, 
+            isFirst = false, 
+            isLast = false, 
+            totalItems = 0, 
+            hasPrevious = false, 
+            hasNext = false, 
+            currentPage = 0 
+        } = response.data;
 
+        // 반환할 데이터 구조
         return {
-            content,      // 게시글 목록
-            totalPages,   // 총 페이지 수
+            content: meetBoardPage,  // 게시글 목록 (기존 meetBoardPage)
+            totalPages,              // 총 페이지 수
+            totalItems,              // 총 게시글 수
+            isFirst,                 // 첫 번째 페이지 여부
+            isLast,                  // 마지막 페이지 여부
+            hasPrevious,             // 이전 페이지 존재 여부
+            hasNext,                 // 다음 페이지 존재 여부
+            currentPage,             // 현재 페이지 번호
         };
     } catch (error) {
         console.error('모임 게시판 데이터를 불러오는 데 실패했습니다:', error);
@@ -292,6 +308,13 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
     }
 };
 
+
+
+
+
+
+
+
 // 소모임 게시판 상세 조회 API
 export const getMeetBoardDetail = async (meetBoardId) => {
     if (!meetBoardId) {
@@ -301,7 +324,7 @@ export const getMeetBoardDetail = async (meetBoardId) => {
     try {
         const token = getAuthToken(); 
         // URL 경로에 meetBoardId를 포함하여 요청 보내기
-        const response = await axios.get(`${BASE_URL}/meetBoards/${meetBoardId}`, {
+        const response = await axios.get(`${BASE_URL}/meetBoards/${meetBoardId}`, {//야기 meetId로 들어옴
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'accept': '*/*',
