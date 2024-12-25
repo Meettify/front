@@ -308,13 +308,6 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
     }
 };
 
-
-
-
-
-
-
-
 // 소모임 게시판 상세 조회 API
 export const getMeetBoardDetail = async (meetBoardId) => {
     if (!meetBoardId) {
@@ -375,43 +368,6 @@ export const getMeetBoardDetail = async (meetBoardId) => {
         }
     }
 };
-
-
-
-
-// export const getMeetBoardDetail = async (meetBoardId, meetId) => {
-//     try {
-//         const token = getAuthToken(); 
-//         const response = await axios.get(`${BASE_URL}/meetBoards/${meetBoardId}`, {
-//             headers: {
-//                 'Authorization': `Bearer ${token}`,
-//                 'accept': '*/*',
-//                 "Content-Type": "application/json",
-//             }
-//         });
-//         // 응답 데이터를 분리해서 반환
-//         const { meetBoardDetailsDTO, meetBoardPermissionDTO } = response.data;
-//         return {
-//             meetBoardDetails: meetBoardDetailsDTO,
-//             meetBoardPermission: meetBoardPermissionDTO
-//         };
-//     } catch (error) {
-//         console.error('소모임 게시판 상세 조회 오류:', error);
-//         if (error.response) {
-//             return error.response.data;  // 서버 응답 처리
-//         } else if (error.request) {
-//             return {
-//                 status: 500,
-//                 message: '서버에 연결할 수 없습니다.',
-//             };
-//         } else {
-//             return {
-//                 status: 500,
-//                 message: error.message || '알 수 없는 오류가 발생했습니다.',
-//             };
-//         }
-//     }
-// };
 
 
 //모임 게시판 글 작성 API
