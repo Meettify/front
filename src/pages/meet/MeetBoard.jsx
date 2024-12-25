@@ -24,6 +24,7 @@ const MeetBoard = () => {
 
     // 게시판 데이터 불러오기
     useEffect(() => {
+        console.log(`Current meetId from useParams: ${meetId}`);
         const fetchPageData = async () => {
             try {
                 const sort = sortOrder === "최신순" ? "desc" : "asc";

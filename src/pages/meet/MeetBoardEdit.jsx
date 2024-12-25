@@ -6,7 +6,7 @@ import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import useMeetBoardStore from '../../stores/useMeetBoardStore';
 import useAuthStore from '../../stores/useAuthStore';
 import { useNavigate, useParams } from 'react-router-dom';
-
+/*meetBoardId가 넘어가면서 meetId로 전달되는 오류.,,*/
 const modules = {
     toolbar: {
         container: [

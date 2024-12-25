@@ -246,7 +246,6 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
         if (!meetId || isNaN(meetId)) {
             throw new Error('Invalid meetId');
         }
-
         const authToken = `${sessionStorage.getItem('accessToken')}`;
         if (!authToken) {
             throw new Error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
@@ -263,7 +262,6 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
                 'Authorization': `Bearer ${authToken}`,
             },
         });
-
         // API 응답 데이터에서 필요한 정보 추출
         const { 
             meetBoardPage = [], 
@@ -307,13 +305,6 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
         }
     }
 };
-
-
-
-
-
-
-
 
 // 소모임 게시판 상세 조회 API
 export const getMeetBoardDetail = async (meetBoardId) => {
