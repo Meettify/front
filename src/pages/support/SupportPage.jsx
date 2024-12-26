@@ -1,14 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom"; // 라우팅을 위해 React Router의 Link 사용
+import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 import SupportQna from "../../components/support/SupportQna";
 import RoundedButton from "../../components/button/RoundedButton";
+import useQuestionsStore from "../../stores/useQuestionsStore";
 
 const SupportPage = () => {
+    const { myQuestionsCount, fetchMyQuestions, questions, loading } = useQuestionsStore();
+    const navigate = useNavigate();  // useNavigate로 변경
+
     // 샘플 공지사항 데이터
     const noticeList = [
         { id: 1, image: "https://via.placeholder.com/150", title: "test1", quantity: 1, price: 100 },
         { id: 2, image: "https://via.placeholder.com/150", title: "test2", quantity: 2, price: 200 },
     ];
+
+    // 내 문의 목록 버튼 클릭 시
+    const handleMyQuestionsClick = () => {
+        navigate("/my-questions"); // 내 문의 목록 페이지로 이동
+    };
 
     return (
         <div className="max-w-5xl mx-auto mt-12 px-4 text-left">
@@ -41,10 +50,19 @@ const SupportPage = () => {
                     </tbody>
                 </table>
 
-                {/* 문의하기 버튼 */}
-                <div className="mt-6 text-right">
+                {/* 버튼들 우측 정렬 */}
+                <div className="mt-6 flex justify-end space-x-4">
+                    {/* 문의하기 버튼 */}
                     <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}>
                         <Link to="/contact">문의하기</Link>
+                    </RoundedButton>
+
+                    {/* 내 문의 목록 버튼 */}
+                    <RoundedButton
+                        style={{ padding: '6px 14px', fontSize: '12px' }}
+                        onClick={handleMyQuestionsClick}  // 클릭 시 내 문의 목록 페이지로 이동
+                    >
+                        내 문의 목록
                     </RoundedButton>
                 </div>
             </div>

@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuestion } from '../../api/questionsAPI';
 import useCommentStore from '../../stores/useCommentStore';
+<<<<<<< HEAD
+import { addAnswer } from '../../api/adminQuestionsAPI';
+import RoundedButton from '../../components/button/RoundedButton';
+=======
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
 import RoundedDeleteButton from '../../components/button/RoundedDeleteButton';
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
 import { CiRead } from 'react-icons/ci';
 import { LiaEdit } from "react-icons/lia";
 import { TiDelete } from "react-icons/ti";
@@ -14,14 +19,23 @@ const QuestionDetail = () => {
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
+  const [commentContent, setCommentContent] = useState('');  // 댓글 내용
+=======
   const [commentContent, setCommentContent] = useState('');
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState('');
   const [replyingCommentId, setReplyingCommentId] = useState(null);
   const [replyContent, setReplyContent] = useState('');
 
+<<<<<<< HEAD
+  const { questionId } = useParams();
+  const { comments = [], fetchComments, updateComment, deleteComment } = useCommentStore();
+=======
   const { questionId } = useParams();  // URL에서 questionId 추출
   const { comments = [], fetchComments, addComment, updateComment, deleteComment } = useCommentStore();
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -34,7 +48,11 @@ const QuestionDetail = () => {
         setLoading(true);
         const questionData = await getQuestion(questionId);
         setQuestion(questionData);
+<<<<<<< HEAD
+        await fetchComments(questionId);
+=======
         await fetchComments(questionId);  // 댓글도 함께 가져오기
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
       } catch (err) {
         console.error('문의 조회 중 오류 발생:', err);
         setError('문의 조회 중 오류가 발생했습니다.');
@@ -47,11 +65,22 @@ const QuestionDetail = () => {
   }, [questionId, fetchComments]);
 
   const handleCommentChange = (e) => setCommentContent(e.target.value);
+<<<<<<< HEAD
+
+  // 댓글 등록을 addAnswer로 변경
+  const handleCommentSubmit = async () => {
+    if (!commentContent.trim()) return;
+    try {
+      await addAnswer(questionId, commentContent);  // addAnswer API 호출
+      setCommentContent('');
+      await fetchComments(questionId);  // 댓글이 추가된 후 새로고침
+=======
   const handleCommentSubmit = async () => {
     if (!commentContent.trim()) return;
     try {
       await addComment(questionId, commentContent);  // 댓글 등록
       setCommentContent('');
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
     } catch (error) {
       console.error('댓글 등록 중 오류:', error);
     }
@@ -67,7 +96,11 @@ const QuestionDetail = () => {
 
   const confirmEdit = async () => {
     try {
+<<<<<<< HEAD
+      await updateComment(questionId, editingCommentId, editingContent);
+=======
       await updateComment(questionId, editingCommentId, editingContent);  // 댓글 수정
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
       setEditingCommentId(null);
       setEditingContent('');
       await fetchComments(questionId);
@@ -83,7 +116,11 @@ const QuestionDetail = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
+<<<<<<< HEAD
+      await deleteComment(questionId, commentId);
+=======
       await deleteComment(questionId, commentId);  // 댓글 삭제
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
       await fetchComments(questionId);
     } catch (error) {
       console.error("댓글 삭제 중 오류:", error);
@@ -102,7 +139,11 @@ const QuestionDetail = () => {
   const submitReply = async () => {
     if (!replyContent.trim()) return;
     try {
+<<<<<<< HEAD
+      await addAnswer(questionId, replyContent);  // addAnswer API 호출
+=======
       await addComment(questionId, replyContent, replyingCommentId);  // 답글 등록
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
       setReplyingCommentId(null);
       setReplyContent('');
       await fetchComments(questionId);
@@ -219,14 +260,21 @@ const QuestionDetail = () => {
                       type="text"
                       value={replyContent}
                       onChange={handleReplyChange}
+<<<<<<< HEAD
+                      className="w-full p-2 border rounded"
+                      placeholder="답글을 작성하세요..."
+=======
                       placeholder="답글을 입력하세요..."
                       className="w-full p-2 border rounded mb-2"
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
                     />
                     <RoundedButton onClick={submitReply} disabled={!replyContent.trim()}>
                       답글 등록
                     </RoundedButton>
                   </div>
                 )}
+<<<<<<< HEAD
+=======
 
                 {comment.children && comment.children.map((child) => (
                   <div key={child.commentId} className="ml-8 mt-2">
@@ -237,11 +285,16 @@ const QuestionDetail = () => {
                     </div>
                   </div>
                 ))}
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
               </li>
             );
           })
         ) : (
+<<<<<<< HEAD
+          <li>댓글이 없습니다.</li>
+=======
           <p>댓글이 없습니다.</p>
+>>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
         )}
       </ul>
     </div>

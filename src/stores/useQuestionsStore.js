@@ -8,29 +8,24 @@ const useQuestionsStore = create((set) => ({
   loading: false,
   error: null,
 
-  // 내 문의 조회
-  fetchMyQuestions: async (page = 0, size = 10, sort = ['createdDate,desc'], id = null) => {
+  fetchMyQuestions: async (page = 0, size = 10, sort) => {
     set({ loading: true, error: null });
     try {
-      const data = await getMyQuestions(page, size, sort);
-      const questions = data.content || [];
-      
-      if (id) {
-        // id가 제공되면 해당 문의글 찾기
-        const questionData = questions.find((q) => q.boardId === parseInt(id));
-        if (questionData) {
-          set({ questions: [questionData], loading: false }); // 해당 질문만 상태에 저장
-        } else {
-          set({ error: '해당 ID의 문의글을 찾을 수 없습니다.', loading: false });
-        }
+      const data = await getMyQuestions(page, size, sort);  // getMyQuestions 호출
+      console.log('내 문의 목록 데이터:', data); // 응답 데이터 확인
+      if (data && data.contents) {
+        set({ questions: data.contents, loading: false });
+        console.log('질문 목록:', data.contents); // 갱신된 질문 목록 확인
       } else {
-        set({ questions, loading: false }); // id가 없으면 전체 문의글 상태 저장
+        set({ questions: [], loading: false });
+        console.log('응답 데이터에 contents가 없거나 비어 있습니다.');
       }
     } catch (error) {
       set({ error: error.response?.data || error.message, loading: false });
+      console.error('내 문의 조회 중 오류 발생:', error);  // 오류 로그 추가
     }
   },
-
+  
   // 문의 작성
   createQuestion: async (title, content) => {
     set({ loading: true });
