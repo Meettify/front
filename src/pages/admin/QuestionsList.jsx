@@ -1,9 +1,5 @@
 import React, { useEffect } from 'react';
-<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
-=======
-import { useNavigate } from 'react-router-dom'; // useNavigate 추가
->>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import useAdminQuestionsStore from '../../stores/useAdminQuestionsStore';
 import { useAuth } from '../../hooks/useAuth';
@@ -18,11 +14,7 @@ const QuestionsList = () => {
   } = useAdminQuestionsStore();
 
   const { user } = useAuth();
-<<<<<<< HEAD
   const navigate = useNavigate();
-=======
-  const navigate = useNavigate(); // useNavigate 초기화
->>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
   const [currentPage, setCurrentPage] = React.useState(0);
   const [sortOrder, setSortOrder] = React.useState('desc');
   const [replyStatus, setReplyStatus] = React.useState('');
@@ -33,12 +25,8 @@ const QuestionsList = () => {
 
   const handleRowClick = (id) => {
     if (id) {
-<<<<<<< HEAD
-      navigate(`/admin/questions/${id}`);
-=======
       console.log('Navigating to:', `/admin/questions/${id}`); // 디버깅 추가
       navigate(`/admin/questions/${id}`); // 페이지 이동
->>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
     } else {
       console.warn('Invalid question ID:', id);
     }
@@ -64,25 +52,16 @@ const QuestionsList = () => {
           {Array.isArray(questions) &&
             questions.map((question, index) => (
               <tr
-<<<<<<< HEAD
-                key={question.questionId}
-                className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleRowClick(question.questionId)}
-=======
                 key={question.questionId} // 여기에서 key prop을 추가
                 className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleRowClick(question.questionId)} // 클릭 시 이동
->>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
               >
                 <td className="p-2 text-center">{index + 1 + currentPage * 10}</td>
                 <td className="p-2 text-left">{question.content}</td>
                 <td className="p-2 text-center">
-<<<<<<< HEAD
+
                   {new Date(question.regTime).toLocaleDateString()}
-=======
-                  {new Date(question.regTime).toLocaleDateString()}  {/* 작성일 필드 수정 */}
->>>>>>> 80fda1de143bc9bdbd8585a77c260feea3db3f99
-                </td>
+                </td >
                 <td className="p-2 text-center">
                   {question.answered ? (
                     <span className="text-green-500">답변</span>
@@ -90,13 +69,13 @@ const QuestionsList = () => {
                     <span className="text-red-500">미답변</span>
                   )}
                 </td>
-              </tr>
+              </tr >
             ))}
-        </tbody>
-      </table>
+        </tbody >
+      </table >
 
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-    </div>
+    </div >
   );
 };
 
