@@ -24,20 +24,17 @@ export const getAdminQuestions = async (page = 1, size = 10, sort = 'desc', repl
 // 문의글 답변 달기
 export const addAnswer = async (questionId, comment) => {
   try {
-    console.log('Posting comment for questionId:', questionId);
-    console.log('Comment:', comment);
-
     const response = await request.post({
-      url: `${BASE_URL}/${questionId}/answer`,  // 질문 ID에 대한 답변을 달기
-      data: { comment },  // 댓글 내용
+      url: `${BASE_URL}/${questionId}/answer`, // 문의글 답변 추가 경로
+      data: { comment }, // 답변 내용
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`, // JWT 토큰 추가
       },
     });
     return response.data;
   } catch (error) {
-    console.error('문의글 답변 추가 중 오류 발생:', error.response?.data || error.message);
+    console.error('문의글 답변 추가 중 오류 발생:', error.response?.data || error.message); // 에러 상세 출력
     throw error;
   }
 };

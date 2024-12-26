@@ -1,12 +1,11 @@
 import { create } from 'zustand';
-import { getAdminQuestions, addAnswer, updateAnswer, deleteAnswer, getComments } from '../api/adminQuestionsAPI'; // 댓글 목록을 가져오는 API 추가
+import { getAdminQuestions, addAnswer, updateAnswer, deleteAnswer } from '../api/adminQuestionsAPI';
 
 const useAdminQuestionsStore = create((set) => ({
   questions: [],
   totalPages: 0,
   loading: false,
   error: null,
-  comments: [],  // 댓글 상태 추가
 
   // 문의글 목록 조회
   fetchQuestions: async (page = 0, size = 10, sort = 'desc', replyStatus) => {
@@ -29,26 +28,12 @@ const useAdminQuestionsStore = create((set) => ({
     }
   },
 
-  // 댓글 목록 조회
-  fetchComments: async (questionId) => {
-    set({ loading: true, comments: [] });  // 댓글 상태 초기화
-    try {
-      const response = await getComments(questionId); // 댓글 조회 API 호출
-      set({ comments: response.data, loading: false });
-    } catch (error) {
-      console.error('댓글 목록 조회 실패:', error);
-      set({ error, loading: false });
-    }
-  },
-
   // 답변 추가
   addAnswer: async (questionId, comment) => {
     set({ loading: true });
     try {
       await addAnswer(questionId, comment);
       set({ loading: false });
-      // 댓글 추가 후 댓글 목록 새로 고침
-      await getComments(questionId); // 추가된 댓글을 반영하기 위해 댓글 목록 새로고침
     } catch (error) {
       set({ error: error.response?.data || error.message, loading: false });
     }
