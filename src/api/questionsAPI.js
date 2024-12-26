@@ -64,11 +64,14 @@ export const deleteQuestion = async (questionId) => {
 };
 
 // 내 문의 조회
-export const getMyQuestions = async (page = 0, size = 10, sort = ['createdDate,desc']) => {
+export const getMyQuestions = async (page = 0, size = 10, sort) => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/my-questions`,
       params: { page, size, sort },
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,
+      },
     });
     return response.data;
   } catch (error) {

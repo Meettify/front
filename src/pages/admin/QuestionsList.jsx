@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useNavigate } from 'react-router-dom';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import useAdminQuestionsStore from '../../stores/useAdminQuestionsStore';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,7 +14,7 @@ const QuestionsList = () => {
   } = useAdminQuestionsStore();
 
   const { user } = useAuth();
-  const navigate = useNavigate(); // useNavigate 초기화
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = React.useState(0);
   const [sortOrder, setSortOrder] = React.useState('desc');
   const [replyStatus, setReplyStatus] = React.useState('');
@@ -25,8 +25,7 @@ const QuestionsList = () => {
 
   const handleRowClick = (id) => {
     if (id) {
-      console.log('Navigating to:', `/admin/questions/${id}`); // 디버깅 추가
-      navigate(`/admin/questions/${id}`); // 페이지 이동
+      navigate(`/admin/questions/${id}`);
     } else {
       console.warn('Invalid question ID:', id);
     }
@@ -52,14 +51,14 @@ const QuestionsList = () => {
           {Array.isArray(questions) &&
             questions.map((question, index) => (
               <tr
-                key={question.questionId} // 여기에서 key prop을 추가
+                key={question.questionId}
                 className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleRowClick(question.questionId)} // 클릭 시 이동
+                onClick={() => handleRowClick(question.questionId)}
               >
                 <td className="p-2 text-center">{index + 1 + currentPage * 10}</td>
                 <td className="p-2 text-left">{question.content}</td>
                 <td className="p-2 text-center">
-                  {new Date(question.regTime).toLocaleDateString()}  {/* 작성일 필드 수정 */}
+                  {new Date(question.regTime).toLocaleDateString()}
                 </td>
                 <td className="p-2 text-center">
                   {question.answered ? (

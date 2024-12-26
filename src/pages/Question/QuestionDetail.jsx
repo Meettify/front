@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuestion } from '../../api/questionsAPI';
 import useCommentStore from '../../stores/useCommentStore';
+import { addAnswer } from '../../api/adminQuestionsAPI';
 import RoundedButton from '../../components/button/RoundedButton';
-import RoundedCancelButton from '../../components/button/RoundedCancelButton';
-import RoundedDeleteButton from '../../components/button/RoundedDeleteButton';
 import { CiRead } from 'react-icons/ci';
 import { LiaEdit } from "react-icons/lia";
 import { TiDelete } from "react-icons/ti";
@@ -14,14 +13,14 @@ const QuestionDetail = () => {
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [commentContent, setCommentContent] = useState('');
+  const [commentContent, setCommentContent] = useState('');  // 댓글 내용
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState('');
   const [replyingCommentId, setReplyingCommentId] = useState(null);
   const [replyContent, setReplyContent] = useState('');
 
-  const { questionId } = useParams();  // URL에서 questionId 추출
-  const { comments = [], fetchComments, addComment, updateComment, deleteComment } = useCommentStore();
+  const { questionId } = useParams();
+  const { comments = [], fetchComments, updateComment, deleteComment } = useCommentStore();
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -34,7 +33,7 @@ const QuestionDetail = () => {
         setLoading(true);
         const questionData = await getQuestion(questionId);
         setQuestion(questionData);
-        await fetchComments(questionId);  // 댓글도 함께 가져오기
+        await fetchComments(questionId);
       } catch (err) {
         console.error('문의 조회 중 오류 발생:', err);
         setError('문의 조회 중 오류가 발생했습니다.');
@@ -47,11 +46,14 @@ const QuestionDetail = () => {
   }, [questionId, fetchComments]);
 
   const handleCommentChange = (e) => setCommentContent(e.target.value);
+
+  // 댓글 등록을 addAnswer로 변경
   const handleCommentSubmit = async () => {
     if (!commentContent.trim()) return;
     try {
-      await addComment(questionId, commentContent);  // 댓글 등록
+      await addAnswer(questionId, commentContent);  // addAnswer API 호출
       setCommentContent('');
+      await fetchComments(questionId);  // 댓글이 추가된 후 새로고침
     } catch (error) {
       console.error('댓글 등록 중 오류:', error);
     }
@@ -67,7 +69,7 @@ const QuestionDetail = () => {
 
   const confirmEdit = async () => {
     try {
-      await updateComment(questionId, editingCommentId, editingContent);  // 댓글 수정
+      await updateComment(questionId, editingCommentId, editingContent);
       setEditingCommentId(null);
       setEditingContent('');
       await fetchComments(questionId);
@@ -83,7 +85,7 @@ const QuestionDetail = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await deleteComment(questionId, commentId);  // 댓글 삭제
+      await deleteComment(questionId, commentId);
       await fetchComments(questionId);
     } catch (error) {
       console.error("댓글 삭제 중 오류:", error);
@@ -102,7 +104,7 @@ const QuestionDetail = () => {
   const submitReply = async () => {
     if (!replyContent.trim()) return;
     try {
-      await addComment(questionId, replyContent, replyingCommentId);  // 답글 등록
+      await addAnswer(questionId, replyContent);  // addAnswer API 호출
       setReplyingCommentId(null);
       setReplyContent('');
       await fetchComments(questionId);
@@ -219,29 +221,19 @@ const QuestionDetail = () => {
                       type="text"
                       value={replyContent}
                       onChange={handleReplyChange}
-                      placeholder="답글을 입력하세요..."
-                      className="w-full p-2 border rounded mb-2"
+                      className="w-full p-2 border rounded"
+                      placeholder="답글을 작성하세요..."
                     />
                     <RoundedButton onClick={submitReply} disabled={!replyContent.trim()}>
                       답글 등록
                     </RoundedButton>
                   </div>
                 )}
-
-                {comment.children && comment.children.map((child) => (
-                  <div key={child.commentId} className="ml-8 mt-2">
-                    <div className="text-sm font-semibold text-gray-700">{child.nickName}</div>
-                    <div>{child.comment}</div>
-                    <div className="text-xs text-gray-400">
-                      {new Date(child.createdAt).toLocaleString()}
-                    </div>
-                  </div>
-                ))}
               </li>
             );
           })
         ) : (
-          <p>댓글이 없습니다.</p>
+          <li>댓글이 없습니다.</li>
         )}
       </ul>
     </div>
