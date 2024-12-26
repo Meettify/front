@@ -18,12 +18,15 @@ export const createQuestion = async (title, content) => {
   }
 };
 
-// 문의 조회
 export const getQuestion = async (questionId) => {
   try {
     console.log('문의 조회 요청:', questionId); // 디버깅 추가
     const response = await request.get({
       url: `${BASE_URL}/${questionId}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      },
     });
     console.log('문의 조회 응답:', response.data); // 디버깅 추가
     return response.data;
@@ -61,15 +64,44 @@ export const deleteQuestion = async (questionId) => {
 };
 
 // 내 문의 조회
-export const getMyQuestions = async (page = 0, size = 10, sort = ['createdDate,desc']) => {
+export const getMyQuestions = async (page = 0, size = 10, sort) => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/my-questions`,
       params: { page, size, sort },
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,
+      },
     });
     return response.data;
   } catch (error) {
     console.error('내 문의 조회 중 오류 발생:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// 모든 문의글 수 조회
+export const countQuestions = async () => {
+  try {
+    const response = await request.get({
+      url: `${BASE_URL}/count-questions`,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('모든 문의글 수 조회 중 오류 발생:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// 내 문의글 수 조회
+export const countMyQuestions = async () => {
+  try {
+    const response = await request.get({
+      url: `${BASE_URL}/count-my-questions`,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('내 문의글 수 조회 중 오류 발생:', error.response?.data || error.message);
     throw error;
   }
 };

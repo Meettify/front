@@ -78,7 +78,7 @@ const MeetBoardAdd = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let hasError = false;
-
+    
         // 입력 값 검증
         if (!title.trim()) {
             setTitleError(true);
@@ -89,67 +89,60 @@ const MeetBoardAdd = () => {
             hasError = true;
         }
         if (hasError) return;
-
+    
         const formData = new FormData();
-
-        // courseImage가 존재하면 FormData에 추가
+    
+        // 1. meetBoard 데이터를 JSON으로 감싸서 추가
+        const meetBoardData = {
+            meetBoardTitle: title, // 제목
+            meetBoardContent: content, // 내용
+            meetId: meetId, // 미팅 ID
+        };
+    
+        // meetBoard는 JSON 데이터로 추가
+        formData.append('meetBoard', new Blob([JSON.stringify(meetBoardData)], { type: 'application/json' }));
+    
+        // 2. courseImage가 존재하면 FormData에 추가
         if (courseImage) {
             formData.append('courseImage', courseImage);
         }
-
-        // 코스 데이터 추가
-        const courseData = {
-            title: title,
-            content: content,
-        };
-        formData.append('course', new Blob([JSON.stringify(courseData)], { type: 'application/json' }));
-
-        // roots가 존재하면 FormData에 추가
-        if (roots && roots.length > 0) {
-            formData.append('roots', new Blob([JSON.stringify(roots)], { type: 'application/json' }));
-        }
-
-        // 루트 이미지 추가
-        rootImages.forEach((image) => {
-            if (image) {
-                formData.append('rootImages', image);
-            }
+    
+        // 3. 첨부된 이미지 파일들을 Multipart로 추가
+        files.forEach((file) => {
+            formData.append('images', file);  // 첨부된 파일들을 그대로 추가
         });
-
-        // meetBoard 데이터를 JSON으로 Blob으로 감싸서 전송
-        const meetBoardData = {
-            meetId: meetId,
-            meetBoardTitle: title,
-            meetBoardContent: content,
-        };
-        formData.append('meetBoard', new Blob([JSON.stringify(meetBoardData)], { type: 'application/json' }));
-
-        // 이미지 파일들을 'images' 필드로 추가
-        files.forEach(file => {
-            formData.append('images', file);
-        });
-
-        console.log('FormData:', formData); // FormData 내용 확인
-
+    
         try {
             if (!meetId) {
                 console.error("meetId가 없습니다.");
                 return;
             }
-
+    
             // 게시글 작성 API 호출
             const response = await createPost(formData, meetId);
+            console.log('게시글 작성 API 응답:', response);  // 응답 내용 확인
 
-            if (response && response.success) {
-                navigate(`/meetBoards/list/${meetId}`);  
+            // 응답 구조를 자세히 로그로 확인
+            console.log('응답 전체:', response);
+            console.log('응답 success:', response.success);
+            console.log('응답 message:', response.message);
+            console.log('응답 data:', response.data);
+    
+            if (response && response.success === true) {
+                // 응답이 성공적일 경우에만 리다이렉트
+                navigate(`/meetBoards/list/${meetId}`);
             } else {
-                console.error('게시글 작성 실패:', response?.message || '알 수 없는 오류');
-            }
+                // 실패한 이유를 좀 더 정확하게 로그로 출력
+                const errorMessage = response?.message || '알 수 없는 오류';
+                console.error('게시글 작성 실패:', errorMessage);
+                alert(`게시글 작성에 실패했습니다: ${errorMessage}. 다시 시도해주세요.`);
+            }            
         } catch (error) {
             console.error('게시글 작성 중 오류:', error.message || error);
+            alert('게시글 작성 중 오류가 발생했습니다.');
         }
     };
-
+    
     const handleCancel = () => {
         setTitle('');
         setContent('');
@@ -209,28 +202,6 @@ const MeetBoardAdd = () => {
 
             <div className="mt-6">
                 <label className="text-left block bg-gray-100 p-2 rounded-t-md text-gray-700">
-                    코스 이미지
-                </label>
-                <div className="border rounded-b-lg p-4 bg-white">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleCourseImageChange}
-                    />
-                    {courseImage && (
-                        <div className="mt-4">
-                            <img
-                                src={URL.createObjectURL(courseImage)}
-                                alt="Course Image Preview"
-                                className="w-48 h-48 object-cover rounded-md"
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="mt-6">
-                <label className="text-left block bg-gray-100 p-2 rounded-t-md text-gray-700">
                     첨부파일
                 </label>
                 <div className="border rounded-b-lg p-4 bg-white">
@@ -259,7 +230,7 @@ const MeetBoardAdd = () => {
                                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
                                         onClick={() => handleFileRemove(index)}
                                     >
-                                        X
+                                        &times;
                                     </button>
                                 </div>
                             ))

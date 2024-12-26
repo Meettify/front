@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import useMeetBoardStore from '../../stores/useMeetBoardStore';
+import useAuthStore from '../../stores/useAuthStore';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import RoundedButton from '../../components/button/RoundedButton';
 import RoundedCancelButton from '../../components/button/RoundedCancelButton';
-import useMeetBoardStore from '../../stores/useMeetBoardStore';
-import useAuthStore from '../../stores/useAuthStore';
-import { useNavigate, useParams } from 'react-router-dom';
+
 
 const modules = {
     toolbar: {
@@ -23,7 +24,14 @@ const modules = {
 };
 
 const MeetBoardEdit = () => {
-    const { id } = useParams();
+    const { postDetail, fetchPostDetail, updatePost } = useMeetBoardStore();
+    const { user } = useAuthStore();
+    const navigate = useNavigate();
+    const { meetBoardId } = useParams(); // URL에서 meetBoardId를 가져옵니다.
+    const location = useLocation();  // useLocation을 통해 전달된 state를 받음
+    const { meetId } = location.state || {};  // state에서 meetId를 가져옴 (없을 경우 빈 객체로 디폴트값 설정)
+
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [existingFiles, setExistingFiles] = useState([]); // 기존 이미지 상태
@@ -32,27 +40,28 @@ const MeetBoardEdit = () => {
     const [contentError, setContentError] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
 
-    const { fetchPostDetail, updatePost, postDetail } = useMeetBoardStore();
-    const { user } = useAuthStore();
-    const navigate = useNavigate();
-    const quillRef = useRef(null);
-
+    // 게시글 상세 정보 불러오기
     useEffect(() => {
         if (!user || !user.memberEmail) {
             navigate('/');
         } else {
-            fetchPostDetail(parseInt(id));
+            fetchPostDetail(parseInt(meetBoardId)); // 게시글 상세 정보 가져오기
         }
-    }, [id, user, navigate, fetchPostDetail]);
+    }, [meetBoardId, user, navigate, fetchPostDetail]);
 
+    // 게시글 상세 정보 상태 업데이트
     useEffect(() => {
         if (postDetail) {
             console.log('게시글 세부 정보:', postDetail);
-            setTitle(postDetail.title);
-            setContent(postDetail.content);
-            setExistingFiles(postDetail.images || []);
-            // 수정시 기존 이미지가 있을 때는 newFiles 초기화하지 않음
-            setNewFiles([]); // 이미지를 추가하지 않을 경우 새로운 이미지 초기화
+
+            // meetBoardDetailsDTO에서 필요한 정보를 추출
+            const meetBoardDetails = postDetail || {};
+
+            // 게시글 제목, 내용, 기존 이미지 URL을 상태로 설정
+            setTitle(meetBoardDetails.meetBoardTitle || '');
+            setContent(meetBoardDetails.meetBoardContent || '');
+            setExistingFiles(meetBoardDetails.images || []);
+            setNewFiles([]); // 새로 추가된 파일 초기화
         }
     }, [postDetail]);
 
@@ -77,13 +86,9 @@ const MeetBoardEdit = () => {
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
         if (selectedFiles.length > 0) {
-            console.log('선택한 파일:', selectedFiles);
             setNewFiles(selectedFiles);
-        } else {
-            console.warn('새로 추가된 파일이 없습니다.');
         }
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -104,12 +109,13 @@ const MeetBoardEdit = () => {
 
         // 기존 이미지 ID 배열 생성
         const remainImgId = existingFiles.map(file => file.boardId);
+        // 이미지 URL 배열 생성 (기존 이미지 URL)
+        const existingImgUrls = existingFiles.map(file => file.uploadImgUrl);
 
-        // API 요청에 따라 형식 변경
+        // 게시글 수정 API 호출
         try {
-            // newFiles가 비어있을 경우에는 추가하지 않음
-            await updatePost(id, title, content, remainImgId, newFiles.length > 0 ? newFiles : undefined);
-            navigate(`/meetBoard/list/${meetId}`);
+            await updatePost(meetBoardId, title, content, remainImgId, newFiles, existingImgUrls);
+            navigate(`/meetBoards/list/${meetId}`);
         } catch (error) {
             console.error('게시글 수정 중 오류:', error);
         }
@@ -131,13 +137,8 @@ const MeetBoardEdit = () => {
             {/* 제목 입력 필드 */}
             <input
                 type="text"
-                className={`w-full p-3 mb-6 border rounded-md text-md ${titleError ? 'border-red-500 placeholder-red-500' : 'border-gray-300 focus:border-black'
-                    }`}
-                placeholder={
-                    titleError && focusedField !== 'title'
-                        ? '제목을 입력해주세요'
-                        : '제목을 입력하세요'
-                }
+                className={`w-full p-3 mb-6 border rounded-md text-md ${titleError ? 'border-red-500 placeholder-red-500' : 'border-gray-300 focus:border-black'}`}
+                placeholder={titleError && focusedField !== 'title' ? '제목을 입력해주세요' : '제목을 입력하세요'}
                 value={title}
                 onChange={handleTitleChange}
                 onFocus={() => {
@@ -149,23 +150,12 @@ const MeetBoardEdit = () => {
             />
 
             {/* Quill 에디터 */}
-            <div
-                className={`text-left border rounded-lg overflow-hidden mb-6 bg-white ${contentError ? 'border-red-500' : 'border-gray-300 focus-within:border-black'
-                    }`}
-                style={{ position: 'relative' }}
-            >
+            <div className={`text-left border rounded-lg overflow-hidden mb-6 bg-white ${contentError ? 'border-red-500' : 'border-gray-300 focus-within:border-black'}`} style={{ position: 'relative' }}>
                 <div className="quill-toolbar">
                     <ReactQuill
-                        ref={quillRef}
                         value={content}
                         onChange={handleContentChange}
-                        placeholder={
-                            focusedField === 'content'
-                                ? ''
-                                : contentError
-                                    ? '내용을 입력해주세요'
-                                    : '내용을 입력하세요'
-                        }
+                        placeholder={focusedField === 'content' ? '' : contentError ? '내용을 입력해주세요' : '내용을 입력하세요'}
                         onFocus={() => {
                             setFocusedField('content');
                             setContentError(false); // 에러 초기화
@@ -205,7 +195,6 @@ const MeetBoardEdit = () => {
                                     </button>
                                 </div>
                             ))}
-
                         {/* 새로 추가된 파일 표시 */}
                         {newFiles.map((file, index) => (
                             <div key={index} className="relative w-24 h-24 rounded-lg overflow-hidden shadow-md">

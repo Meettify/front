@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { LuList } from "react-icons/lu"; // LuList 아이콘 임포트
+import { LuList } from "react-icons/lu";
 import useMeetBoardStore from "../../stores/useMeetBoardStore";
-import { MeetBoardList } from "../../api/meetAPI";
 import ChannelIOWidget from '../../components/chatbot/ChannelIOWidget';
 
 const MeetBoard = () => {
-    const { meetId } = useParams();
+    const { meetId } = useParams(); // URL에서 meetId를 가져옵니다.
+    const { setMeetId } = useMeetBoardStore(); 
     const [boardList, setBoardList] = useState([]); // 게시판 리스트 상태
     const { posts, fetchPosts, loading, error } = useMeetBoardStore();
     const [currentPage, setCurrentPage] = useState(1);
@@ -24,33 +24,33 @@ const MeetBoard = () => {
 
     // 게시판 데이터 불러오기
     useEffect(() => {
+        console.log(`Current meetId from useParams: ${meetId}`);
         const fetchPageData = async () => {
             try {
                 const sort = sortOrder === "최신순" ? "desc" : "asc";
                 console.log(`Fetching posts for meetId: ${meetId} with sort order: ${sort}`);
                 
-                // API에서 데이터 가져오기
+                // API 요청
                 const response = await fetchPosts(currentPage, 10, sort, meetId);
+                console.log("API Response:", response);
     
-                // 응답이 정상적인지 확인하고, content와 totalPages 존재 여부 확인
-                if (response && response.content && response.totalPages !== undefined) {
-                    setBoardList(response.content);  // 게시판 리스트 상태 업데이트
-                    setTotalPage(response.totalPages); // 전체 페이지 수 설정
-                } else {
-                    // 응답 데이터가 없거나 예상과 다른 형식일 경우 처리
-                    console.error("응답 형식이 잘못되었습니다.", response);
-                    setBoardList([]); // 빈 배열로 초기화
-                    setTotalPage(0);  // 전체 페이지 수를 0으로 설정
-                }
+                const { content, totalPages, totalItems, isFirst, isLast, hasPrevious, hasNext, currentPage: fetchedCurrentPage } = response; // 현재 페이지 변수명이 fetchedCurrentPage로 수정됨
+                console.log("Fetched content:", content);
+                
+                // 응답 데이터가 잘 들어왔으면, 상태를 업데이트
+                setBoardList(content);
+                setTotalPage(totalPages); // 전체 페이지 수 설정
+                setCurrentPage(fetchedCurrentPage );
             } catch (error) {
-                console.error("페이지 데이터 가져오기 실패:", error);
-                setBoardList([]); // 오류 발생 시 빈 배열로 초기화
+                console.error('페이지 데이터 가져오기 실패:', error);
+                setBoardList([]);  // 오류 발생 시 빈 배열로 초기화
                 setTotalPage(0);  // 오류 발생 시 전체 페이지 수 0으로 설정
             }
         };
     
         fetchPageData();
-    }, [currentPage, sortOrder, meetId]); // `meetId`, `sortOrder` 변경 시마다 데이터 갱신
+        setMeetId(meetId);
+    }, [meetId, currentPage, sortOrder, setMeetId, fetchPosts]); // 필요한 의존성만 추가
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value); // 정렬 상태 변경
@@ -110,33 +110,39 @@ const MeetBoard = () => {
                 </thead>
                 <tbody>
                 {/* posts가 배열인지 확인한 후 map 사용 */}
-                {Array.isArray(posts) && posts.length > 0 ? (
-                posts.map((post, index) => (
-                    <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
-                    <td className="p-2 text-center">{index + 1 + (currentPage - 1) * 10}</td>
-                    <td className="p-2 text-left">
-                        <Link to={`/meetBoards/${post.boardId}`} className="text-black hover:underline">
-                        {post.title}
-                        </Link>
-                    </td>
-                    <td className="p-2 text-center">{post.nickName}</td>
-                    <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
-                    <td className="p-2 text-center">{post.viewCount}</td>
-                    </tr>
-                ))
-                ) : (
+                {Array.isArray(boardList) && boardList.length > 0 ? (
+                boardList.map((post, index) => {
+                    // currentPage가 undefined인 경우 처리
+                    const pageIndex = currentPage && !isNaN(currentPage) ? index + 1 + (currentPage - 1) * 10 : index + 1;
+
+                    return (
+                        <tr key={post.boardId} className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="p-2 text-center">
+                                {pageIndex}
+                            </td>
+                            <td className="p-2 text-left">
+                                <Link to={`/meetBoards/${post.meetBoardId}`} className="text-black hover:underline">
+                                    {post.title}
+                                </Link>
+                            </td>
+                            <td className="p-2 text-center">{post.nickName}</td>
+                            <td className="p-2 text-center">{new Date(post.regTime).toLocaleDateString()}</td>
+                            <td className="p-2 text-center">{post.viewCount}</td>
+                        </tr>
+                    );
+                })
+            ) : (
                 <tr>
                     <td colSpan="5" className="p-4 text-center text-gray-500">게시물이 없습니다.</td>
                 </tr>
-                )}
-            </tbody>
-            </table>
-            <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
-            <ChannelIOWidget pluginKey={pluginKey} />
-        </div>
-    );
-};
-
+            )}
+                    </tbody>
+                    </table>
+                    <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
+                    <ChannelIOWidget pluginKey={pluginKey} />
+                </div>
+            );
+        };
 
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
     return (
