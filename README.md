@@ -186,6 +186,15 @@ npm install react-intersection-observer
 npm install recharts
 ```
 
+### 채팅 stomp 라이브러리
+
+```bash
+npm install @stomp/stompjs --save
+```
+```js
+import * as StompJs from "@stomp/stompjs";
+```
+
 ###  챗봇라이브러리
 
 ``` bash
