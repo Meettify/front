@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList } from "react-icons/lu";
 
-const FilterSection = () => {
+const FilterSection = ({ title, setTitle }) => {
     return (
         <div className="w-1/5 p-2 pr-8 border-r border-gray-300">
             {/* 상단 필터 아이콘과 드롭다운 */}
@@ -23,43 +23,18 @@ const FilterSection = () => {
                 <RangeSlider />
             </div>
 
-            {/* <div className="mb-4 pb-4">
-                <h3 className="text-left text-md font-bold mb-5">카테고리</h3>
-                <div className="grid grid-cols-1 gap-4">
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>스포츠</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>여행</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>음악</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>예술</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>독서</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>건강</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>패션/뷰티</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        <span>반려동물</span>
-                    </label>
-                </div>
-            </div> */}
+            {/* 제목 검색 */}
+            <div className="mb-4 pb-4">
+                <label className="block text-left text-md font-bold mb-2">검색</label>
+                <input
+                    type="text"
+                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                    placeholder="상품 이름"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)} // 제목 입력 시 상태 변경
+                />
+            </div>
+
         </div>
     );
 };

@@ -86,10 +86,10 @@ const ItemAdd = () => {
                         <option value="TRAVEL">여행</option>
                         <option value="MUSIC">음악</option>
                         <option value="ART">예술</option>
-                        <option value="BOOKS">독서</option>
+                        <option value="READING">독서</option>
                         <option value="HEALTH">건강</option>
                         <option value="FASHION_BEAUTY">패션/뷰티</option>
-                        <option value="PETS">반려동물</option>
+                        <option value="PET_LOVERS">반려동물</option>
                     </select>
                 </div>
                 <div className="flex flex-col items-center">
