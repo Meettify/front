@@ -9,7 +9,7 @@ const CommPage = () => {
     const { posts, fetchPosts, loading, error } = useCommStore();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
-    const [sortOrder, setSortOrder] = useState("최신순"); // 정렬 상태 유지
+    const [sortOrder, setSortOrder] = useState("최신순"); // 초기값 최신순
     const navigate = useNavigate();
 
     const goToCommAdd = () => {
@@ -21,25 +21,39 @@ const CommPage = () => {
         const fetchPageData = async () => {
             try {
                 const sort = sortOrder === "최신순" ? "desc" : "asc";
-                console.log(`Fetching posts with sort order: ${sort}`);
-                const total = await fetchPosts(currentPage, 10, sort);
+                console.log(`Fetching posts: Page ${currentPage}, Sort: ${sort}`);
+                const total = await fetchPosts(currentPage, 10, sort); // 데이터 요청
                 setTotalPage(total);
+
+                // 정렬 보정 (클라이언트에서 추가 정렬)
+                const sortedPosts = [...posts].sort((a, b) => {
+                    if (sort === "desc") {
+                        return new Date(b.regTime) - new Date(a.regTime);
+                    } else {
+                        return new Date(a.regTime) - new Date(b.regTime);
+                    }
+                });
+                console.log("Sorted posts on client:", sortedPosts);
             } catch (error) {
                 console.error("페이지 데이터 가져오기 실패:", error);
             }
         };
 
         fetchPageData();
-    }, [currentPage, sortOrder]); // 필요 시 의존성을 추가
-
+    }, [currentPage, sortOrder]);
 
     const handleSortChange = (event) => {
-        setSortOrder(event.target.value); // 정렬 상태 변경
-        setCurrentPage(1); // 정렬 변경 시 첫 페이지로 이동
+        const newSortOrder = event.target.value;
+        console.log(`Sort order changed to: ${newSortOrder}`);
+        setSortOrder(newSortOrder);
+        setCurrentPage(1);
     };
 
     const handlePageChange = (page) => {
-        if (page >= 1 && page <= totalPage) setCurrentPage(page);
+        if (page >= 1 && page <= totalPage) {
+            setCurrentPage(page);
+            console.log(`Page changed to: ${page}`);
+        }
     };
 
     if (loading) return <p>Loading...</p>;
@@ -109,7 +123,6 @@ const CommPage = () => {
         </div>
     );
 };
-
 
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
     return (

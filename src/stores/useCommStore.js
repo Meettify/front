@@ -17,15 +17,24 @@ const useCommStore = create((set) => ({
   error: null,
 
   fetchPosts: async (page = 0, size = 1, sort = 'desc') => {
-    set({ loading: true, posts: [] }); // 이전 상태 초기화
+    set({ loading: true, posts: [] });
     try {
-        console.log(`Fetching posts from API - Page: ${page}, Size: ${size}, Sort: ${sort}`);
         const response = await getAllCommunityPosts(page, size, sort);
         const { communities, totalPage } = response;
 
         console.log('API Response:', response);
+
+        // 클라이언트 정렬
+        const sortedPosts = [...communities].sort((a, b) => {
+            if (sort === 'desc') {
+                return new Date(b.regTime) - new Date(a.regTime);
+            } else {
+                return new Date(a.regTime) - new Date(b.regTime);
+            }
+        });
+
         set({
-            posts: communities, // 데이터를 덮어쓰는 방식으로 설정
+            posts: sortedPosts, // 정렬된 데이터를 상태에 설정
             loading: false,
         });
 

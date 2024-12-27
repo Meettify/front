@@ -64,7 +64,7 @@ export const deleteQuestion = async (questionId) => {
 };
 
 // 내 문의 조회
-export const getMyQuestions = async (page = 0, size = 10, sort) => {
+export const getMyQuestions = async (page = 1, size = 10, sort = 'desc') => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/my-questions`,
