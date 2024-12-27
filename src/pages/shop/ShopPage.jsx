@@ -33,53 +33,50 @@ const ShopPage = () => {
     const [sortOrder, setSortOrder] = useState('desc'); // desc: 최신순, asc: 오래된순
     const navigate = useNavigate();
 
+    // 검색어를 바탕으로 상품 필터링
+    const handleSearch = async (searchTerm) => {
+        setTitle(searchTerm); // 검색어 저장
+
+        const items = await getItemList(1, 10, sortOrder);
+        let filteredItems = items;
+
+        if (searchTerm) {
+            filteredItems = filteredItems.filter(item =>
+                item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        if (selectedCategory !== 'all') {
+            filteredItems = filteredItems.filter(item => item.itemCategory === selectedCategory);
+        }
+
+        // itemId로 정렬하는 코드 추가
+        const sortedItems = filteredItems.sort((a, b) => {
+            if (sortOrder === 'desc') {
+                return b.itemId - a.itemId; // 내림차순 정렬
+            } else {
+                return a.itemId - b.itemId; // 오름차순 정렬
+            }
+        });
+
+        setShopItems(sortedItems);
+    };
+
     useEffect(() => {
         const loadData = async () => {
-            console.log("Fetching items with sortOrder:", sortOrder); // 상태값 사용
             setIsLoading(true);
-
             await Promise.all([fetchShopItems(), fetchAllCartItems()]);
-
-            const items = await getItemList(1, 10, sortOrder);
-            console.log("Fetched Items:", items); // API로 가져온 원본 데이터 출력
-
-            let filteredItems = items;
-
-            if (title) {
-                filteredItems = filteredItems.filter(item =>
-                    item.itemName.toLowerCase().includes(title.toLowerCase())
-                );
-                console.log("Filtered by Title:", filteredItems); // 제목으로 필터링된 결과 출력
-            }
-
-            if (selectedCategory !== 'all') {
-                filteredItems = filteredItems.filter(item => item.itemCategory === selectedCategory);
-                console.log("Filtered by Category:", filteredItems); // 카테고리로 필터링된 결과 출력
-            }
-
-            // itemId로 정렬하는 코드 추가
-            const sortedItems = filteredItems.sort((a, b) => {
-                if (sortOrder === 'desc') {
-                    return b.itemId - a.itemId; // 내림차순 정렬
-                } else {
-                    return a.itemId - b.itemId; // 오름차순 정렬
-                }
-            });
-
-            console.log("Final Sorted and Filtered Items:", sortedItems); // 최종 결과 출력
-            setShopItems(sortedItems);
+            await handleSearch(title); // 초기 로딩 시 검색
             setIsLoading(false);
         };
 
         loadData();
-    }, [selectedCategory, title, sortOrder, fetchShopItems, fetchAllCartItems]);
-
+    }, [selectedCategory, sortOrder, fetchShopItems, fetchAllCartItems]);
 
     const handleNavigateToDetail = (itemId) => {
         if (typeof itemId !== 'string') {
             itemId = String(itemId);  // itemId를 문자열로 변환
         }
-        console.log("Navigating to item detail with ID:", itemId);
         navigate(`/shop/detail/${itemId}`);
     };
 
@@ -89,27 +86,24 @@ const ShopPage = () => {
 
     const handleSortChange = (e) => {
         const newSortOrder = e.target.value;
-        console.log("Sort Order Changed:", newSortOrder); // 새로운 정렬 순서 출력
         setSortOrder(newSortOrder);
     };
 
-
     if (isLoading) {
-        return <p>로딩 중...</p>; // 로딩 상태 표시
+        return <p>로딩 중...</p>;
     }
 
     return (
         <div className="max-w-7xl mx-auto mt-12 px-4 flex">
-            {/* FilterSection에 title, setTitle, sortOrder, handleSortChange 전달 */}
             <FilterSection
                 title={title}
                 setTitle={setTitle}
                 sortOrder={sortOrder}
-                setSortOrder={setSortOrder} // 추가
+                setSortOrder={setSortOrder}
+                onSearch={handleSearch} // 검색 함수 전달
             />
 
             <div className="flex-1 pl-8">
-                {/* 카테고리 버튼 섹션 */}
                 <div className="flex justify-start space-x-4 mb-2">
                     {categories.map((category) => (
                         <button

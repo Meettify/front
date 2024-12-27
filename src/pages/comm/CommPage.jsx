@@ -6,23 +6,6 @@ import { LuList } from "react-icons/lu"; // LuList 아이콘 임포트
 import { LuSearch } from "react-icons/lu"; // LuSearch 아이콘 임포트
 import useCommStore from "../../stores/useCommStore";
 
-// 디바운스 유틸리티 함수
-const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay]);
-
-    return debouncedValue;
-};
-
 const CommPage = () => {
     const { posts, fetchPosts, searchPosts, loading, error } = useCommStore();
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,8 +19,7 @@ const CommPage = () => {
         navigate('/comm/add');
     };
 
-    const debouncedSearchQuery = useDebounce(searchQuery, 600000); // 디바운스를 10분(600000ms)으로 설정
-
+    // 페이지 데이터 가져오기
     useEffect(() => {
         const fetchPageData = async () => {
             try {
@@ -45,8 +27,8 @@ const CommPage = () => {
                 console.log(`Fetching posts: Page ${currentPage}, Sort: ${sort}`);
 
                 // searchQuery가 있을 경우 searchPosts, 없으면 fetchPosts 호출
-                const total = debouncedSearchQuery
-                    ? await searchPosts(currentPage, 10, sort, debouncedSearchQuery) // 검색 기능 호출
+                const total = searchQuery
+                    ? await searchPosts(currentPage, 10, sort, searchQuery) // 검색 기능 호출
                     : await fetchPosts(currentPage, 10, sort); // 일반 게시물 목록 호출
                 setTotalPage(total);
 
@@ -65,7 +47,7 @@ const CommPage = () => {
         };
 
         fetchPageData();
-    }, [currentPage, sortOrder, debouncedSearchQuery]); // debouncedSearchQuery가 변경될 때마다 호출
+    }, [currentPage, sortOrder]); // 의존성 배열에서 searchQuery를 제거
 
     const handleSortChange = (event) => {
         const newSortOrder = event.target.value;
@@ -101,7 +83,6 @@ const CommPage = () => {
             }
         }
     };
-
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -194,8 +175,7 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                         className={`w-4 h-4 border rounded-sm flex items-center justify-center
-                            ${currentPage === 1 ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}
-                        `}
+                            ${currentPage === 1 ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}`}
                     >
                         <MdKeyboardArrowLeft />
                     </button>
@@ -205,8 +185,7 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
                         <button
                             onClick={() => onPageChange(number)}
                             className={`w-5 h-4 flex items-center justify-center
-          ${currentPage === number ? 'text-black' : 'text-gray-500'}
-      `}
+          ${currentPage === number ? 'text-black' : 'text-gray-500'}`}
                         >
                             {number}
                         </button>
@@ -217,8 +196,7 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPage}
                         className={`w-4 h-4 border rounded-sm flex items-center justify-center
-                            ${currentPage === totalPage ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}
-                        `}
+                            ${currentPage === totalPage ? 'border-gray-300 text-gray-300' : 'border-gray-300 text-blue-500'}`}
                     >
                         <MdKeyboardArrowRight />
                     </button>

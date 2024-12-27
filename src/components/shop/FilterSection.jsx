@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList, LuSearch } from "react-icons/lu";
 
-const FilterSection = ({ title, setTitle, sortOrder, setSortOrder }) => {
+const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch }) => {
     const handleSortChange = (e) => {
         setSortOrder(e.target.value); // 정렬 기준 업데이트
     };
@@ -14,7 +14,7 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder }) => {
     const handleSearchSubmit = (e) => {
         if (e.key === 'Enter') {
             // 엔터키 처리 로직
-            console.log("검색어 제출:", title);
+            onSearch(title); // 부모 컴포넌트로 검색어를 전달
         }
     };
 
