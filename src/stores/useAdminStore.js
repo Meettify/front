@@ -7,25 +7,26 @@ const useAdminStore = create((set) => ({
     loading: false,
     error: null,
 
-    // 상품 목록 조회 함수
-    fetchItemList: async (page = 1, size = 10, sort = 'desc') => {
+    fetchItemList: async (page = 1, size = 10, sort = 'desc', sortBy = 'itemId') => {
         set({ loading: true });
         try {
             const items = await getItemList(page, size);
-            console.log('Fetched items:', items); // 디버깅용 콘솔
-
-            // 재고 수량이 0 이상인 상품만 필터링
+            console.log('Fetched items:', items); // Debugging console log
+    
             const sellItems = items.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
-            console.log('Filtered SELL items with available stock:', sellItems); // 디버깅용 콘솔
-
-            // 클라이언트 정렬 처리
-            const sortedItems = [...sellItems].sort((a, b) =>
-                sort === 'desc' // 최신순 (내림차순)
-                    ? new Date(b.createdAt) - new Date(a.createdAt)
-                    : new Date(a.createdAt) - new Date(b.createdAt) // 오래된순 (오름차순)
-            );
-            console.log('Sorted items:', sortedItems); // 디버깅용 콘솔
-
+            console.log('Filtered SELL items with available stock:', sellItems); // Debugging console log
+    
+            const sortedItems = [...sellItems].sort((a, b) => {
+                if (sortBy === 'itemId') {
+                    return sort === 'desc' ? b.itemId - a.itemId : a.itemId - b.itemId;
+                } else if (sortBy === 'createdAt') {
+                    return sort === 'desc'
+                        ? new Date(b.createdAt) - new Date(a.createdAt)
+                        : new Date(a.createdAt) - new Date(b.createdAt);
+                }
+            });
+            console.log('Sorted items:', sortedItems); // Debugging console log
+    
             set({ itemList: sortedItems, loading: false });
         } catch (error) {
             console.error('Error fetching item list:', error);

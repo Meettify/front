@@ -2,15 +2,19 @@ import React, { useState } from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList, LuSearch } from "react-icons/lu";
 
-const FilterSection = ({ title, setTitle }) => {
+const FilterSection = ({ title, setTitle, sortOrder, setSortOrder }) => {
+    const handleSortChange = (e) => {
+        setSortOrder(e.target.value); // 정렬 기준 업데이트
+    };
+
     const handleSearchChange = (e) => {
-        setTitle(e.target.value); // 검색어가 바뀔 때 title을 업데이트
+        setTitle(e.target.value); // 검색어 업데이트
     };
 
     const handleSearchSubmit = (e) => {
-        if (e.key === "Enter") {
-            // 엔터키가 눌렸을 때 검색 로직 처리
-            console.log("검색어:", title);
+        if (e.key === 'Enter') {
+            // 엔터키 처리 로직
+            console.log("검색어 제출:", title);
         }
     };
 
@@ -21,6 +25,15 @@ const FilterSection = ({ title, setTitle }) => {
                     <LuList size={16} />
                     <span className="font-semibold">필터</span>
                 </div>
+                <select
+                    className="p-2 border border-gray-300 rounded-lg text-sm"
+                    style={{ transform: 'translateY(3px)' }}
+                    value={sortOrder}
+                    onChange={handleSortChange} // 호출 지점
+                >
+                    <option value="desc">최신순</option>
+                    <option value="asc">오래된순</option>
+                </select>
             </div>
 
             <h3 className="text-left text-md font-bold mt-10 mb-5">가격 범위</h3>
