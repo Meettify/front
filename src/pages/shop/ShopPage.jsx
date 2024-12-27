@@ -36,7 +36,6 @@ const ShopPage = () => {
         const loadData = async () => {
             setIsLoading(true);
 
-            // Fetching shop items and cart items in parallel
             await Promise.all([fetchShopItems(), fetchAllCartItems()]);
 
             const items = await getItemList(1, 10); // 페이지네이션을 고려하여 호출
