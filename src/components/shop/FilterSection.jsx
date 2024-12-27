@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList, LuSearch } from "react-icons/lu";
 
-const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch }) => {
+const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onPriceChange }) => {
     const handleSortChange = (e) => {
         setSortOrder(e.target.value); // 정렬 기준 업데이트
     };
@@ -38,7 +38,7 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch }) =
 
             <h3 className="text-left text-md font-bold mt-10 mb-5">가격 범위</h3>
             <div className="mb-4 pb-4">
-                <RangeSlider />
+                <RangeSlider onPriceChange={onPriceChange} /> {/* onPriceChange 전달 */}
             </div>
 
             {/* 제목 검색 */}

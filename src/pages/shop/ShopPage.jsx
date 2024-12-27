@@ -26,15 +26,23 @@ const ShopPage = () => {
         fetchShopItems,
         fetchAllCartItems,
     } = useCartStore();
+
     const [shopItems, setShopItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [selectedCategory, setSelectedCategory] = useState('all'); // 선택된 카테고리
     const [title, setTitle] = useState(''); // 제목 검색 상태
     const [sortOrder, setSortOrder] = useState('desc'); // desc: 최신순, asc: 오래된순
+    const [priceRange, setPriceRange] = useState([10, 50000]); // 가격 범위 상태
     const navigate = useNavigate();
 
+    // 가격 범위 변경 함수
+    const handlePriceChange = (newRange) => {
+        setPriceRange(newRange); // 가격 범위 업데이트
+        handleSearch(title, newRange); // 가격 범위 필터링 적용한 검색
+    };
+
     // 검색어를 바탕으로 상품 필터링
-    const handleSearch = async (searchTerm) => {
+    const handleSearch = async (searchTerm, range = priceRange) => {
         setTitle(searchTerm); // 검색어 저장
 
         const items = await getItemList(1, 10, sortOrder);
@@ -48,6 +56,13 @@ const ShopPage = () => {
 
         if (selectedCategory !== 'all') {
             filteredItems = filteredItems.filter(item => item.itemCategory === selectedCategory);
+        }
+
+        // 가격 범위 필터 추가
+        if (range) {
+            filteredItems = filteredItems.filter(item =>
+                item.itemPrice >= range[0] && item.itemPrice <= range[1]
+            );
         }
 
         // itemId로 정렬하는 코드 추가
@@ -101,6 +116,7 @@ const ShopPage = () => {
                 sortOrder={sortOrder}
                 setSortOrder={setSortOrder}
                 onSearch={handleSearch} // 검색 함수 전달
+                onPriceChange={handlePriceChange} // 가격 범위 변경 함수 전달
             />
 
             <div className="flex-1 pl-8">
