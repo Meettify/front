@@ -61,6 +61,36 @@ fetchItemList: async (page = 1, size = 10) => {
             set({ error: error.message, loading: false });
         }
     },
+
+    // **검색 및 정렬 처리**
+    fetchSearchList: async (searchQuery = '', sort = 'desc', page = 1, size = 10) => {
+        set({ loading: true });
+        try {
+            const items = await getItemList(page, size);
+            console.log('Fetched items:', items);
+
+            // 검색어 필터링
+            const filteredItems = items.filter(
+                (item) =>
+                    item.itemStatus === 'SELL' &&
+                    item.itemCount > 0 &&
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            // 정렬 처리 (desc: 최신순, asc: 오래된순)
+            const sortedItems = filteredItems.sort((a, b) =>
+                sort === 'desc'
+                    ? new Date(b.createdAt) - new Date(a.createdAt)
+                    : new Date(a.createdAt) - new Date(b.createdAt)
+            );
+
+            console.log('Filtered and sorted items:', sortedItems);
+            set({ itemList: sortedItems, loading: false });
+        } catch (error) {
+            console.error('Error fetching search list:', error);
+            set({ error: error.message, loading: false });
+        }
+    },
 }));
 
 export default useAdminStore;

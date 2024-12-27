@@ -159,3 +159,17 @@ export const confirmItem = async (itemId) => {
       throw error;
     }
   };
+
+  // 상품 목록 검색 및 정렬 API
+  export const searchItems = async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
+    try {
+        const response = await request.get({
+            url: `${BASE_URL}/search`,
+            params: { page, size, sort, searchQuery },
+        });
+        return response.data.items;
+    } catch (error) {
+        console.error('상품 목록 검색 중 오류 발생:', error);
+        throw error;
+    }
+  };
