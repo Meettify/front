@@ -131,16 +131,20 @@ fetchPostDetail: async (communityId) => {
     }
   },
 
-  // 게시물 검색
-  searchPosts: async (page = 1, size = 10, sort = []) => {
-    set({ loading: true });
-    try {
-      const data = await searchCommunityPosts(page, size, sort);
+// 게시물 검색
+searchPosts: async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
+  set({ loading: true });
+  try {
+    if (searchQuery.trim() !== '') { // 검색어가 있을 때만 실행
+      const data = await searchCommunityPosts(page, size, sort, searchQuery); // searchQuery를 추가
       set({ posts: data.communities, loading: false });
-    } catch (error) {
-      set({ error, loading: false });
+    } else {
+      set({ posts: [], loading: false }); // 검색어가 없으면 게시물 비우기
     }
-  },
+  } catch (error) {
+    set({ error, loading: false });
+  }
+},
 
 }));
 
