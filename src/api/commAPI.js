@@ -103,7 +103,7 @@ export const getCommunityPost = async (communityId) => {
   }
 };
 
-export const searchCommunityPosts = async (page = 1, size = 10, sort = []) => {
+export const searchCommunityPosts = async (page = 1, size = 10, sort = 'desc') => {
   try {
     const response = await request.get({ url: `${BASE_URL}/search`, params: { page, size, sort } });
     return response.data;
@@ -113,7 +113,7 @@ export const searchCommunityPosts = async (page = 1, size = 10, sort = []) => {
   }
 };
 
-export const getAllCommunityPosts = async (page = 0, size = 1, sort = 'desc') => {
+export const getAllCommunityPosts = async (page = 1, size = 10, sort = 'desc') => {
     try {
         console.log(`API Request params - Page: ${page}, Size: ${size}, Sort: ${sort}`); // 디버깅용 로그
         const response = await request.get({

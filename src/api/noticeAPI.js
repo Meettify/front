@@ -58,7 +58,7 @@ export const getNotice = async (noticeId) => {
 };
 
 // 공지사항 목록 조회 (페이징)
-export const getNoticeList = async (page = 0, size = 1, sort = []) => {
+export const getNoticeList = async (page = 1, size = 10, sort = 'desc') => {
   try {
     const response = await request.get({
       url: `${BASE_URL}List`,

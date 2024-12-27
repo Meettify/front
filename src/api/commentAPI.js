@@ -16,11 +16,11 @@ export const createComment = async (communityId, comment, parentId = null) => {
   }
 };
 
-export const getComments = async (communityId, page = 0, size = 10) => {
+export const getComments = async (page = 1, size = 10, sort = 'desc') => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/${communityId}/comment/commentList`,
-      params: page && size ? { page, size } : undefined,
+      params: page && size ? { page, size, sort } : undefined,
     });
     console.log('댓글 목록 응답:', response);
 
