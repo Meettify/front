@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ShopCard from '../../components/shop/ShopCard';
 import FilterSection from '../../components/shop/FilterSection';
+import useCartStore from '../../stores/useCartStore';
 import { getItemList } from '../../api/adminAPI';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,10 @@ const categories = [
 ];
 
 const ShopPage = () => {
+    const {
+        fetchShopItems,
+        fetchAllCartItems,
+    } = useCartStore();
     const [shopItems, setShopItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [selectedCategory, setSelectedCategory] = useState('all'); // 선택된 카테고리
@@ -30,6 +35,10 @@ const ShopPage = () => {
     useEffect(() => {
         const loadData = async () => {
             setIsLoading(true);
+
+            // Fetching shop items and cart items in parallel
+            await Promise.all([fetchShopItems(), fetchAllCartItems()]);
+
             const items = await getItemList(1, 10); // 페이지네이션을 고려하여 호출
             let filteredItems = items;
 
@@ -50,7 +59,7 @@ const ShopPage = () => {
         };
 
         loadData();
-    }, [selectedCategory, title]); // 카테고리나 제목 변경 시마다 상품 목록 갱신
+    }, [selectedCategory, title, fetchShopItems, fetchAllCartItems]); // 카테고리나 제목 변경 시마다 상품 목록 갱신
 
     const handleNavigateToDetail = (itemId) => {
         if (typeof itemId !== 'string') {
