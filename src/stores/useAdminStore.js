@@ -7,21 +7,31 @@ const useAdminStore = create((set) => ({
     loading: false,
     error: null,
 
-// 상품 목록 조회 함수
-fetchItemList: async (page = 1, size = 10) => {
-    set({ loading: true });
-    try {
-        const items = await getItemList(page, size);
-        console.log('Fetched items:', items); // 디버깅용 콘솔
-        // 재고 수량이 0 이상인 상품만 필터링
-        const sellItems = items.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
-        console.log('Filtered SELL items with available stock:', sellItems); // 디버깅용 콘솔
-        set({ itemList: sellItems, loading: false });
-    } catch (error) {
-        console.error('Error fetching item list:', error);
-        set({ error: error.message, loading: false });
-    }
-},
+    // 상품 목록 조회 함수
+    fetchItemList: async (page = 1, size = 10, sort = 'desc') => {
+        set({ loading: true });
+        try {
+            const items = await getItemList(page, size);
+            console.log('Fetched items:', items); // 디버깅용 콘솔
+
+            // 재고 수량이 0 이상인 상품만 필터링
+            const sellItems = items.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
+            console.log('Filtered SELL items with available stock:', sellItems); // 디버깅용 콘솔
+
+            // 클라이언트 정렬 처리
+            const sortedItems = [...sellItems].sort((a, b) =>
+                sort === 'desc' // 최신순 (내림차순)
+                    ? new Date(b.createdAt) - new Date(a.createdAt)
+                    : new Date(a.createdAt) - new Date(b.createdAt) // 오래된순 (오름차순)
+            );
+            console.log('Sorted items:', sortedItems); // 디버깅용 콘솔
+
+            set({ itemList: sortedItems, loading: false });
+        } catch (error) {
+            console.error('Error fetching item list:', error);
+            set({ error: error.message, loading: false });
+        }
+    },
     
     // 상품 상세 조회 함수
      fetchItemDetail: async (itemId) => {
@@ -62,35 +72,43 @@ fetchItemList: async (page = 1, size = 10) => {
         }
     },
 
-    // **검색 및 정렬 처리**
-    fetchSearchList: async (searchQuery = '', sort = 'desc', page = 1, size = 10) => {
-        set({ loading: true });
-        try {
-            const items = await getItemList(page, size);
-            console.log('Fetched items:', items);
+    fetchSearchList: async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
+    set({ loading: true });
+    try {
+        // 검색어가 있을 때만 실행
+        if (searchQuery.trim() !== '') {
+            // 아이템 목록 가져오기
+            const items = await getItemList(page, size, sort);
 
-            // 검색어 필터링
+            // 검색어 필터링: 검색어가 있을 때만 필터링
             const filteredItems = items.filter(
                 (item) =>
-                    item.itemStatus === 'SELL' &&
-                    item.itemCount > 0 &&
-                    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    item.itemStatus === 'SELL' && // 판매중인 아이템만
+                    item.itemCount > 0 && // 재고가 있는 아이템만
+                    item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) // 이름에 검색어가 포함된 아이템만
             );
 
-            // 정렬 처리 (desc: 최신순, asc: 오래된순)
-            const sortedItems = filteredItems.sort((a, b) =>
-                sort === 'desc'
+            console.log('Filtered items:', filteredItems);
+
+            // 클라이언트 정렬 처리
+            const sortedItems = [...filteredItems].sort((a, b) =>
+                sort === 'desc' // 최신순 (내림차순)
                     ? new Date(b.createdAt) - new Date(a.createdAt)
-                    : new Date(a.createdAt) - new Date(b.createdAt)
+                    : new Date(a.createdAt) - new Date(b.createdAt) // 오래된순 (오름차순)
             );
 
             console.log('Filtered and sorted items:', sortedItems);
+
             set({ itemList: sortedItems, loading: false });
-        } catch (error) {
-            console.error('Error fetching search list:', error);
-            set({ error: error.message, loading: false });
+        } else {
+            // 검색어가 없으면 아이템 목록 비우기
+            set({ itemList: [], loading: false });
         }
-    },
+    } catch (error) {
+        console.error('Error fetching search list:', error);
+        set({ error: error.message, loading: false });
+    }
+},
 }));
 
 export default useAdminStore;

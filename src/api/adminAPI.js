@@ -43,11 +43,11 @@ export const createItem = async (itemName, itemPrice, itemDetails, itemCount, it
 };
 
 // **상품 목록 조회 (GET)**
-export const getItemList = async (page = 1, size = 10) => {
+export const getItemList = async (page = 1, size = 10, sort = 'desc') => {
     try {
         const response = await request.get({
             url: `${BASE_URL}/search`,
-            params: { page, size },
+            params: { page, size, sort },
         });
         return response.data.items;
     } catch (error) {
@@ -165,7 +165,7 @@ export const confirmItem = async (itemId) => {
     try {
         const response = await request.get({
             url: `${BASE_URL}/search`,
-            params: { page, size, sort, searchQuery },
+            params: { page, size, sort, searchTitle: searchQuery },
         });
         return response.data.items;
     } catch (error) {
