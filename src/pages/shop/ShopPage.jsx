@@ -30,35 +30,50 @@ const ShopPage = () => {
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [selectedCategory, setSelectedCategory] = useState('all'); // 선택된 카테고리
     const [title, setTitle] = useState(''); // 제목 검색 상태
+    const [sortOrder, setSortOrder] = useState('desc'); // desc: 최신순, asc: 오래된순
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadData = async () => {
+            console.log("Fetching items with sortOrder:", sortOrder); // 상태값 사용
             setIsLoading(true);
 
             await Promise.all([fetchShopItems(), fetchAllCartItems()]);
 
-            const items = await getItemList(1, 10); // 페이지네이션을 고려하여 호출
+            const items = await getItemList(1, 10, sortOrder);
+            console.log("Fetched Items:", items); // API로 가져온 원본 데이터 출력
+
             let filteredItems = items;
 
             if (title) {
-                // 제목 검색
                 filteredItems = filteredItems.filter(item =>
                     item.itemName.toLowerCase().includes(title.toLowerCase())
                 );
+                console.log("Filtered by Title:", filteredItems); // 제목으로 필터링된 결과 출력
             }
 
             if (selectedCategory !== 'all') {
-                // 카테고리 필터링
                 filteredItems = filteredItems.filter(item => item.itemCategory === selectedCategory);
+                console.log("Filtered by Category:", filteredItems); // 카테고리로 필터링된 결과 출력
             }
 
-            setShopItems(filteredItems); // 필터링된 상품을 상태에 저장
+            // itemId로 정렬하는 코드 추가
+            const sortedItems = filteredItems.sort((a, b) => {
+                if (sortOrder === 'desc') {
+                    return b.itemId - a.itemId; // 내림차순 정렬
+                } else {
+                    return a.itemId - b.itemId; // 오름차순 정렬
+                }
+            });
+
+            console.log("Final Sorted and Filtered Items:", sortedItems); // 최종 결과 출력
+            setShopItems(sortedItems);
             setIsLoading(false);
         };
 
         loadData();
-    }, [selectedCategory, title, fetchShopItems, fetchAllCartItems]); // 카테고리나 제목 변경 시마다 상품 목록 갱신
+    }, [selectedCategory, title, sortOrder, fetchShopItems, fetchAllCartItems]);
+
 
     const handleNavigateToDetail = (itemId) => {
         if (typeof itemId !== 'string') {
@@ -72,14 +87,26 @@ const ShopPage = () => {
         setSelectedCategory(category);
     };
 
+    const handleSortChange = (e) => {
+        const newSortOrder = e.target.value;
+        console.log("Sort Order Changed:", newSortOrder); // 새로운 정렬 순서 출력
+        setSortOrder(newSortOrder);
+    };
+
+
     if (isLoading) {
         return <p>로딩 중...</p>; // 로딩 상태 표시
     }
 
     return (
         <div className="max-w-7xl mx-auto mt-12 px-4 flex">
-            {/* FilterSection에 title과 setTitle 전달 */}
-            <FilterSection title={title} setTitle={setTitle} />
+            {/* FilterSection에 title, setTitle, sortOrder, handleSortChange 전달 */}
+            <FilterSection
+                title={title}
+                setTitle={setTitle}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder} // 추가
+            />
 
             <div className="flex-1 pl-8">
                 {/* 카테고리 버튼 섹션 */}
@@ -112,7 +139,7 @@ const ShopPage = () => {
                                 description={item.itemDetails}
                                 price={`₩${item.itemPrice}`}
                                 imageUrl={item.files?.[0] ? `https://example.com/${item.files[0]}` : 'https://via.placeholder.com/150'}
-                                onClick={() => handleNavigateToDetail(item.itemId)} // itemId가 제대로 전달되는지 확인
+                                onClick={() => handleNavigateToDetail(item.itemId)}
                             />
                         ))}
                     </div>
