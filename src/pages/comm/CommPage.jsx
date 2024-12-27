@@ -3,13 +3,32 @@ import { Link, useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { LuList } from "react-icons/lu"; // LuList 아이콘 임포트
+import { LuSearch } from "react-icons/lu"; // LuSearch 아이콘 임포트
 import useCommStore from "../../stores/useCommStore";
 
+// 디바운스 유틸리티 함수
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
+
 const CommPage = () => {
-    const { posts, fetchPosts, loading, error } = useCommStore();
+    const { posts, fetchPosts, searchPosts, loading, error } = useCommStore();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [sortOrder, setSortOrder] = useState("최신순"); // 초기값 최신순
+    const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태 추가
     const navigate = useNavigate();
 
     const goToCommAdd = () => {
@@ -17,12 +36,18 @@ const CommPage = () => {
         navigate('/comm/add');
     };
 
+    const debouncedSearchQuery = useDebounce(searchQuery, 600000); // 디바운스를 10분(600000ms)으로 설정
+
     useEffect(() => {
         const fetchPageData = async () => {
             try {
                 const sort = sortOrder === "최신순" ? "desc" : "asc";
                 console.log(`Fetching posts: Page ${currentPage}, Sort: ${sort}`);
-                const total = await fetchPosts(currentPage, 10, sort); // 데이터 요청
+
+                // searchQuery가 있을 경우 searchPosts, 없으면 fetchPosts 호출
+                const total = debouncedSearchQuery
+                    ? await searchPosts(currentPage, 10, sort, debouncedSearchQuery) // 검색 기능 호출
+                    : await fetchPosts(currentPage, 10, sort); // 일반 게시물 목록 호출
                 setTotalPage(total);
 
                 // 정렬 보정 (클라이언트에서 추가 정렬)
@@ -40,13 +65,13 @@ const CommPage = () => {
         };
 
         fetchPageData();
-    }, [currentPage, sortOrder]);
+    }, [currentPage, sortOrder, debouncedSearchQuery]); // debouncedSearchQuery가 변경될 때마다 호출
 
     const handleSortChange = (event) => {
         const newSortOrder = event.target.value;
         console.log(`Sort order changed to: ${newSortOrder}`);
         setSortOrder(newSortOrder);
-        setCurrentPage(1);
+        setCurrentPage(1); // 페이지를 처음으로 리셋
     };
 
     const handlePageChange = (page) => {
@@ -55,6 +80,28 @@ const CommPage = () => {
             console.log(`Page changed to: ${page}`);
         }
     };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value); // 검색어 상태 업데이트
+    };
+
+    const handleSearchSubmit = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 엔터키의 기본 동작 방지
+            console.log('Search submitted:', searchQuery);
+
+            // 검색어가 비어있을 경우 검색어를 초기화
+            if (searchQuery.trim()) {
+                // 검색어가 있을 경우 검색을 즉시 실행
+                searchPosts(currentPage, 10, sortOrder === "최신순" ? "desc" : "asc", searchQuery);
+            } else {
+                // 검색어가 없을 경우 초기화 처리
+                setSearchQuery("");  // 검색어 초기화
+                fetchPosts(currentPage, 10, sortOrder === "최신순" ? "desc" : "asc");  // 초기 게시물 로딩
+            }
+        }
+    };
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -84,6 +131,20 @@ const CommPage = () => {
                         <option value="최신순">최신순</option>
                         <option value="오래된순">오래된 순</option>
                     </select>
+                </div>
+                <div className="relative w-1/4"> {/* 아이콘을 넣을 위치 */}
+                    <input
+                        type="text"
+                        placeholder="검색어 입력 후 Enter"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        onKeyDown={handleSearchSubmit} // 엔터키 처리
+                        className="p-2 pl-10 border border-gray-300 rounded-full text-sm w-full"
+                    />
+                    <LuSearch
+                        size={20}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
                 </div>
                 <RoundedButton
                     style={{ padding: "6px 14px", fontSize: "12px" }}

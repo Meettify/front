@@ -103,9 +103,14 @@ export const getCommunityPost = async (communityId) => {
   }
 };
 
-export const searchCommunityPosts = async (page = 1, size = 10, sort = 'desc') => {
+export const searchCommunityPosts = async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
   try {
-    const response = await request.get({ url: `${BASE_URL}/search`, params: { page, size, sort } });
+    const response = await request.get({
+      url: `${BASE_URL}/search`,  // 템플릿 리터럴로 수정
+      params: { page, size, sort, searchTitle: searchQuery }, // 검색어 추가
+    });
+    
+    console.log('API Response Data:', response.data);
     return response.data;
   } catch (error) {
     console.error('게시글 검색 중 오류 발생:', error);
