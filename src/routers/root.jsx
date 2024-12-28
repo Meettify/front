@@ -16,7 +16,7 @@ const Meet = lazy(() => import("../pages/meet/MeetPage"));
 const Shop = lazy(() => import("../pages/shop/ShopPage"));
 const Support = lazy(() => import("../pages/support/SupportPage"));
 const Search = lazy(() => import("../pages/search/SearchPage"));
-const Chat = lazy(() => import("../pages/chat/ChatPage"));
+const Chat = lazy(() => import("../pages/chat/Chat"));
 const Admin = lazy(() => import("../pages/admin/AdminPage"));
 const Signup = lazy(() => import("../pages/member/signup/SignupPage"));
 const SignupSuccess = lazy(() =>

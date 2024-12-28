@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@channel.io/channel-web-sdk-loader": "^2.0.0",
+    "@stomp/stompjs": "^7.0.0",
     "@tanstack/react-query": "^5.62.3",
     "@tosspayments/payment-widget-sdk": "^0.12.0",
     "@tosspayments/tosspayments-sdk": "^2.3.2",
@@ -38,6 +39,8 @@
     "react-slick": "^0.30.2",
     "recharts": "^2.15.0",
     "slick-carousel": "^1.8.1",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "tailwind-scrollbar": "^3.1.0",
     "zustand": "^5.0.0-rc.2"
   },

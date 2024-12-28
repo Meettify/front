@@ -46,6 +46,11 @@ const InfoModal = ({ buttonPosition, onClose }) => {
         onClose(); // 배경 클릭 시 InfoModal 닫기
     };
 
+    const handleCartClick = () => {
+        closeModal('info');
+        nav('/chat');
+    }
+
     return (
         <div className="fixed inset-0 flex items-center justify-center
             bg-black bg-opacity-10 mt-1"
@@ -87,7 +92,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                                 className={`flex ml-3 w-24 text-center h-10 items-center 
                                     text-gray-400 transition-colors duration-200 hover:text-gray-700
                                     ${user.memberRole !== "ADMIN" ? 'mb-3' : ''}`}
-                                onClick={(handleCartClick) => { }}
+                                onClick={handleCartClick}
                             >
                                 <BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
                             </button>
