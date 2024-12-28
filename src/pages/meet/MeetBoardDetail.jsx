@@ -9,8 +9,6 @@ import { CiRead } from 'react-icons/ci';
 import { getMeetBoardDetail, deleteMeetBoard, updateMeetBoard } from '../../api/meetAPI'; // API 요청 함수
 import { createComment } from '../../api/meetCommentAPI';
 import { Navigate } from 'react-router-dom';
-/*meetBoardId가 넘어가면서 meetId로 전달되는 오류.,,*/
-/* 댓글이 적힌 게시글은 상세조회가 안되는 오류,,,, */
 
 
 const MeetBoardDetail = () => {
