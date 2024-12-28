@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from "./Modal"; // Modal 컴포넌트를 임포트
 
 function MapSearch({ onSelectPlace }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -9,6 +10,7 @@ function MapSearch({ onSelectPlace }) {
     lat: 37.5665, // 기본값: 서울 시청
     lng: 126.978,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
 
   // 사용자의 현재 위치 가져오기
   useEffect(() => {
@@ -74,20 +76,14 @@ function MapSearch({ onSelectPlace }) {
 
       kakao.maps.event.addListener(marker, "click", () => {
         setSelectedPlace(place); // 선택한 장소 상태 업데이트
-        onSelectPlace(place); // 상위 컴포넌트에 선택된 장소 전달
+        setIsModalOpen(true); // 모달 열기
       });
-
-      // 강조된 마커
-      const isSelected = selectedPlace && selectedPlace.title === place.title;
-      if (isSelected) {
-        marker.setImage(
-          new kakao.maps.MarkerImage(
-            "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png", // 강조된 마커 이미지
-            new kakao.maps.Size(24, 35)
-          )
-        );
-      }
     });
+  };
+
+  // 모달을 닫는 함수
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // 모달 닫기
   };
 
   return (
@@ -130,7 +126,7 @@ function MapSearch({ onSelectPlace }) {
                 <button
                   onClick={() => {
                     setSelectedPlace(place); // 장소 선택
-                    onSelectPlace(place); // 상위 컴포넌트에 전달
+                    setIsModalOpen(true); // 모달 열기
                   }}
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
@@ -141,6 +137,11 @@ function MapSearch({ onSelectPlace }) {
           ))}
         </ul>
       </div>
+
+      {/* 모달 컴포넌트 표시 */}
+      {isModalOpen && (
+        <Modal place={selectedPlace} onClose={handleCloseModal} onShare={onSelectPlace} />
+      )}
     </div>
   );
 }
