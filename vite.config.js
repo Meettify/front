@@ -3,6 +3,15 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    // 브라우저 환경에서 global을 빈 객체로 정의
+    global: {},
+    process: {
+      env: {
+        NODE_ENV: '"development"',  // 또는 필요한 다른 환경 변수를 추가
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {

@@ -12,7 +12,7 @@ function ChatRoom() {
     const [newMessage, setNewMessage] = useState("");
     const stompClientRef = useRef(null);
 
-    const currentUser = localStorage.getItem("nickName"); // 현재 사용자 닉네임 가져오기
+    const currentUser = sessionStorage.getItem("nickName"); // 현재 사용자 닉네임 가져오기
 
     useEffect(() => {
         if (!roomId) {
@@ -20,7 +20,7 @@ function ChatRoom() {
             return;
         }
 
-        const token = localStorage.getItem("accessToken");
+        const token = sessionStorage.getItem("accessToken");
         if (!token) {
             console.error("Token이 존재하지 않습니다.");
             return;
@@ -73,7 +73,7 @@ function ChatRoom() {
 
     const sendMessage = () => {
         if (newMessage.trim() && stompClientRef.current) {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             stompClientRef.current.send(
                 `/send/${roomId}`,
                 { Authorization: `Bearer ${token}` },
