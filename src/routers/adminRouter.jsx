@@ -1,4 +1,5 @@
 import { Suspense, lazy } from "react";
+import NoticePage from "../pages/admin/NoticePage";
 
 const Loading = () => <div>Loading..</div>;
 const ItemConfirm = lazy(() => import("../pages/admin/ItemConfirm"));
@@ -9,6 +10,8 @@ const ItemAdd = lazy(() => import("../pages/admin/ItemAdd"));
 const MemList = lazy(() => import("../pages/admin/MemList"));
 const QuestionsList = lazy(() => import("../pages/admin/QuestionsList"));
 const QuestionDetail = lazy(() => import("../pages/Question/QuestionDetail"));
+const Notice = lazy(() => import("../pages/admin/NoticePage"));
+const NoticeAdd = lazy(() => import("../pages/admin/NoticeAdd"));
 
 const adminRouter = () => {
     return [
@@ -43,6 +46,14 @@ const adminRouter = () => {
         {
             path: "questions/:questionId",
             element: <Suspense fallback={<Loading />}><QuestionDetail /></Suspense>,
+        },
+        {
+            path: "notice",
+            element: <Suspense fallback={<Loading />}><Notice /></Suspense>,
+        },
+        {
+            path: "notice/noticeAdd",
+            element: <Suspense fallback={<Loading />}><NoticeAdd /></Suspense>,
         },
     ];
 };
