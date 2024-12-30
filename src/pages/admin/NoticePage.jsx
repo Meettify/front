@@ -61,7 +61,7 @@ const NoticePage = () => {
                         </thead>
                         <tbody>
                             {(notices || []).map((notice, index) => (
-                                <tr key={notice.id} className="hover:bg-gray-100">
+                                <tr key={notice.id || index} className="hover:bg-gray-100">
                                     <td className="p-2 text-center">{index + 1}</td>
                                     <td className="p-2 text-center">{notice.title}</td>
                                     <td className="p-2 text-center">{notice.content}</td>
