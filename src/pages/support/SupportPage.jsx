@@ -1,18 +1,19 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import SupportQna from "../../components/support/SupportQna";
 import RoundedButton from "../../components/button/RoundedButton";
 import useQuestionsStore from "../../stores/useQuestionsStore";
+import useNoticeStore from "../../stores/useNoticeStore"; // useNoticeStore 추가
 
 const SupportPage = () => {
     const { myQuestionsCount, fetchMyQuestions, questions, loading } = useQuestionsStore();
-    const navigate = useNavigate();  // useNavigate로 변경
+    const { notices, fetchNotices, loading: noticesLoading } = useNoticeStore(); // 공지사항 상태와 fetch 함수 가져오기
+    const navigate = useNavigate();
 
-    // 샘플 공지사항 데이터
-    const noticeList = [
-        { id: 1, image: "https://via.placeholder.com/150", title: "test1", quantity: 1, price: 100 },
-        { id: 2, image: "https://via.placeholder.com/150", title: "test2", quantity: 2, price: 200 },
-    ];
+    // 공지사항 목록 가져오기
+    useEffect(() => {
+        fetchNotices(); // 페이지 로딩 시 공지사항 목록을 가져옵니다.
+    }, [fetchNotices]);
 
     // 내 문의 목록 버튼 클릭 시
     const handleMyQuestionsClick = () => {
@@ -20,14 +21,14 @@ const SupportPage = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto mt-12 px-4 text-left">
+        <div className="max-w-5xl mx-auto mt-4 px-2 text-left">
             <h2 className="text-4xl font-bold mb-6">
                 <span className="text-black">고객센터.</span>{" "}
                 <span className="text-gray-500">도움이 필요하신가요?</span>
             </h2>
 
             {/* 공지사항 게시판 */}
-            <div className="mt-12 mb-12">
+            <div className="mt-6 mb-6">
                 <table className="w-full text-sm border-t border-b border-gray-200">
                     <thead>
                         <tr className="bg-gray-50">
@@ -35,18 +36,24 @@ const SupportPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {noticeList.map((notice) => (
-                            <tr key={notice.id} className="border-t">
-                                <td className="py-2 px-4">
-                                    <a
-                                        href={`/notice/${notice.id}`}
-                                        className="text-blue-500 hover:underline"
-                                    >
-                                        {notice.title}
-                                    </a>
-                                </td>
+                        {noticesLoading ? (
+                            <tr>
+                                <td className="py-2 px-4">로딩 중...</td>
                             </tr>
-                        ))}
+                        ) : (
+                            notices.map((notice) => (
+                                <tr key={notice.id} className="border-t">
+                                    <td className="py-2 px-4">
+                                        <Link
+                                            to={`/notice/${notice.id}`}
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            {notice.title}
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
 
@@ -67,22 +74,30 @@ const SupportPage = () => {
                 </div>
             </div>
 
-            <div className="text-2xl font-bold mb-6">자주 묻는 질문</div>
+            <div className="text-4xl font-bold mb-6">자주 묻는 질문</div>
             <div className="border-t border-gray-300">
-                <SupportQna question="질문1">
-                    <p>첫 번째 답변 목록이야</p>
+                <SupportQna question="회원가입은 어디서 하나요?">
+                    <p className="text-gray-600 text-sm">홈페이지 상단의 "회원가입" 버튼을 클릭한 후, <br />
+                        이메일과 비밀번호를 입력하여 회원가입을 완료할 수 있습니다. <br />
+                        가입 후 다양한 기능을 이용하실 수 있습니다.</p>
                 </SupportQna>
-                <SupportQna question="질문2">
-                    <p>두 번째 답변 목록이고</p>
+                <SupportQna question="소모임에 어떻게 가입하나요?">
+                    <p className="text-gray-600 text-sm">소모임 페이지에서 원하는 소모임을 선택하고 <br />
+                        "가입하기" 버튼을 클릭하여 가입 신청을 할 수 있습니다. <br />
+                        소모임 관리자가 승인하면 참여가 가능합니다.</p>
                 </SupportQna>
-                <SupportQna question="질문3">
-                    <p>세 번째 답변 목록일걸?</p>
+                <SupportQna question="상품을 어떻게 주문하나요?">
+                    <p className="text-gray-600 text-sm">상품 페이지에서 원하는 상품을 선택하고, <br />
+                        "장바구니에 담기" 또는 "구매하기" 버튼을 클릭하여 주문 절차를 진행할 수 있습니다. <br />
+                        결제 후 상품을 확인할 수 있습니다.</p>
                 </SupportQna>
-                <SupportQna question="질문4">
-                    <p>네 번째 답변 목록이겠지</p>
+                <SupportQna question="소모임 활동 중 상품을 구매할 수 있나요?">
+                    <p className="text-gray-600 text-sm">네, 소모임에 참여하면서 관련된 상품을 구매할 수 있습니다. <br />
+                        소모임 카테고리에서 관련 상품을 찾아 바로 주문할 수 있습니다.</p>
                 </SupportQna>
-                <SupportQna question="질문5">
-                    <p>다섯 번째 답변 목록 끝</p>
+                <SupportQna question="주문한 상품은 언제 배송되나요?">
+                    <p className="text-gray-600 text-sm">주문한 상품은 결제 완료 후 2~3일 내에 배송됩니다. <br />
+                        배송 현황은 "내 주문" 페이지에서 확인할 수 있습니다.</p>
                 </SupportQna>
             </div>
         </div>

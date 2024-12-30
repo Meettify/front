@@ -34,6 +34,17 @@ const useNoticeStore = create((set, get) => ({
     }
   },
 
+   // 공지사항 상세 조회
+   fetchNoticeDetails: async (noticeId) => {
+    try {
+      const response = await getNotice(noticeId);
+      return response;
+    } catch (error) {
+      console.error('공지사항 상세 조회 실패:', error);
+      throw error;
+    }
+  },
+
   createNotice: async (title, content) => {
     try {
       await createNotice(title, content);

@@ -2,11 +2,11 @@ import React from 'react';
 
 const SupportQna = ({ question, children }) => {
     return (
-        <details className="py-4 border-b">
-            <summary className="cursor-pointer text-lg flex justify-between items-center">
+        <details className="py-3.5 border-b text-gray-800">
+            <summary className="cursor-pointer text-gray-800 text-[14px] flex justify-between items-center"> {/* 텍스트 굵게 설정 */}
                 <span className="text-left">{question}</span>
             </summary>
-            <div className="mt-2 text-left text-gray-700">
+            <div className="mt-5 text-left">
                 {children}
             </div>
         </details>
