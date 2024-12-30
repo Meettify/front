@@ -53,7 +53,7 @@ const AdminPage = () => {
                 <section>
                     <h2 className="font-semibold mb-3 text-left text-xl">고객센터 관리</h2>
                     <ul className="space-y-2 text-left">
-                        <li><Link to="inquiry-list">공지사항 등록</Link></li>
+                        <li><Link to="notice">공지사항 등록</Link></li>
                         <li><Link to="questionsList">전체 문의 내역</Link></li>
                     </ul>
                 </section>
