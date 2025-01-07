@@ -26,7 +26,7 @@ const handleSave = async () => {
     meetDescription: description,
     meetMaximum: maxMembers,
     meetLocation: tags[0],  
-    category: tags[1] || 'SPORTS',
+    category: tags[1] || 'SPORTS',//이부분수정
   };
 
   formData.append('meet', new Blob([JSON.stringify(meetData)], { type: 'application/json' }));

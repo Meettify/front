@@ -53,6 +53,7 @@ import useWebSocket from "../../hooks/useWebSocket"; // 수정된 웹소켓 훅
 const ChatPage = () => {
     const [selectedUser, setSelectedUser] = useState('');  
     const [chatMessages, setChatMessages] = useState({});
+    const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
     
     // WebSocket URL 수정
     const handleUserSelect = (username) => {
@@ -79,7 +80,7 @@ const ChatPage = () => {
     }, []);
 
     // 웹소켓 URL 설정
-    const socketUrl = 'ws://your-websocket-url'; // 서버의 웹소켓 URL을 여기에 넣으세요
+    const socketUrl = `wss://${BASE_URL}/ws/chat}`; // 서버의 웹소켓 URL을 여기에 넣으세요
     const sendMessage = useWebSocket(socketUrl, handleWebSocketMessage); // 웹소켓을 통해 메시지 전송하는 함수 반환
 
     return (
