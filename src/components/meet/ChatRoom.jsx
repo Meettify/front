@@ -1,8 +1,11 @@
+// ChatRoom 컴포넌트
+
 import { useEffect, useState, useRef } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { useLocation } from "react-router-dom";
-import "./ChatRoom.css"; // 스타일을 위한 CSS 파일
+import axios from "axios";
+// import "./ChatRoom.css";
 
 function ChatRoom() {
     const { search } = useLocation();
@@ -12,20 +15,41 @@ function ChatRoom() {
     const [newMessage, setNewMessage] = useState("");
     const stompClientRef = useRef(null);
 
-    const currentUser = sessionStorage.getItem("nickName"); // 현재 사용자 닉네임 가져오기
+    const currentUser = sessionStorage.getItem("nickName"); // 현재 사용자 닉네임
+    const token = sessionStorage.getItem("accessToken"); // 토큰
 
+    // 채팅방에 유저 등록 (입장)
+    const joinRoom = async () => {
+        try {
+            if (!roomId || !token) {
+                console.error("roomId 또는 Token이 존재하지 않습니다.");
+                return;
+            }
+            // 유저가 해당 방에 들어가도록 유저 번호 등록
+            await axios.post(`http://localhost:8080/api/v1/chat/${roomId}/access`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log("채팅방에 입장하였습니다.");
+        } catch (error) {
+            console.error("채팅방 입장 오류:", error);
+        }
+    };
+
+    // WebSocket 연결 및 STOMP 설정
     useEffect(() => {
         if (!roomId) {
             console.error("roomId가 정의되지 않았습니다.");
             return;
         }
 
-        const token = sessionStorage.getItem("accessToken");
         if (!token) {
             console.error("Token이 존재하지 않습니다.");
             return;
         }
 
+        // WebSocket 연결 설정
         if (stompClientRef.current && stompClientRef.current.connected) {
             return;
         }
@@ -37,6 +61,7 @@ function ChatRoom() {
         client.connect(
             { Authorization: `Bearer ${token}` },
             () => {
+                // 채팅방 메시지 수신 대기
                 client.subscribe(`/topic/${roomId}`, (msg) => {
                     const receivedMessage = JSON.parse(msg.body);
                     setMessages((prevMessages) => [
@@ -45,6 +70,7 @@ function ChatRoom() {
                     ]);
                 });
 
+                // 입장 메시지 전송
                 client.send(
                     `/send/${roomId}`,
                     {},
@@ -62,6 +88,25 @@ function ChatRoom() {
             }
         );
 
+        // 채팅방 입장
+        joinRoom();
+
+        // 채팅방 메시지 목록 가져오기
+        const fetchMessages = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/v1/chat/${roomId}/messages`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setMessages(response.data);
+            } catch (error) {
+                console.error("메시지 가져오기 오류:", error);
+            }
+        };
+        fetchMessages();
+
+        // 컴포넌트가 언마운트될 때 WebSocket 연결 해제
         return () => {
             if (stompClientRef.current && stompClientRef.current.connected) {
                 stompClientRef.current.disconnect(() => {
@@ -69,25 +114,37 @@ function ChatRoom() {
                 });
             }
         };
-    }, [roomId, currentUser]);
+    }, [roomId, currentUser, token]);
 
+    // 메시지 전송
     const sendMessage = () => {
         if (newMessage.trim() && stompClientRef.current) {
-            const token = sessionStorage.getItem("accessToken");
-            stompClientRef.current.send(
-                `/send/${roomId}`,
-                { Authorization: `Bearer ${token}` },
-                JSON.stringify({
-                    sender: currentUser,
-                    message: newMessage,
-                    roomId: roomId,
-                    type: "TALK",
-                    timestamp: new Date().toLocaleTimeString(),
-                })
-            );
-            setNewMessage("");
+            try {
+                stompClientRef.current.send(
+                    `/send/${roomId}`,
+                    { Authorization: `Bearer ${token}` },
+                    JSON.stringify({
+                        sender: currentUser,
+                        message: newMessage,
+                        roomId: roomId,
+                        type: "TALK",
+                        timestamp: new Date().toLocaleTimeString(),
+                    })
+                );
+                setNewMessage(""); // 전송 후 입력창 초기화
+            } catch (error) {
+                console.error("메시지 전송 오류:", error);
+            }
         }
     };
+
+    // 새로운 메시지가 오면 스크롤을 맨 아래로 이동
+    useEffect(() => {
+        const messagesContainer = document.querySelector('.messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }, [messages]);
 
     return (
         <div className="chat-room">
