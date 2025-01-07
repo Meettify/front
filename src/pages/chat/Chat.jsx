@@ -283,9 +283,10 @@
 
 // export default Chat;
 
+// Chat 컴포넌트
 import { useEffect, useState, useRef } from "react";
-import SockJS from "sockjs-client";  // 브라우저용 SockJS 임포트
-import { Stomp } from "@stomp/stompjs";  // 브라우저용 STOMP 임포트
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 import Modal from "../../components/chat/Modal";
 import MapSearch from "../../components/chat/MapSerach";
 
@@ -297,29 +298,32 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록 (빈 배열로 초기화)
-  const [roomMembers, setRoomMembers] = useState([]); // 현재 채팅방 멤버 리스트
-  const [connected, setConnected] = useState(false); // 연결 상태 추적
+  const [chatRooms, setChatRooms] = useState([]); 
+  const [roomMembers, setRoomMembers] = useState([]); 
+  const [connected, setConnected] = useState(false); 
+  const [searchResults, setSearchResults] = useState([]);
   const stompClientRef = useRef(null);
   const roomId = new URLSearchParams(window.location.search).get("roomId");
   const currentUser = localStorage.getItem("nickName");
   const KAKAO_API_KEY = process.env.REACT_APP_KAKAO_API_KEY;
 
-  const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+  const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL; // 환경변수에서 API base URL을 가져옴
   
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    const socket = new SockJS(`/ws/chat`);  // SockJS를 사용한 WebSocket 연결
+    const token = sessionStorage.getItem("accessToken"); // 세션에서 액세스 토큰을 가져옴
+    const socket = new SockJS(`${BASE_URL}/ws/chat`); // WebSocket 연결
     const client = Stomp.over(socket);
     stompClientRef.current = client;
     
+    // STOMP 연결
     client.connect(
       { Authorization: `Bearer ${token}` },
       (frame) => {
         setConnected(true);
         console.log("STOMP 연결 성공", frame);
-        // 채팅방 메시지 수신 구독
+
+        // 해당 채팅방에 대한 메시지 구독
         client.subscribe(`/exchange/chat.exchange/room.${roomId}`, (msg) => {
           const receivedMessage = JSON.parse(msg.body);
           if (receivedMessage.type === "PLACE") {
@@ -336,7 +340,7 @@ const Chat = () => {
       }
     );
 
-    // 채팅방 참여한 멤버들 가져오기
+    // 채팅방 목록 가져오기
     fetch(`${BASE_URL}/chat/rooms`, {
       headers: { 
         'Authorization': `Bearer ${token}` 
@@ -351,29 +355,24 @@ const Chat = () => {
     };
   }, [roomId]);
 
-  // 채팅방 메시지 전송
+  // 메시지 보내는 기능
   const sendMessage = (message, type = "TALK") => {
-    if (connected && stompClientRef.current) {
-      const token = sessionStorage.getItem("accessToken");
-      stompClientRef.current.send(
-        `/pub/chat.message.${roomId}`,
-        { Authorization: `Bearer ${token}` },
-        JSON.stringify({
-          sender: currentUser,
-          message,
-          roomId,
-          type,
-          timestamp: new Date().toISOString(),
-        })
-      );
-      if (type === "TALK") setNewMessage(""); // 메시지 입력창 초기화
-    } else {
-      console.error("STOMP 연결이 완료되지 않았습니다.");
-      alert("STOMP 연결이 완료되지 않았습니다.");
-    }
+    const token = localStorage.getItem("accessToken");
+    stompClientRef.current?.send(
+      `/pub/chat.message.${roomId}`,
+      { Authorization: `Bearer ${token}` },
+      JSON.stringify({
+        sender: currentUser,
+        message,
+        roomId,
+        type,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    if (type === "TALK") setNewMessage("");
   };
 
-  // 참여한 채팅방 멤버 가져오기
+  // 현재 채팅방 멤버 리스트 가져오기
   useEffect(() => {
     if (roomId) {
       fetch(`${BASE_URL}/chat/room/${roomId}`, {
@@ -383,7 +382,7 @@ const Chat = () => {
       })
         .then((res) => res.json())
         .then((data) => setRoomMembers(data))
-        .catch((error) => console.error("멤버 가져오기 실패:", error));
+        .catch((error) => console.error("채팅방 멤버 가져오기 실패:", error));
     }
   }, [roomId]);
 
@@ -394,13 +393,13 @@ const Chat = () => {
       address: place.address,
       lat: place.lat,
       lng: place.lng,
-      mapUrl: `https://map.kakao.com/link/map/${place.title},${place.lat},${place.lng}`,
+      mapUrl: `https://map.kakao.com/link/map/${place.title},${place.lat},${place.lng}`, // Kakao Maps 링크
     });
     sendMessage(message, "PLACE");
     setIsModalOpen(false); // 지도 공유 모달 닫기
   };
 
-  // 채팅방 나가기
+  //채팅방 나가기
   const leaveRoom = () => {
     fetch(`${BASE_URL}/chat/${roomId}`, {
       method: "DELETE",
@@ -454,58 +453,49 @@ const Chat = () => {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg, index) => {
-            const isCurrentUser = msg.sender === currentUser;
-            return (
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex items-start ${msg.sender === currentUser ? "justify-end" : "justify-start"}`}
+            >
               <div
-                key={index}
-                className={`flex items-start ${
-                  isCurrentUser ? "justify-end" : "justify-start"
+                className={`max-w-xs p-4 rounded-lg shadow-md ${
+                  msg.sender === currentUser ? "bg-blue-500 text-white" : "bg-white text-black border"
                 }`}
               >
-                <div
-                  className={`max-w-xs p-4 rounded-lg shadow-md ${
-                    isCurrentUser
-                      ? "bg-blue-500 text-white"
-                      : "bg-white text-black border"
-                  }`}
-                >
-                  {msg.type === "PLACE" ? (
-                    <div
-                      className="p-4 bg-gray-100 rounded shadow cursor-pointer"
-                      onClick={() => handlePlaceClick(msg.place)}
-                    >
-                      <div className="flex items-center space-x-4">
-                        {/* Kakao Static Map으로 지도 미리보기 */}
-                        <img
-                          src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=200x150`}
-                          alt="map preview"
-                          className="w-24 h-24 rounded"
-                        />
-                        <div>
-                          <strong>{msg.place.title}</strong>
-                          <p>{msg.place.address}</p>
-                        </div>
+                {msg.type === "PLACE" ? (
+                  <div
+                    className="p-4 bg-gray-100 rounded shadow cursor-pointer"
+                    onClick={() => {
+                      const kakaoMapLink = `https://map.kakao.com/link/map/${msg.place.title},${msg.place.lat},${msg.place.lng}`;
+                      window.open(kakaoMapLink, "_blank");
+                    }}
+                  >
+                    <div className="flex items-center space-x-4">
+                      {/* Kakao Static Map으로 지도 미리보기 */}
+                      <img
+                        src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=200x150`}
+                        alt="map preview"
+                        className="w-24 h-24 rounded"
+                      />
+                      <div>
+                        <strong>{msg.place.title}</strong>
+                        <p>{msg.place.address}</p>
                       </div>
                     </div>
-                  ) : (
-                    <p className="break-words">{msg.message}</p>
-                  )}
-                  {/* 시간 표시 */}
-                  <span
-                    className={`text-xs mt-2 ${
-                      isCurrentUser ? "text-gray-200" : "text-gray-500"
-                    }`}
-                  >
-                    {new Date(msg.timestamp).toLocaleString("ko-KR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </div>
+                  </div>
+                ) : (
+                  <p className="break-words">{msg.message}</p>
+                )}
+                {/* 시간 표시 */}
+                <span
+                  className={`text-xs mt-2 ${msg.sender === currentUser ? "text-gray-200" : "text-gray-500"}`}
+                >
+                  {new Date(msg.timestamp).toLocaleString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                </span>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
         <div className="p-4 border-t flex">
           <input
@@ -523,19 +513,39 @@ const Chat = () => {
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-green-500 text-white p-2 rounded ml-2"
+            className="ml-2 bg-green-500 text-white p-2 rounded"
           >
-            장소 공유
+            주소 공유
           </button>
         </div>
       </div>
 
-      {/* 지도 공유 모달 */}
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <MapSearch onSelect={sharePlace} />
-        </Modal>
-      )}
+      {/* 접속 인원 */}
+      <div className="w-1/4 bg-white border-l p-4">
+        <h2 className="text-lg font-bold mb-4">접속 인원</h2>
+        <ul className="space-y-2">
+          {roomMembers.map((member) => (
+            <li
+              key={member.nickName}
+              className={`p-2 rounded ${member.isOnline ? "bg-green-100" : "bg-gray-200 text-gray-500"}`}
+            >
+              {member.nickName}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 장소 공유 모달 */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        content={
+          <MapSearch
+            onSelectPlace={(place) => sharePlace(place)}
+            setSearchResults={setSearchResults}
+          />
+        }
+      />
     </div>
   );
 };

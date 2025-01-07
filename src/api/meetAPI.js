@@ -484,9 +484,6 @@ export const deleteMeetBoard = async (meetId, meetBoardId) => {
             }
 };
     
-    
-
-
 // 추천 상품을 가져오는 함수
 export const getRecommendedItems = async () => {
     const token = `${sessionStorage.getItem('accessToken')}`;  // 인증 토큰 가져오기
