@@ -1,38 +1,36 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import SupportQna from "../../components/support/SupportQna";
-import RoundedButton from "../../components/button/RoundedButton";
-import useQuestionsStore from "../../stores/useQuestionsStore";
-import useNoticeStore from "../../stores/useNoticeStore"; // useNoticeStore 추가
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import SupportQna from '../../components/support/SupportQna';
+import RoundedButton from '../../components/button/RoundedButton';
+import useQuestionsStore from '../../stores/useQuestionsStore';
+import useNoticeStore from '../../stores/useNoticeStore';
 
 const SupportPage = () => {
     const { myQuestionsCount, fetchMyQuestions, questions, loading } = useQuestionsStore();
-    const { notices, fetchNotices, loading: noticesLoading } = useNoticeStore(); // 공지사항 상태와 fetch 함수 가져오기
+    const { notices, fetchNotices, loading: noticesLoading } = useNoticeStore();
     const navigate = useNavigate();
 
     // 공지사항 목록 가져오기
     useEffect(() => {
-        fetchNotices(); // 페이지 로딩 시 공지사항 목록을 가져옵니다.
+        fetchNotices(); // Zustand 상태 갱신
     }, [fetchNotices]);
 
-    // 내 문의 목록 버튼 클릭 시
     const handleMyQuestionsClick = () => {
-        navigate("/my-questions"); // 내 문의 목록 페이지로 이동
+        navigate('/my-questions');
     };
 
     return (
         <div className="max-w-5xl mx-auto mt-4 px-2 text-left">
             <h2 className="text-4xl font-bold mb-6">
-                <span className="text-black">고객센터.</span>{" "}
+                <span className="text-black">고객센터.</span>{' '}
                 <span className="text-gray-500">도움이 필요하신가요?</span>
             </h2>
 
-            {/* 공지사항 게시판 */}
             <div className="mt-6 mb-6">
                 <table className="w-full text-sm border-t border-b border-gray-200">
                     <thead>
                         <tr className="bg-gray-50">
-                            <th className="py-2 px-4 text-left">공지사항</th>
+                            <th className="py-2 px-4 text-left text-[14px]">공지사항</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,11 +40,11 @@ const SupportPage = () => {
                             </tr>
                         ) : (
                             notices.map((notice) => (
-                                <tr key={notice.id} className="border-t">
+                                <tr key={notice.noticeId} className="border-t">
                                     <td className="py-2 px-4">
                                         <Link
-                                            to={`/notice/${notice.id}`}
-                                            className="text-blue-500 hover:underline"
+                                            to={`/notice/${notice.noticeId}`}
+                                            className="text-black hover:underline"
                                         >
                                             {notice.title}
                                         </Link>
@@ -99,6 +97,7 @@ const SupportPage = () => {
                     <p className="text-gray-600 text-sm">주문한 상품은 결제 완료 후 2~3일 내에 배송됩니다. <br />
                         배송 현황은 "내 주문" 페이지에서 확인할 수 있습니다.</p>
                 </SupportQna>
+                {/* 추가 SupportQna 생략 */}
             </div>
         </div>
     );

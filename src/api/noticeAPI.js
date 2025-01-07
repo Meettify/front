@@ -51,10 +51,8 @@ export const deleteNotice = async (noticeId) => {
 
 // 공지사항 상세 조회
 export const getNotice = async (noticeId) => {
+  console.log('Fetching notice with ID:', noticeId); // 디버깅용
   try {
-    const data = await getNoticeList(page);
-console.log("공지사항 목록:", data);
-
     const response = await request.get({
       url: `${BASE_URL}/${noticeId}`,
     });
@@ -65,15 +63,14 @@ console.log("공지사항 목록:", data);
   }
 };
 
+
 // 공지사항 목록 조회 (페이징)
 export const getNoticeList = async (page = 1, size = 10, sort = 'desc') => {
   try {
-    console.log(`API Request params - Page: ${page}, Size: ${size}, Sort: ${sort}`); // 디버깅용 로그
     const response = await request.get({
       url: `${BASE_URL}/noticeList`,
-      params: {page, size, sort},
+      params: { page, size, sort },
     });
-    console.log('API Response Data:', response.data); // 디버깅용 로그
     return response.data;
   } catch (error) {
     console.error('공지사항 목록 조회 중 오류 발생:', error);
