@@ -51,13 +51,15 @@ const useOrderStore = create((set, get) => ({
       }
       console.log("Final address for order:", address); // 최종 주소 정보 확인
 
-      // 임시 주문 생성
       const orderResult = await createTempOrder(address);
-      console.log("createTempOrder 결과:", orderResult);  // 여기서 반환되는 결과를 확인
+    console.log("createTempOrder 결과:", orderResult); // 결과 로그 추가
 
-      // 상태 업데이트
-      console.log("orderData 상태를 다음 값으로 설정:", orderResult);
-      set({ orderData: orderResult });
+    if (!orderResult || !orderResult.orderId) {
+      throw new Error('임시 주문 생성 결과에 유효한 데이터가 없습니다.');
+    }
+
+    set({ orderData: orderResult }); // 상태 업데이트
+
 
       return orderResult;
     } catch (error) {
