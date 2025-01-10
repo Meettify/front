@@ -11,7 +11,7 @@ const MeetBoard = lazy(() => import("../pages/meet/MeetBoard"));
 const MeetBoardDetail = lazy(()=>import("../pages/meet/MeetBoardDetail")); 
 const MeetBoardAdd = lazy(()=>import("../pages/meet/MeetBoardAdd")); 
 const MeetBoardEdit = lazy(()=>import("../pages/meet/MeetBoardEdit")); 
-const ChatRoom = lazy(()=>import("../components/meet/ChatRoom")); 
+const ChatRoom = lazy(()=>import("../components/meet/ChatRoom"));
 
 
 const meetRouter = () => {
@@ -58,7 +58,7 @@ const meetRouter = () => {
     },
     {
       path: "/chat/room/:roomId",
-      element: <Suspense fallback={<Loading />}><ChatRoom /></Suspense>, // 채팅방 리스트 + 채팅창
+      element: <Suspense fallback={<Loading />}><ChatRoom /></Suspense>,
     },
   ];
 };
