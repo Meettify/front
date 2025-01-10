@@ -1,219 +1,151 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { CheckoutPage } from "../../components/payment/CheckoutPage";
-import { getItemList } from "../../api/adminAPI";
-import { createTempOrder } from "../../api/orderAPI";
-import useOrderStore from "../../stores/useOrderStore";
+import React, { useState, useEffect } from 'react';
+import { getCartItems } from '../../api/cartAPI';
+import { getMember } from '../../api/memberAPI';
+import { createTempOrder } from '../../api/orderAPI';
+import paymentAPI from '../../api/paymentAPI';
+import { useAuth } from '../../hooks/useAuth';
 
 const OrderPage = () => {
-    const location = useLocation();
-    const { state } = location;
+    const [cartItems, setCartItems] = useState([]);
+    const [memberData, setMemberData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const { user } = useAuth();
-    const navigate = useNavigate();
-    const { createOrder, orderData, setOrderData } = useOrderStore();
-
-    const [selectedCartItems, setSelectedCartItems] = useState([]);
-    const [orderAmount, setOrderAmount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if (state?.selectedCartItems?.length) {
-            setSelectedCartItems(state.selectedCartItems);
-        } else {
-            setIsLoading(true);
-            getItemList(1, 10)
-                .then((items) => {
-                    if (Array.isArray(items)) {
-                        setSelectedCartItems(items);
-                    } else {
-                        throw new Error("Invalid items data structure.");
-                    }
-                })
-                .catch((error) => console.error("Error fetching items from API:", error))
-                .finally(() => setIsLoading(false));
-        }
-    }, [state]);
+        const fetchInitialData = async () => {
+            try {
+                setLoading(true);
 
-    useEffect(() => {
-        const totalAmount = selectedCartItems.reduce((sum, item) => {
-            return sum + (item.itemPrice || 0) * (item.itemCount || 1);
-        }, 0);
-        setOrderAmount(totalAmount);
-    }, [selectedCartItems]);
+                // 1. 장바구니 데이터 가져오기
+                const items = await getCartItems();
+                setCartItems(items);
 
-    const handleSuccess = async (response) => {
-        if (!user?.memberAddr || !user?.memberAddrDetail || !user?.memberZipCode) {
-            alert("배송 정보가 부족합니다. 주소를 입력해주세요.");
-            return;
-        }
+                // 2. 사용자 정보 가져오기
+                const member = await getMember(localStorage.getItem('memberId'));
 
-        try {
-            const { paymentKey, orderId, amount } = response;
-            const result = await createOrder({
-                memberAddr: user.memberAddr,
-                memberAddrDetail: user.memberAddrDetail,
-                memberZipCode: user.memberZipCode,
-                orders: selectedCartItems.map((item) => ({
-                    itemId: item.itemId,
-                    itemCount: item.itemCount || 1,
-                    itemName: item.itemName || "상품명 없음",
-                })),
-            });
+                // 디버깅용 로그 추가
+                console.log('Member Data:', member);  // 실제 API 응답 확인
 
-            if (result) {
-                navigate(`/success`, {
-                    state: {
-                        orderId: result.orderId,
-                        amount: orderAmount,
-                        items: selectedCartItems,
-                        successMessage: "결제가 성공적으로 완료되었습니다.",
-                    },
-                });
-            } else {
-                throw new Error("Order creation failed.");
+                // memberAddr가 객체일 경우 내부의 address, detail, zipCode를 분리하여 사용
+                if (!member) {
+                    console.error('회원 데이터가 없습니다.');  // member가 없다면 에러 출력
+                }
+
+                const { memberAddr } = member;
+                console.log('Raw memberAddr:', memberAddr);  // memberAddr 값 확인
+
+                let memberAddrString = '주소 정보 없음';  // 기본값을 '주소 정보 없음'으로 설정
+
+                // memberAddr가 객체일 경우 주소 정보 추출
+                if (memberAddr && typeof memberAddr === 'object') {
+                    const { memberAddr: address, memberAddrDetail, memberZipCode } = memberAddr;
+                    memberAddrString = address || '주소 정보 없음';  // 주소가 있으면 사용
+                    const memberAddrDetailString = memberAddrDetail || '상세 주소 정보 없음';  // 상세 주소
+                    const memberZipCodeString = memberZipCode || '우편번호 정보 없음';  // 우편번호
+
+                    console.log("Processed memberAddr:", memberAddrString);  // memberAddr 값 확인
+                    console.log("Processed memberAddrDetail:", memberAddrDetailString);
+                    console.log("Processed memberZipCode:", memberZipCodeString);
+
+                    setMemberData({
+                        ...member,
+                        memberAddr: memberAddrString,  // 주소는 문자열로 저장
+                        memberAddrDetail: memberAddrDetailString,  // 상세 주소
+                        memberZipCode: memberZipCodeString,  // 우편번호
+                    });
+                }
+
+                setLoading(false);
+            } catch (err) {
+                console.error('초기 데이터 로드 실패:', err);
+                setError(err.message);
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Error creating order:", error);
-            handleFailure(error);
-        }
-    };
+        };
 
-    const handleFailure = (error) => {
-        console.error("결제 실패:", error);
-        navigate(`/fail`, {
-            state: {
-                message: error.message || "결제 실패",
-                orderDetails: JSON.stringify({
-                    items: selectedCartItems,
-                    totalAmount: orderAmount,
-                }),
-                error: true,
-            },
-        });
-    };
+        fetchInitialData();
+    }, []);  // 컴포넌트 마운트 시 데이터 로드
 
-    const handleCreateTempOrder = async () => {
-        if (!selectedCartItems.length) {
-            console.error("No selected items for temp order.");
-            return;
-        }
 
+    const handleOrder = async () => {
         try {
-            setIsLoading(true);
-            const orderData = await createTempOrder({
-                memberAddr: user?.memberAddr,
-                memberAddrDetail: user?.memberAddrDetail,
-                memberZipCode: user?.memberZipCode,
-                selectedCartItems,
-            });
+            setLoading(true);
 
-            setOrderData(orderData);
-        } catch (error) {
-            console.error("Error creating temp order:", error);
-        } finally {
-            setIsLoading(false);
+            // 3. 임시 주문 생성
+            const tempOrder = await createTempOrder(memberData.memberId); // memberId만 넘기도록 수정
+            console.log("memberId: ", memberData.memberId);
+            // 나머지 결제 로직은 그대로 유지
+            const paymentData = {
+                itemCount: tempOrder.itemCount,
+                impUid: '', // 실제 아임포트 결제 창과 연동 시 설정
+                orderUid: tempOrder.orderUid,
+                payMethod: 'card', // 결제 방식
+                payPrice: tempOrder.totalPrice,
+                orders: tempOrder.orders,
+                address: {
+                    memberAddr: memberData.memberAddr,
+                    memberAddrDetail: memberData.memberAddrDetail,
+                    memberZipCode: memberData.memberZipCode,
+                },
+            };
+
+            const result = await paymentAPI.confirmPayment(paymentData);
+
+            // 결제 성공 처리
+            alert('결제가 완료되었습니다!');
+            console.log('결제 결과:', result);
+
+            setLoading(false);
+        } catch (err) {
+            console.error('주문 처리 중 오류 발생:', err);
+            alert('결제 중 오류가 발생했습니다.');
+            setError(err.message);
+            setLoading(false);
         }
     };
 
-    if (isLoading) return <p>로딩 중...</p>;
+    if (loading) return <p>로딩 중...</p>;
+    if (error) return <p>오류 발생: {error}</p>;
 
     return (
-        <div className="max-w-2xl mx-auto mt-16 p-4">
-            {/* 배송 정보 */}
-            <div className="mb-8">
-                <h2 className="text-lg font-bold mb-4 text-left">배송 정보</h2>
-                <div className="text-sm text-gray-600 text-left">
-                    <p>주문자명: {user?.memberName || "정보 없음"}</p>
-                    <p>
-                        주문자 주소:{" "}
-                        {user?.memberAddr && typeof user.memberAddr === "object"
-                            ? `${user.memberAddr.memberAddr || ''} ${user.memberAddr.memberAddrDetail || ''} (${user.memberAddr.memberZipCode || ''})`
-                            : user?.memberAddr || '주소 정보 없음'}
-                    </p>
-                </div>
-            </div>
-
-            <div className="mb-8">
-                <h2 className="text-lg font-bold mb-4 text-left">주문 상품</h2>
-                {selectedCartItems.length === 0 ? (
-                    <p className="text-sm text-gray-600 text-left">주문한 상품이 없습니다.</p>
-                ) : (
-                    <table className="w-full text-sm border-t border-b border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-50">
-                                <th className="py-2 px-4 text-left">상품 이미지</th>
-                                <th className="py-2 px-4 text-left">상품명</th>
-                                <th className="py-2 px-4 text-center">수량</th>
-                                <th className="py-2 px-4 text-right">가격</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {selectedCartItems.map((item) => (
-                                <tr key={item.itemId} className="border-t">
-                                    <td className="py-2 px-4">
-                                        <img
-                                            src={item.files?.[0] || "https://via.placeholder.com/150"}
-                                            alt={item.itemName || "상품 이미지"}
-                                            className="w-12 h-12 object-cover rounded"
-                                        />
-                                    </td>
-                                    <td className="py-2 px-4">{item.itemName || "상품 제목 없음"}</td>
-                                    <td className="py-2 px-4 text-center">{item.itemCount || 1}</td>
-                                    <td className="py-2 px-4 text-right">
-                                        ₩{(item.itemPrice || 0) * (item.itemCount || 1)}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-
-            <div className="mb-8">
-                <h2 className="text-lg font-bold mb-4 text-left">결제</h2>
-                <CheckoutPage
-                    price={orderAmount}
-                    user={user}
-                    orderItems={selectedCartItems}
-                    onSuccess={handleSuccess}
-                    onFail={handleFailure}
-                />
-            </div>
-
-            <button
-                onClick={handleCreateTempOrder}
-                className="py-2 px-4 bg-blue-600 text-white font-semibold rounded"
-            >
-                임시 주문 생성
-            </button>
-
-            {orderData && (
-                <div className="mt-8">
-                    <h3 className="text-lg font-bold text-left mb-2">임시 주문 생성 결과</h3>
-                    <div className="p-4 border rounded bg-gray-50 text-left">
-                        <p><strong>주문 번호:</strong> {orderData.orderId || "정보 없음"}</p>
-                        <p><strong>결제 상태:</strong> {orderData.payStatus || "정보 없음"}</p>
-                        <p><strong>배송 주소:</strong> {orderData.orderAddress?.memberAddr || "주소 정보 없음"}, {orderData.orderAddress?.memberAddrDetail || ""}</p>
-                        <p><strong>총 결제 금액:</strong> ₩{orderData.orderTotalPrice || 0}</p>
-                        <h4 className="mt-4 font-semibold">주문 상품</h4>
-                        <ul className="list-disc ml-5 mt-2">
-                            {orderData.orderItems?.map((item, index) => (
-                                <li key={index}>
-                                    <p><strong>상품명:</strong> {item.item?.itemName || "상품명 없음"}</p>
-                                    <p><strong>수량:</strong> {item.orderCount || 0}</p>
-                                    <p><strong>가격:</strong> ₩{item.orderPrice || 0}</p>
-                                    <img
-                                        src={item.item?.images?.[0]?.uploadImgUrl || "https://via.placeholder.com/150"}
-                                        alt={item.item?.itemName || "상품 이미지"}
-                                        className="w-16 h-16 object-cover mt-2 rounded"
-                                    />
-                                </li>
-                            ))}
-                        </ul>
+        <div>
+            <h1>주문 페이지</h1>
+            <section>
+                <h2>배송 정보</h2>
+                {memberData ? (
+                    <div>
+                        <p>이름: {memberData.memberName}</p>
+                        <p>주소: {memberData.memberAddr}</p>  {/* memberAddr 문자열로 출력 */}
+                        <p>상세 주소: {memberData.memberAddrDetail}</p>  {/* memberAddrDetail */}
+                        <p>우편번호: {memberData.memberZipCode}</p>  {/* memberZipCode */}
                     </div>
-                </div>
-            )}
+                ) : (
+                    <p>사용자 정보를 불러오는 중...</p>
+                )}
+            </section>
+            <section>
+                <h2>주문 상품</h2>
+                {cartItems.length > 0 ? (
+                    <ul>
+                        {cartItems.map((item, index) => (
+                            <li key={item.cartItemId || index}>
+                                <p>상품명: {item.item.itemName}</p>  {/* item.itemName으로 수정 */}
+                                <p>수량: {item.itemCount}</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>장바구니에 상품이 없습니다.</p>
+                )}
+            </section>
+
+            {/* 결제 버튼 */}
+            <section>
+                <button onClick={handleOrder} disabled={loading}>
+                    결제하기
+                </button>
+            </section>
         </div>
     );
 };
