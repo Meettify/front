@@ -6,76 +6,75 @@ const BASE_URL = '/orders';  // 주문 관련 API URL
 
 export const createTempOrder = async (memberId) => {
   try {
-    // 1. 회원 정보 가져오기
+    // memberId를 사용하여 회원 정보를 가져옵니다.
     const member = await getMember(memberId);
-    console.log('회원 정보:', member);  // 회원 정보 출력
+    if (!member) throw new Error('회원 정보를 가져오지 못했습니다.');
 
-    if (!member) {
-      throw new Error('회원 정보를 가져올 수 없습니다.');
+    const cartItems = await getCartItems(); // 장바구니 데이터 가져오기
+    console.log('장바구니 데이터:', cartItems);
+
+    // cartItems가 배열인지 확인
+    if (!Array.isArray(cartItems)) {
+      throw new Error('장바구니 데이터가 올바르지 않습니다. 배열이어야 합니다.');
     }
 
-    const { memberAddr } = member; // memberAddr 객체를 가져오기
-
-    // 2. 주소 정보 검증
-    const { memberAddr: address, memberAddrDetail, memberZipCode } = memberAddr;  // memberAddr 객체에서 필요한 속성들 분리
-    console.log('회원 주소:', { address, memberAddrDetail, memberZipCode });  // 주소 정보 출력
-
-    if (!address || !memberAddrDetail || !memberZipCode) {
-      throw new Error('회원 정보에 유효한 주소가 없습니다.');
-    }
-
-    console.log('회원 주소 정보 유효:', address, memberAddrDetail, memberZipCode);
-
-    // 3. 장바구니 상품 정보 가져오기
-    const cartItems = await getCartItems();
-    console.log('장바구니 상품 조회:', cartItems);
-
-    if (!cartItems || cartItems.length === 0) {
+    if (cartItems.length === 0) {
       throw new Error('장바구니에 상품이 없습니다.');
     }
 
-    // 4. 장바구니 항목 매핑
-    const orders = cartItems.map((item) => ({
-      itemId: item.itemId,
-      itemCount: item.itemCount || 1,
-      itemName: item.itemName || '상품명 없음',
-    }));
+    const orders = cartItems.map((item) => {
+      if (!item || !item.item) {
+        console.warn('잘못된 item 데이터:', item);
+        return null; // 잘못된 데이터는 제외
+      }
+      
+      return {
+        itemId: item.item.itemId,  // itemId를 가져옵니다.
+        itemCount: item.itemCount || 1,  // 수량
+        itemName: item.item.itemName || '상품명 없음',  // itemName을 직접 가져옵니다.
+      };
+    }).filter(order => order !== null); // 잘못된 데이터 제외
+    
 
-    // 5. 요청 데이터 구성
+    if (orders.length === 0) {
+      throw new Error('유효한 주문 항목이 없습니다.');
+    }
+
     const requestBody = {
       orders,
-      address: {
-        memberAddr: address,
-        memberAddrDetail,
-        memberZipCode,
-      },
     };
 
-    console.log('Request body to send:', JSON.stringify(requestBody, null, 2));
+    console.log('임시 주문 생성 요청 데이터:', JSON.stringify(requestBody));
+    console.log('임시 주문 orders: ', orders);
 
-    // 6. 임시 주문 생성 요청
     const response = await request.post({
-      method: 'POST',  // 요청 메서드 명시
-      url: `${BASE_URL}/tempOrder`,  // 요청 URL
-      data: requestBody,  // 요청 본문 데이터
+      method: 'POST',
+      url: `${BASE_URL}/tempOrder`,
+      data: requestBody,
       headers: {
-        'Content-Type': 'application/json',  // 요청 헤더 설정
+        'Content-Type': 'application/json',
       },
     });
 
-    // 응답 데이터 처리
     if (response && response.data) {
       console.log('임시 주문 생성 성공:', response.data);
-      return response.data;
+      
+      const orders = response.data.orders || response.data.orderItems || [];
+      return {
+        orders, // orders를 명확히 반환
+        ...response.data, // 추가적으로 필요한 다른 데이터 포함
+      };
+
     } else {
       console.error('임시 주문 생성 실패:', response);
       throw new Error('임시 주문 생성에 실패했습니다.');
     }
   } catch (error) {
-    console.error('임시 주문 생성 중 오류 발생:', error.response?.data || error.message);
+    console.error('임시 주문 생성 중 오류 발생:', error.message);
     throw error;
   }
 };
+
 
 // 내 주문 조회
 export const getMyOrders = async () => {

@@ -191,12 +191,20 @@ npm install recharts
 ```bash
 npm install @stomp/stompjs --save
 ```
+
 ```js
 import * as StompJs from "@stomp/stompjs";
 ```
 
-###  챗봇라이브러리
+### 챗봇라이브러리
 
-``` bash
+```bash
 npm install @channel.io/channel-web-sdk-loader
+```
+
+### moment
+
+```bash
+npm install moment
+npm install moment-timezone
 ```
