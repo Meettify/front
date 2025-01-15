@@ -4,54 +4,51 @@ import { getMember } from './memberAPI';
 import { createTempOrder } from './orderAPI';
 
 const BASE_URL = '/payment';
-const TOSS_SECRET_KEY = import.meta.env.VITE_TOSS_SECRET_KEY;
 
 const paymentAPI = {
-  // Toss 결제 확인
-  tossPayConfirm: async (data) => {
-    console.log('Received data:', data);
-
+  tossPayConfirm: async ({ orderId, amount, paymentKey }) => {
     try {
-      // 임시 주문 생성
-      const tempOrder = await createTempOrder(data.orders, data.address);
-      console.log('Temporary Order Created:', tempOrder);
+      const tempOrder = await createTempOrder();
+      console.log('임시 주문 생성 성공:', tempOrder);
 
-      // Toss 결제 요청 데이터 구성
+      // 1. Toss 결제 요청 데이터 구성
       const paymentData = {
-        orderId: tempOrder.orderId,
-        amount: data.amount,
-        paymentKey: data.paymentKey,
-        requestedAt: data.requestedAt,
-        approvedAt: data.approvedAt,
-        orderUid: data.orderUid,
-        orders: data.orders.map((order) => ({
-          itemId: order.itemId,
-          itemCount: order.itemCount,
-          itemName: order.itemName,
-        })),
-        address: {
-          memberAddr: data.address.memberAddr,
-          memberAddrDetail: data.address.memberAddrDetail,
-          memberZipCode: data.address.memberZipCode,
-        },
+        orderId,
+        amount,
+        paymentKey,
       };
 
+      // 디버깅: paymentData 로그 출력
+      console.log('Sending payment confirmation request with data:', paymentData);
+      console.log('Final payment data:', JSON.stringify(paymentData));
+
+      console.log('tempOrder.orderItems:', tempOrder.orderItems);
+
+      // 2. Toss 결제 확인 요청 (결제 상태 확인)
       const response = await request.post({
-        url: `${BASE_URL}/toss/confirm`,
-        data: paymentData,
-        headers: {
+        url: `${BASE_URL}/toss/confirm`,  // URL
+        data: paymentData,  // 요청 데이터
+        headers: {  // 헤더
           'Content-Type': 'application/json',
-          Authorization: `Basic ${TOSS_SECRET_KEY}`,
         },
       });
 
-      console.log('Payment Confirmation Response:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Toss 결제 확인 API 오류:', error.response?.data || error.message);
-      throw error;
+     // 응답 처리
+    if (response.status === 200) {
+      const responseData = response.data;
+      console.log('결제 승인 성공:', responseData);
+      
+      // 결제 성공 처리 로직
+      return responseData;
+    } else {
+      console.error('결제 승인 실패:', response);
+      throw new Error('결제 승인에 실패했습니다.');
     }
-  },
+  } catch (error) {
+    console.error('결제 API 호출 중 오류 발생:', error.message);
+    throw error;
+  }
+},
 
   // Toss 결제 취소
   tossPayCancel: async (data) => {
