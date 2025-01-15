@@ -1,81 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import paymentAPI from "../../api/paymentAPI";  // paymentAPI import
 
 const SuccessPage = () => {
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  // URL 쿼리 파라미터에서 값 가져오기
-  const queryParams = new URLSearchParams(location.search);
-  const paymentKey = queryParams.get("paymentKey");
-  const orderId = queryParams.get("orderId");
-  const amount = queryParams.get("amount");
-
-  // state로 받은 값들
-  const { items, address, successMessage } = location.state || {};
-
-  console.log("orderId:", orderId);  // 확인용 로그
-  console.log("paymentKey:", paymentKey);  // 확인용 로그
-  console.log("address:", address);  // 확인용 로그
-  console.log("items:", items);  // 확인용 로그
+  const orderId = searchParams.get("orderId");
+  const paymentKey = searchParams.get("paymentKey");
+  const amount = searchParams.get("amount");
 
   useEffect(() => {
     const confirmPayment = async () => {
-      console.log("결제 API 호출 시작");
-
-      const requestedAt = new Date().toISOString();
-      const approvedAt = new Date().toISOString();
+      if (!orderId || !paymentKey || !amount) {
+        console.warn("필수 정보가 부족합니다.");
+        setErrorMessage("결제 정보가 누락되었습니다.");
+        return;
+      }
 
       try {
-        const response = await fetch('https://meettify.store/api/v1/payment/toss/confirm', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            paymentKey,
-            orderId,
-            amount,
-            requestedAt,
-            approvedAt,
-            orders: items || [],  // 빈 배열로 기본값 설정
-            address: address || {},  // 빈 객체로 기본값 설정
-          }),
-        });
+        // 결제 확인 API 호출
+        const result = await paymentAPI.tossPayConfirm({ orderId, paymentKey, amount });
+        setPaymentDetails(result);  // 결제 성공한 데이터를 상태에 저장
 
-        if (!response.ok) {
-          throw new Error("결제 확인 실패");
-        }
-
-        const data = await response.json();
-        console.log("결제 성공:", data);
-
-        // 응답 데이터 구조 출력
-        console.log("API 응답 데이터:");
-        console.log("orderId:", data.orderId);
-        console.log("amount:", data.amount);
-        console.log("paymentKey:", data.paymentKey);
-        console.log("requestedAt:", data.requestedAt);
-        console.log("approvedAt:", data.approvedAt);
-        console.log("orderUid:", data.orderUid);
-        console.log("orders:", data.orders);
-        console.log("address:", data.address);
-
-        setPaymentDetails(data);
       } catch (error) {
         console.error("결제 처리 오류:", error);
-        setErrorMessage("결제를 처리하는 중 오류가 발생했습니다.");
+        if (error.response && error.response.data) {
+          // 실패 사유가 있다면 그 메시지를 표시
+          setErrorMessage(error.response.data.message || "결제 처리 중 오류가 발생했습니다.");
+        } else {
+          // 일반적인 오류 처리
+          setErrorMessage("결제 처리 중 오류가 발생했습니다.");
+        }
       }
     };
 
-    if (orderId && paymentKey) {
-      confirmPayment();
-    } else {
-      setErrorMessage("필수 정보가 부족합니다.");
-    }
-  }, [orderId, paymentKey, amount, items, address]);
+    confirmPayment();
+  }, [orderId, paymentKey, amount]);
 
   if (errorMessage) {
     return (
@@ -90,16 +54,10 @@ const SuccessPage = () => {
   return (
     <div>
       <h1>결제 성공</h1>
-      {paymentDetails ? (
-        <div>
-          <p>{successMessage}</p>
-          <p>주문번호: {paymentDetails.orderId}</p>
-          <p>결제 금액: {paymentDetails.amount}</p>
-          <button onClick={() => navigate("/order/summary")}>주문 내역 보기</button>
-        </div>
-      ) : (
-        <p>결제 정보를 로딩 중입니다...</p>
-      )}
+      <div>{`주문 아이디: ${orderId}`}</div>
+      <div>{`결제 금액: ${Number(amount).toLocaleString()}원`}</div>
+      {/* You can also show paymentKey or any other information if needed */}
+      {paymentKey && <div>{`결제 키: ${paymentKey}`}</div>}
     </div>
   );
 };

@@ -28,6 +28,10 @@ const Success = lazy(() => import("../pages/payment/SuccessPage"));
 const Fail = lazy(() => import("../pages/payment/FailPage"));
 const Contact = lazy(() => import("../pages/support/ContactPage"));
 const MyQuestion = lazy(() => import("../pages/Question/MyQuestionsPage"));
+const Notice = lazy(() => import("../pages/admin/NoticePage"));
+const NoticeAdd = lazy(() => import("../pages/admin/NoticeAdd"));
+const NoticeDetail = lazy(() => import("../pages/admin/NoticeDetailPage"));
+const Checkout = lazy(() => import("../pages/payment/CheckoutPage"));
 
 const root = createBrowserRouter(
   [
@@ -153,6 +157,38 @@ const root = createBrowserRouter(
           element: (
             <Suspense fallback={<Loading />}>
               <MyQuestion />
+            </Suspense>
+          ),
+        },
+        {
+          path: "notice",
+          element: (
+            <Suspense fallback={<Loading />}>
+              <Notice />
+            </Suspense>
+          ),
+        },
+        {
+          path: "notice/noticeAdd",
+          element: (
+            <Suspense fallback={<Loading />}>
+              <NoticeAdd />
+            </Suspense>
+          ),
+        },
+        {
+          path: "notice/:noticeId",
+          element: (
+            <Suspense fallback={<Loading />}>
+              <NoticeDetail />
+            </Suspense>
+          ),
+        },
+        {
+          path: "checkout",
+          element: (
+            <Suspense fallback={<Loading />}>
+              <Checkout />
             </Suspense>
           ),
         },

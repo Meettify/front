@@ -4,6 +4,7 @@ import {
   createNotice,
   updateNotice,
   deleteNotice,
+  getNotice,
 } from '../api/noticeAPI';
 
 const useNoticeStore = create((set, get) => ({
@@ -12,6 +13,7 @@ const useNoticeStore = create((set, get) => ({
   error: null, // 오류 상태
   page: 1, // 현재 페이지 (디폴트 1)
 
+  //공지사항 전체 조회
   fetchNotices: async (page = 1, size = 10, sort = 'desc') => {
     set({ loading: true, error: null, notices: [] }); // 로딩 시작, 에러 및 기존 데이터를 초기화
     try {
@@ -34,48 +36,52 @@ const useNoticeStore = create((set, get) => ({
     }
   },
 
-   // 공지사항 상세 조회
-   fetchNoticeDetails: async (noticeId) => {
-    try {
-      const response = await getNotice(noticeId);
-      return response;
-    } catch (error) {
-      console.error('공지사항 상세 조회 실패:', error);
-      throw error;
-    }
-  },
+// 공지사항 상세 조회
+fetchNoticeDetails: async (noticeId) => {
+  console.log('Fetching notice details for ID:', noticeId); // 디버깅용
+  try {
+    const response = await getNotice(noticeId);
+    return response;
+  } catch (error) {
+    console.error('공지사항 상세 조회 실패:', error);
+    throw error;
+  }
+},
 
-  createNotice: async (title, content) => {
-    try {
-      await createNotice(title, content);
-      alert('공지사항이 등록되었습니다.');
-      await get().fetchNotices();
-    } catch (error) {
-      console.error('공지사항 등록 실패:', error);
-    }
-  },
+createNotice: async (title, content) => {
+  console.log('Creating notice with title:', title, 'and content:', content); // 디버깅용
+  try {
+    await createNotice(title, content);
+    alert('공지사항이 등록되었습니다.');
+    await get().fetchNotices();
+  } catch (error) {
+    console.error('공지사항 등록 실패:', error);
+  }
+},
 
-  updateNotice: async (noticeId, title, content) => {
-    try {
-      await updateNotice(noticeId, title, content);
-      alert('공지사항이 수정되었습니다.');
-      await get().fetchNotices();
-    } catch (error) {
-      console.error('공지사항 수정 실패:', error);
-    }
-  },
+updateNotice: async (noticeId, title, content) => {
+  console.log('Updating notice with ID:', noticeId, 'title:', title, 'content:', content); // 디버깅용
+  try {
+    await updateNotice(noticeId, title, content);
+    alert('공지사항이 수정되었습니다.');
+    await get().fetchNotices();
+  } catch (error) {
+    console.error('공지사항 수정 실패:', error);
+  }
+},
 
-  deleteNotice: async (noticeId) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+deleteNotice: async (noticeId) => {
+  console.log('Deleting notice with ID:', noticeId); // 디버깅용
+  if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
-    try {
-      await deleteNotice(noticeId);
-      alert('공지사항이 삭제되었습니다.');
-      await get().fetchNotices();
-    } catch (error) {
-      console.error('공지사항 삭제 실패:', error);
-    }
-  },
+  try {
+    await deleteNotice(noticeId);
+    alert('공지사항이 삭제되었습니다.');
+    await get().fetchNotices();
+  } catch (error) {
+    console.error('공지사항 삭제 실패:', error);
+  }
+},
 
   setPage: (page) => set({ page }),
 }));

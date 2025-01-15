@@ -11,6 +11,7 @@ const MeetBoard = lazy(() => import("../pages/meet/MeetBoard"));
 const MeetBoardDetail = lazy(()=>import("../pages/meet/MeetBoardDetail")); 
 const MeetBoardAdd = lazy(()=>import("../pages/meet/MeetBoardAdd")); 
 const MeetBoardEdit = lazy(()=>import("../pages/meet/MeetBoardEdit")); 
+const ChatRoom = lazy(()=>import("../components/meet/ChatRoom"));
 
 
 const meetRouter = () => {
@@ -54,6 +55,10 @@ const meetRouter = () => {
     {
       path: "/meet/list/:categoryTitle",
       element: <Suspense fallback={<Loading />}><MeetList /></Suspense>,
+    },
+    {
+      path: "/chat/room/:roomId",
+      element: <Suspense fallback={<Loading />}><ChatRoom /></Suspense>,
     },
   ];
 };
