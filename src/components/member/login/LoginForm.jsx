@@ -51,10 +51,8 @@ const LoginForm = () => {
   const handleSocialLogin = (provider) => {
     // provider에 따라 소셜 로그인 처리
     // redirect URI /oauth2/authorization/google or naver
-    console.log(`/oauth2/authorization/${provider}`);
     // API 호출 로직
-
-    window.location.href = `/oauth2/authorization/${provider}`;
+    window.location.href = `/api/oauth2/authorization/${provider}`;
   };
 
   return (
