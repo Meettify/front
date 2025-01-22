@@ -71,39 +71,47 @@ const ShopDetail = () => {
     if (!itemDetail) return <p>상품 정보를 찾을 수 없습니다.</p>;
 
     return (
-        <div className="container mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-4">{itemDetail.itemName}</h1>
-            <p className="text-xl mb-2">가격: {Number(itemDetail.itemPrice).toLocaleString()}원</p>
-            <p className="mb-2">설명: {itemDetail.itemDetails}</p>
-            <p className="mb-2">카테고리: {itemDetail.itemCategory}</p>
-            <p className="mb-2">수량: {itemDetail.itemCount}</p>
-            <p className="mb-2">상태: {itemDetail.itemStatus}</p>
+        <div className="container mx-auto p-10">
+            {/* 전체적으로 가운데 정렬 */}
+            <div className="flex justify-center items-center">
+                <div className="flex flex-col lg:flex-row items-center gap-6 w-full max-w-5xl">
+                    {/* 상품 이미지 */}
+                    <div className="flex justify-center flex-1 max-w-sm">
+                        {itemDetail.images && itemDetail.images.length > 0 ? (
+                            <div className="grid grid-cols-1 gap-4">
+                                {itemDetail.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={image.uploadImgUrl || image}
+                                        alt={`상품 이미지 ${index + 1}`}
+                                        className="w-full h-auto rounded shadow"
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">이미지가 없습니다.</p>
+                        )}
+                    </div>
 
-            {/* 상품 이미지 */}
-            {itemDetail.images && itemDetail.images.length > 0 ? (
-                <div className="grid grid-cols-3 gap-4">
-                    {itemDetail.images.map((image, index) => (
-                        <img
-                            key={index}
-                            src={image}
-                            alt={`상품 이미지 ${index + 1}`}
-                            className="w-full h-auto"
-                        />
-                    ))}
-                </div>
-            ) : (
-                <p className="text-gray-500">이미지가 없습니다.</p>
-            )}
+                    {/* 상품 정보 */}
+                    <div className="flex-1 flex flex-col items-center text-center lg:text-left">
+                        <h1 className="text-3xl font-bold mb-4">{itemDetail.itemName}</h1>
+                        <p className="text-xl mb-2">가격: {Number(itemDetail.itemPrice).toLocaleString()}원</p>
+                        <p className="mb-2">설명: {itemDetail.itemDetails}</p>
+                        <p className="mb-2">카테고리: {itemDetail.itemCategory}</p>
+                        <p className="mb-2">수량: {itemDetail.itemCount}</p>
+                        <p className="mb-2">상태: {itemDetail.itemStatus}</p>
 
-            {/* 버튼들 */}
-            <div className="mt-6 flex flex-col items-center">
-                <div className="flex gap-5">
-                    <RoundedButton onClick={() => navigate('/shop')} className="mb-5 bg-blue-500 hover:bg-blue-700 text-white">
-                        목록으로 돌아가기
-                    </RoundedButton>
-                    <RoundedButton onClick={handleOrderNow} className="bg-red-500 hover:bg-red-700 text-white">
-                        주문하기
-                    </RoundedButton>
+                        {/* 버튼들 */}
+                        <div className="mt-6 flex gap-5 justify-center">
+                            <RoundedButton onClick={() => navigate('/shop')} className="bg-blue-500 hover:bg-blue-700 text-white">
+                                목록으로 돌아가기
+                            </RoundedButton>
+                            <RoundedButton onClick={handleOrderNow} className="bg-red-500 hover:bg-red-700 text-white">
+                                주문하기
+                            </RoundedButton>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

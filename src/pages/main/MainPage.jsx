@@ -13,7 +13,7 @@ const MainPage = () => {
     const { itemList, fetchItemList } = useAdminStore(); // ShopPage의 상품 데이터 가져오기
     const [latestPosts, setLatestPosts] = useState([]);
     const [limitedItems, setLimitedItems] = useState([]);
-    const { goToCategoryList, goToMeetDetail } = useNavigation(); 
+    const { goToCategoryList, goToMeetDetail } = useNavigation();
 
     const handleButtonClick = (id, isCategory, categoryTitle) => {
         if (isCategory && categoryTitle) {
@@ -42,19 +42,19 @@ const MainPage = () => {
                 <SectionText title="최신모임." subtitle="따끈따끈한 모임이야기." />
                 <div className="flex flex-row justify-start gap-4 overflow-x-auto overflow-y-hidden">
                     {MeetCategoryData.map((meet) => (
-                        <div 
-                            key={meet.categoryId} 
+                        <div
+                            key={meet.categoryId}
                             className="p-2"
                             onClick={() => handleButtonClick(meet.categoryId, true, meet.categoryTitle)}
                         >
-                            <MeetCard 
-                                meetId={meet.categoryId} 
+                            <MeetCard
+                                meetId={meet.categoryId}
                                 imageUrls={[meet.image]}  // 배열로 변경
-                                title={meet.title} 
-                                description={meet.description} 
-                                tags={meet.tags} 
-                                isMeetPage={true} 
-                                onTitleClick={() => goToCategoryList(meet.categoryTitle)} 
+                                title={meet.title}
+                                description={meet.description}
+                                tags={meet.tags}
+                                isMeetPage={true}
+                                onTitleClick={() => goToCategoryList(meet.categoryTitle)}
                             />
                         </div>
                     ))}
@@ -73,8 +73,8 @@ const MainPage = () => {
                             description={item.itemDetails}
                             price={`₩${item.itemPrice}`}
                             imageUrl={
-                                item.files?.[0]
-                                    ? `https://example.com/${item.files[0]}`
+                                item.images?.[0]?.uploadImgUrl
+                                    ? item.images[0].uploadImgUrl
                                     : "https://via.placeholder.com/150"
                             }
                         />
