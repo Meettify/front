@@ -41,16 +41,6 @@ const SuccessPage = () => {
     confirmPayment();
   }, [orderId, paymentKey, amount]);
 
-  if (errorMessage) {
-    return (
-      <div>
-        <h1>결제 실패</h1>
-        <p>{errorMessage}</p>
-        <button onClick={() => navigate("/retry")}>재시도</button>
-      </div>
-    );
-  }
-
   return (
     <div>
       <h1>결제 성공</h1>

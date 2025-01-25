@@ -148,7 +148,11 @@ const ShopPage = () => {
                                 title={item.itemName}
                                 description={item.itemDetails}
                                 price={`₩${item.itemPrice}`}
-                                imageUrl={item.files?.[0] ? `https://example.com/${item.files[0]}` : 'https://via.placeholder.com/150'}
+                                imageUrl={
+                                    item.images?.[0]?.uploadImgUrl
+                                        ? item.images[0].uploadImgUrl
+                                        : 'https://via.placeholder.com/150'
+                                }
                                 onClick={() => handleNavigateToDetail(item.itemId)}
                             />
                         ))}

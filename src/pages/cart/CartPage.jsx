@@ -105,7 +105,7 @@ const CartPage = () => {
         const item = shopItems.find(item => item.itemId === itemId);
         if (!item) {
             console.warn(`Item with ID ${itemId} not found.`);
-            return { stock: 0, itemPrice: 0, itemName: 'Unknown', files: [] };
+            return { stock: 0, itemPrice: 0, itemName: 'Unknown', images: [] };  // 'files' 대신 'images'
         }
         console.log('Item details for itemId:', itemId, 'Price:', item.itemPrice);  // 가격 출력
         return item;
@@ -144,7 +144,7 @@ const CartPage = () => {
                 <>
                     <ul>
                         {cartItems.map(cartItem => {
-                            const { itemName, itemPrice, files } = getItemDetails(cartItem.itemId);
+                            const { itemName, itemPrice, images } = getItemDetails(cartItem.itemId);
                             const parsedPrice = Number(itemPrice) || 0;  // itemPrice가 없으면 0으로 처리
 
                             console.log('Rendered item details:', itemName, 'Price:', parsedPrice); // 가격 디버깅 로그
@@ -159,7 +159,7 @@ const CartPage = () => {
                                             className="mr-4"
                                         />
                                         <img
-                                            src={files?.[0] || 'https://via.placeholder.com/150'}
+                                            src={images?.[0]?.uploadImgUrl || 'https://via.placeholder.com/150'}  // 'files' -> 'images'
                                             alt={itemName || '상품 이미지'}
                                             className="w-16 h-16 object-cover rounded-md mr-4"
                                         />
@@ -199,7 +199,6 @@ const CartPage = () => {
                                 </li>
                             );
                         })}
-
                     </ul>
                     <div className="text-right mt-8">
                         <h3 className="text-xl font-bold">총 합계: ₩{calculateTotalPrice()}</h3>
