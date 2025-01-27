@@ -3,7 +3,7 @@ import { EventSourcePolyfill } from "event-source-polyfill";
 import useNotificationStore from "../stores/useNotificationStore";
 import { useAuth } from "./useAuth";
 
-const BASE_URL = 'https://meettify.store/api/v1';
+const BASE_URL = "http://localhost:8080/api/v1";
 
 const useNotificationSSE = () => {
   const { user } = useAuth(); // 사용자 인증 정보 가져오기
@@ -22,7 +22,7 @@ const useNotificationSSE = () => {
         "Content-Type": "text/event-stream",
         Authorization: `Bearer ${accessToken}`,
       },
-      heartbeatTimeout: 60000, // 60초 동안 활동이 없어도 연결 유지
+      heartbeatTimeout: 3600000, // 60초 동안 활동이 없어도 연결 유지
       fetchOptions: {
         mode: "cors",
         credentials: "include",
@@ -50,7 +50,10 @@ const useNotificationSSE = () => {
         });
 
         // 상태에 추가된 알림 데이터 확인
-        console.log("zustand 알림 상태:", useNotificationStore.getState().notifications);
+        console.log(
+          "zustand 알림 상태:",
+          useNotificationStore.getState().notifications
+        );
       } catch (error) {
         console.error("[SSE] 데이터 처리 오류:", error);
       }
