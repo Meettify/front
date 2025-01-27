@@ -16,7 +16,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://meettify.store', // 백엔드 URL
+        target: 'http://localhost:8080', // 백엔드 URL
         changeOrigin: true,
         secure: false,
         ws: true,
