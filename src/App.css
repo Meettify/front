@@ -112,6 +112,16 @@ body::-webkit-scrollbar {
 main{
   margin:0;
 }
+
+.page-wrap{
+  padding: 32px 120px;
+}
+
+@media (max-width: 1000px) {
+  .page-wrap{
+      padding: 32px 24px;
+  }
+}
 /*
 .logo {
   height: 6em;

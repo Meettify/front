@@ -1,0 +1,78 @@
+
+
+.new-meets{
+
+}
+.slider{
+    width:100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 -10px;
+    scrollbar-width: none;  /* Firefox에서 스크롤 바 숨기기 */
+    -ms-overflow-style: none;  /* IE, Edge에서 스크롤 바 숨기기 */
+
+    &::-webkit-scrollbar{
+        display: none;  /* Chrome, Safari에서 스크롤 바 숨기기 */
+    }
+
+    .slider-wrap{
+        display:flex;
+        padding:20px 0;
+    }
+
+    .card-wrap{
+        padding: 0 10px;
+    }
+
+    .card{
+        box-shadow: 2px 4px 6px rgba(20, 33, 29, 0.15);
+        border-radius: 8px;
+        width:260px;
+        overflow: hidden;
+    
+        .card-top{
+            height:140px;
+        }
+    }
+}
+.slider.animation-slider{
+    width:auto;
+    margin: 0 -120px;
+    position:relative;
+    min-height:360px;
+
+    .slider-wrap{
+        position:absolute;
+        top:0;
+        left:0;
+        animation-name:slider-animation;
+        animation-duration: 15s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        box-sizing: border-box;
+    }
+
+    &:hover .slider-wrap{
+        animation-play-state: paused;
+
+    }
+    .card{
+        border: 1px solid transparent;
+    }
+    .card:hover{
+        border:1px solid #000;
+        cursor: pointer;
+    }
+    
+}
+
+
+@keyframes slider-animation{
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(-50%);
+    }
+}
+

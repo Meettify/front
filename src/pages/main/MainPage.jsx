@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import MeetCard from "../../components/meet/MeetCard";
 import useNavigation from '../../hooks/useNavigation';
 import MeetCategoryData from "../../components/meet/MeetCategoryData";
+import "../main/MainPage.css"
 
 const MainPage = () => {
     const { posts, fetchPosts } = useCommStore(); // CommPage의 게시글 데이터 가져오기
@@ -36,28 +37,49 @@ const MainPage = () => {
     }, [posts, itemList]);
 
     return (
-        <div className="max-w-7xl mx-auto mt-12 px-4">
+        <div className="page-wrap MainPage">
             {/* 최신 모임 섹션 */}
-            <div className="my-8">
+            <div className="new-meets">
                 <SectionText title="최신모임." subtitle="따끈따끈한 모임이야기." />
-                <div className="flex flex-row justify-start gap-4 overflow-x-auto overflow-y-hidden">
-                    {MeetCategoryData.map((meet) => (
-                        <div
-                            key={meet.categoryId}
-                            className="p-2"
-                            onClick={() => handleButtonClick(meet.categoryId, true, meet.categoryTitle)}
-                        >
-                            <MeetCard
-                                meetId={meet.categoryId}
-                                imageUrls={[meet.image]}  // 배열로 변경
-                                title={meet.title}
-                                description={meet.description}
-                                tags={meet.tags}
-                                isMeetPage={true}
-                                onTitleClick={() => goToCategoryList(meet.categoryTitle)}
-                            />
-                        </div>
-                    ))}
+                <div className="slider animation-slider">
+                    <div className="slider-wrap">
+                        {MeetCategoryData.map((meet) => (
+                            <div
+                                className="card-wrap"
+                                key={meet.categoryId}
+                                onClick={() => handleButtonClick(meet.categoryId, true, meet.categoryTitle)}
+                            >
+                                <MeetCard
+                                    meetId={meet.categoryId}
+                                    imageUrls={[meet.image]}  // 배열로 변경
+                                    title={meet.title}
+                                    description={meet.description}
+                                    tags={meet.tags}
+                                    isMeetPage={true}
+                                    onTitleClick={() => goToCategoryList(meet.categoryTitle)}
+                                />
+                            </div>
+                        ))}
+                        {/* animation-slider 클래스가 있다면 한 번 더 렌더링 */}
+                        {document.querySelector(".animation-slider") &&
+                            MeetCategoryData.map((meet) => (
+                                <div
+                                    className="card-wrap"
+                                    key={`${meet.categoryId}-duplicate`} // key 값 중복 방지
+                                    onClick={() => handleButtonClick(meet.categoryId, true, meet.categoryTitle)}
+                                >
+                                    <MeetCard
+                                        meetId={meet.categoryId}
+                                        imageUrls={[meet.image]}
+                                        title={meet.title}
+                                        description={meet.description}
+                                        tags={meet.tags}
+                                        isMeetPage={true}
+                                        onTitleClick={() => goToCategoryList(meet.categoryTitle)}
+                                    />
+                                </div>
+                            ))}
+                    </div>
                 </div>
             </div>
 
