@@ -1,35 +1,57 @@
 import React from 'react';
 import RoundedButton from '../button/RoundedButton';
+import logo from '../../assets/logo/meettify_logo.svg';
+import "./Footer.css";
+import { Link } from 'react-router-dom';
+import { BsChevronRight } from "react-icons/bs";
+import imgLinkReturn from "../../assets/images/img-link-return.png";
+import imgLinkRegister from "../../assets/images/img-link-register.png";
 
 const Footer = () => {
     return (
-        <footer className="mt-20">
-            <div className="text-left mb-4 ml-8">
-                <h4 className="font-semibold mb-2">빠른 링크</h4>
-                <div className="flex space-x-4">
-                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}> 상품 등록 신청</RoundedButton>
-                    <RoundedButton style={{ padding: '6px 14px', fontSize: '12px' }}>반품하기</RoundedButton>
+        <footer>
+            <div className="logo-wrap">
+                <img src={logo} alt="Meettify Logo" className='logo'/>
+            </div>
+            <div className='footer-content-area'>
+                <div className="footer-link-area">
+                    <div className="footer-link footer-link-shop">
+                        <h4>쇼핑 및 알아보기</h4>
+                        <ul>
+                            <li className="text-base"><Link to="#">모임 바로가기</Link></li>
+                            <li className="text-base"><Link to="#">커뮤니티 바로가기</Link></li>
+                            <li className="text-base"><Link to="#">쇼핑 바로가기</Link></li>
+                        </ul>
+                    </div>
+                    <div className="footer-link footer-link-account">
+                        <h4>계정</h4>
+                        <ul>
+                            <li className="text-base"><Link to="#">Meettify ID 관리</Link></li>
+                            <li className="text-base"><Link to="#">Meettify 계정 정보</Link></li>
+                            <li className="text-base"><Link to="#">Meettify.store</Link></li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="quick-img-btns">
+                    <Link to="#" className='img-link img-link-return'>
+                        <span className='button-name'>반품하기<span class="icon-allow"><BsChevronRight /></span></span>
+                        <img className='img-link-bg bg-return' src={imgLinkReturn} alt="" />
+                    </Link>
+                    <Link to="#" className='img-link img-link-product'>
+                        <span className='button-name'>상품 등록 신청<span class="icon-allow"><BsChevronRight /></span></span>
+                        <img className='img-link-bg bg-register' src={imgLinkRegister} alt="" />
+                        <div className='ico-plus ico-plus-right'>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div className='ico-plus ico-plus-left'>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </Link>
                 </div>
             </div>
-            <div className="flex justify-center space-x-8">
-                <div className="text-md text-left">
-                    <h4 className="font-semibold mb-2">쇼핑 및 알아보기</h4>
-                    <ul className="text-gray-600">
-                        <li className="text-base">모임 바로가기</li>
-                        <li className="text-base">커뮤니티 바로가기</li>
-                        <li className="text-base">쇼핑 바로가기</li>
-                    </ul>
-                </div>
-                <div className="text-md text-left">
-                    <h4 className="font-semibold mb-2">계정</h4>
-                    <ul className="text-gray-600">
-                        <li className="text-base">Meettify ID 관리</li>
-                        <li className="text-base">Meettify 계정 정보</li>
-                        <li className="text-base">Meettify.store</li>
-                    </ul>
-                </div>
-            </div>
-            <p className="text-sm text-gray-600 text-center mt-10">&copy; 2024 Meettify. All rights reserved.</p>
+            <p className="copyright">&copy; 2024 Meettify. All rights reserved.</p>
         </footer>
     );
 };
