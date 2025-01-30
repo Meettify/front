@@ -129,7 +129,7 @@ header .btn-close {
     height: 26px;
   }
 }
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   header .gnb-menu-wrap a:hover::before {
     width: 100%;
   }
@@ -137,6 +137,8 @@ header .btn-close {
     color: #333;
     background: rgba(37, 99, 235, 0.15);
   }
+}
+@media (max-width: 768px) {
   body {
     overflow-x: hidden;
   }
