@@ -1,0 +1,208 @@
+/*S: header*/
+body {
+  position: relative;
+}
+
+header {
+  display: flex;
+  position: relative;
+  height: 64px;
+  padding-left: 120px;
+  padding-right: 120px;
+}
+header nav {
+  width: 100%;
+  justify-content: space-between;
+  height: 100%;
+}
+header nav .logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+header nav .logo-wrap a {
+  display: block;
+}
+header nav .logo {
+  display: block;
+  width: 136px;
+}
+header .gnb {
+  margin: 0;
+}
+header .gnb ul {
+  display: flex;
+}
+header .gnb-menu-wrap {
+  margin-left: 0 !important;
+  white-space: nowrap;
+}
+header .gnb-menu-wrap a {
+  position: relative;
+  display: flex;
+  padding: 12px 24px;
+}
+header .gnb-menu-wrap a::before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: rgba(37, 99, 235, 0.3);
+  transform: translateX(-50%);
+  transition: width 0.2s;
+}
+header .gnb-menu-wrap.current a {
+  color: #2563eb;
+}
+header .gnb-menu-wrap.current a::before {
+  width: 100%;
+  background: #2563eb;
+}
+header .nav-btns-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+header .btn-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  border-radius: 200px;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.3s;
+}
+header .btn-icon:active, header .btn-icon:hover:active {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.3);
+}
+header .btn-icon.on {
+  color: #2563eb !important;
+}
+header .btn-gnb {
+  flex-direction: column;
+}
+header .btn-gnb .bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
+  background: #333;
+  transform-origin: 50% 50%;
+  margin-bottom: 6px;
+}
+header .btn-gnb .bar:last-child {
+  margin-bottom: 0;
+}
+header .btn-gnb {
+  display: none;
+}
+header .btn-close {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  header {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  header .gnb-menu-wrap a {
+    padding: 8px 22px;
+  }
+  header nav .logo {
+    width: 120px;
+    margin-right: 40px;
+  }
+  header .nav-btns-wrap {
+    gap: 0;
+  }
+  header .btn-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  header li:last-child .btn-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+@media (max-width: 768px) {
+  header .gnb-menu-wrap a:hover::before {
+    width: 100%;
+  }
+  header .btn-icon:hover {
+    color: #333;
+    background: rgba(37, 99, 235, 0.15);
+  }
+  body {
+    overflow-x: hidden;
+  }
+  header .btn-gnb {
+    display: flex;
+  }
+  header .gnb {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 60px;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10001;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: auto;
+  }
+  header .gnb ul {
+    display: block;
+  }
+  header .gnb ul::before {
+    content: "";
+    display: inline-flex;
+    width: 200px;
+    height: 60px;
+    background-image: url(/src/assets/logo/meettify_logo.svg);
+    background-repeat: no-repeat;
+    filter: invert(100);
+    background-position: center center;
+  }
+  header .gnb-menu-wrap {
+    height: auto;
+    justify-content: center;
+    padding: 16px 0;
+  }
+  header .gnb-menu-wrap a {
+    display: inline-flex;
+    justify-content: center;
+    min-width: 200px;
+    padding: 12px 24px;
+  }
+  header .gnb-menu-wrap a:active {
+    color: #fff;
+  }
+  header .gnb-menu-wrap.current a {
+    color: #6692f1;
+  }
+  header .gnb-menu-wrap.current a::before {
+    background: #6692f1;
+  }
+  .menu-on header .gnb {
+    left: 0;
+  }
+  .menu-on .btn-close {
+    display: inline-flex;
+    width: 60px;
+    height: 60px;
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 40px;
+  }
+  .menu-on .btn-close:active {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+  }
+}
+/*S: header*//*# sourceMappingURL=BasicMenu.css.map */

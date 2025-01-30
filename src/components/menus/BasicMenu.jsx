@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from "react-router-dom";
-import logo from '../../assets/logo/meettify_logo.png';
+import { Link, useLocation, NavLink } from "react-router-dom";
+import logo from '../../assets/logo/meettify_logo.svg';
 import useModalStore from '../../stores/useModalStore';
 import InfoModal from '../member/mypage/InfoModal';
 import LoginModal from '../../components/member/login/LoginModal';
 import { BsCart3 } from "react-icons/bs";
+import { BsXLg } from "react-icons/bs";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { BsChatSquareText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
@@ -12,6 +13,8 @@ import { PiBell } from "react-icons/pi";
 import SearchBar from '../../components/menus/SearchBar';
 import { useAuth } from '../../hooks/useAuth';
 import NotificationModal from '../Notification/NotificationModal';
+
+import "./BasicMenu.css";
 
 const BasicMenu = () => {
     const { modals, openModal, closeModal } = useModalStore();
@@ -49,6 +52,14 @@ const BasicMenu = () => {
         setIsSearchOpen(prev => !prev);
     };
 
+    const visibleMobileGnb = () => {
+        document.body.classList.add("menu-on");
+    };
+
+    const closeMobileGnb = () =>{
+        document.body.classList.remove("menu-on");
+    }
+
     const closeSearch = () => {
         setIsSearchOpen(false);  // 검색창을 닫음
         setSearchTerm('');  // 검색어 초기화
@@ -71,21 +82,34 @@ const BasicMenu = () => {
     }, [searchTerm, location.pathname]);
 
     return (
-        <nav id='navbar' className="flex items-center justify-center w-full py-0 px-5 relative">
-            <div className="flex items-center mr-14">
+        <nav id='navbar' className="flex items-center w-full py-0 relative">
+            <div className="logo-wrap">
+                <button onClick={visibleMobileGnb} className="btn btn-icon btn-icon-nav btn-gnb">
+                    <span className='bar'></span>
+                    <span className='bar'></span>
+                    <span className='bar'></span>
+                </button>
                 <Link to="/">
-                    <img src={logo} alt="Meettify Logo" className="w-48 h-auto" style={{ transform: 'translateY(-4px)' }} />
+                    <img src={logo} alt="Meettify Logo" className='logo'/>
                 </Link>
             </div>
 
-            <ul className="flex space-x-14 text-black m-0">
-                <li><Link to={'/main'}>메인</Link></li>
-                <li><Link to={'/meet'}>모임</Link></li>
-                <li><Link to={'/comm/'}>커뮤니티</Link></li>
-                <li><Link to={'/shop/'}>쇼핑</Link></li>
-                <li><Link to={'/support'}>고객센터</Link></li>
+            <div className='gnb'>
+                <ul>
+                    <li className={`gnb-menu-wrap ${location.pathname === "/main" ? "current": ""}`}><Link to={'/main'}>메인</Link></li>
+                    <li className={`gnb-menu-wrap ${location.pathname === "/meet" ? "current": ""}`}><Link to={'/meet'}>모임</Link></li>
+                    <li className={`gnb-menu-wrap ${location.pathname === "/comm/" ? "current": ""}`}><Link to={'/comm/'}>커뮤니티</Link></li>
+                    <li className={`gnb-menu-wrap ${location.pathname === "/shop/" ? "current": ""}`}><Link to={'/shop/'}>쇼핑</Link></li>
+                    <li className={`gnb-menu-wrap ${location.pathname === "/support" ? "current": ""}`}><Link to={'/support'}>고객센터</Link></li>
+                </ul>
+                <button onClick={closeMobileGnb} className="btn btn-icon btn-icon-nav btn-close">
+                    <BsXLg size={26} />
+                </button>
+            </div>
+            <ul className="nav-btns-wrap">
                 <li>
-                    <button onClick={toggleSearchBar} className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(0px)' }}>
+                    <button onClick={toggleSearchBar} 
+                    className="btn btn-icon btn-icon-nav">
                         <LuSearch size={26} />
                     </button>
                 </li>
@@ -93,7 +117,7 @@ const BasicMenu = () => {
                     <button
                         ref={notificationButtonRef}
                         onClick={handleNotificationClick}
-                        className="mr-1 text-gray-700 flex items-center"
+                        className="btn btn-icon btn-icon-nav"
                         style={{ transform: 'translateY(0px)' }}
                     >
                         <PiBell size={28} />
@@ -102,7 +126,7 @@ const BasicMenu = () => {
                 <li>
                     <button
                         ref={buttonRef}
-                        className="mr-1 text-gray-700 flex items-center" style={{ transform: 'translateY(-2px)' }}
+                        className="btn btn-icon btn-icon-nav"
                         onClick={handleInfoClick}
                     >
                         <HiOutlineUserCircle size={30} strokeWidth={1.3} />
