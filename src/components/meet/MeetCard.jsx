@@ -14,8 +14,8 @@ const MeetCard = ({ meetId, imageUrls, title, description, tags = [], isMeetPage
     const imageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden w-64 mt-4">
-            <div className="bg-gray-500 h-36 flex items-center justify-center text-white">
+        <div className="card">
+            <div className="card-top card-img-frame">
                 {imgError || !imageUrl ? (
                     <div className="bg-gray-300 h-full w-full flex items-center justify-center">이미지 없음</div>
                 ) : (
