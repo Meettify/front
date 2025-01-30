@@ -109,6 +109,9 @@ body::-webkit-scrollbar {
   text-align: center;
 }
 
+main{
+  margin:0;
+}
 /*
 .logo {
   height: 6em;
