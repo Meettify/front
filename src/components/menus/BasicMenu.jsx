@@ -49,6 +49,25 @@ const BasicMenu = () => {
         setIsSearchOpen(prev => !prev);
     };
 
+    const visibleMobileGnb = () => {
+        document.body.classList.add("menu-on");
+    };
+
+    const closeMobileGnb = () =>{
+        document.body.classList.remove("menu-on");
+    }
+
+    useEffect(() => {
+        const links = document.querySelectorAll('.gnb-menu-wrap a');
+        const handleClick = () => {
+            document.body.classList.remove('menu-on');
+        };
+        links.forEach(link => link.addEventListener('click', handleClick));
+        return () => {
+            links.forEach(link => link.removeEventListener('click', handleClick));
+        };
+    }, []);
+
     const closeSearch = () => {
         setIsSearchOpen(false);  // 검색창을 닫음
         setSearchTerm('');  // 검색어 초기화
