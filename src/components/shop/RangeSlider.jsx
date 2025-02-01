@@ -4,7 +4,7 @@ import 'rc-slider/assets/index.css';
 import RoundedButton from '../button/RoundedButton';
 
 const RangeSlider = ({ onPriceChange }) => {
-    const [range, setRange] = useState([10, 50000]);
+    const [range, setRange] = useState([10000, 70000]);
 
     const handleSliderChange = (newRange) => {
         setRange(newRange);
