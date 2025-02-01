@@ -3,6 +3,8 @@ import { CiStar } from "react-icons/ci";
 import { TiStarFullOutline } from "react-icons/ti";
 import useCartStore from "../../stores/useCartStore";
 
+import "./ShopCard.css";
+
 const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
     const { cartItems, addToCart, removeFromCart, isFavorite } = useCartStore();
 
@@ -35,21 +37,21 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
     };
 
     return (
-        <div onClick={onClick} className="relative overflow-hidden w-48 py-5 text-center cursor-pointer transition">
+        <div onClick={onClick} className="relative overflow-hidden py-5 text-center cursor-pointer transition">
             <div className="relative bg-gray-200 h-36 flex items-center justify-center rounded-md">
                 <img src={imageUrl} alt={title} className="object-cover h-full w-full rounded-md" />
-                <button className="absolute top-3 right-3 text-2xl" onClick={handleStarClick}>
+                <button className="ico-favorite" onClick={handleStarClick}>
                     {isFavorite(itemId) ? (
                         <TiStarFullOutline className="text-yellow-400" />
                     ) : (
-                        <CiStar className="text-gray-200" />
+                        <CiStar className="text-gray-00" />
                     )}
                 </button>
             </div>
-            <div className="mt-4">
-                <h3 className="font-semibold text-sm mb-1">{title}</h3>
-                <p className="text-gray-500 text-xs mb-2">{description}</p>
-                <p className="font-bold text-sm">{price}</p>
+            <div className="item-text-area">
+                <h3 className="item-name">{title}</h3>
+                <p className="description">{description}</p>
+                <p className="price">{price}</p>
             </div>
         </div>
     );

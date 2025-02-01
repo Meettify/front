@@ -1,0 +1,27 @@
+.ShopPage {
+  display: flex;
+}
+
+.filter-section-area {
+  flex: 0 0 auto;
+  width: 240px;
+}
+
+.items-area {
+  flex: 1 1 auto;
+}
+
+.shop-card-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px 20px;
+}
+
+@media (max-width: 768px) {
+  .ShopPage {
+    flex-direction: column;
+  }
+  .filter-section-area {
+    width: 100%;
+  }
+}/*# sourceMappingURL=ShopPage.css.map */
