@@ -4,6 +4,7 @@ import { getItemDetail } from '../../api/adminAPI'; // 상품 상세 조회 함�
 import { BsCart3 } from "react-icons/bs"; // 아이콘 사용
 import RoundedButton from '../../components/button/RoundedButton'; // 버튼 컴포넌트
 import useShopStore from '../../stores/useShopStore'; // useShopStore 가져오기
+import ItemBuyCard from '../../components/shop/ItemBuyCard';
 
 
 const ShopDetail = () => {
@@ -13,6 +14,7 @@ const ShopDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { addToCart, cartItems } = useShopStore();
+    
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -28,44 +30,8 @@ const ShopDetail = () => {
 
         fetchItem();
     }, [itemId]);
-
-    const handleOrderNow = () => {
-        if (!itemDetail) {
-            alert('상품 정보가 없습니다.');
-            return;
-        }
-
-        // itemDetail에서 가격과 수량이 존재하는지 확인
-        const itemPrice = itemDetail.itemPrice;
-        const itemQuantity = itemDetail.itemCount; // 수량은 itemCount로 설정
-
-        if (isNaN(itemPrice) || isNaN(itemQuantity) || itemPrice <= 0 || itemQuantity <= 0) {
-            alert('상품 가격 또는 수량 정보가 올바르지 않습니다.');
-            return;
-        }
-
-        // 단일 상품을 배열로 만들어서 넘기기
-        const selectedCartItems = [itemDetail];
-
-        // 결제 금액 계산 (가격 * 수량)
-        const totalPrice = itemPrice * itemQuantity; // 단일 상품의 결제 금액 계산
-
-        // 결제 금액이 제대로 계산되었는지 확인
-        if (isNaN(totalPrice) || totalPrice <= 0) {
-            alert('결제 금액이 계산되지 않았습니다.');
-            return;
-        }
-
-        // 'order' 페이지로 전달할 때 결제 금액도 함께 넘겨주기
-        navigate('/order', {
-            state: {
-                selectedCartItems,
-                totalPrice // 결제 금액 전달
-            }
-        });
-    };
-
-
+    
+    
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>{error}</p>;
     if (!itemDetail) return <p>상품 정보를 찾을 수 없습니다.</p>;
@@ -101,16 +67,10 @@ const ShopDetail = () => {
                         <p className="mb-2">카테고리: {itemDetail.itemCategory}</p>
                         <p className="mb-2">수량: {itemDetail.itemCount}</p>
                         <p className="mb-2">상태: {itemDetail.itemStatus}</p>
-
-                        {/* 버튼들 */}
-                        <div className="mt-6 flex gap-5 justify-center">
-                            <RoundedButton onClick={() => navigate('/shop')} className="bg-blue-500 hover:bg-blue-700 text-white">
-                                목록으로 돌아가기
-                            </RoundedButton>
-                            <RoundedButton onClick={handleOrderNow} className="bg-red-500 hover:bg-red-700 text-white">
-                                주문하기
-                            </RoundedButton>
-                        </div>
+                        <ItemBuyCard itemDetail={itemDetail} itemId={itemId}/>
+                        <RoundedButton onClick={() => navigate('/shop')} className="bg-blue-500 hover:bg-blue-700 text-white">
+                            목록으로 돌아가기
+                        </RoundedButton>
                     </div>
                 </div>
             </div>
