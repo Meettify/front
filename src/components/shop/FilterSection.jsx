@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList, LuSearch } from "react-icons/lu";
 
+import "./FilterSection.css";
+
 const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onPriceChange }) => {
     const handleSortChange = (e) => {
         setSortOrder(e.target.value); // 정렬 기준 업데이트
@@ -19,28 +21,33 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onP
     };
 
     return (
-        <div className="w-1/5 p-2 pr-8 border-r border-gray-300">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                    <LuList size={16} />
-                    <span className="font-semibold">필터</span>
+        <div className="FilterSection">
+            <div className="filter-box">
+                <div className="filter-top">
+                    <div className="flex items-center space-x-2">
+                        <LuList size={16} />
+                        <span className="font-semibold">필터</span>
+                    </div>
+                    <div>
+                        <select
+                            className="p-2 border border-gray-300 rounded-lg text-sm"
+                            style={{ transform: 'translateY(3px)' }}
+                            value={sortOrder}
+                            onChange={handleSortChange} // 호출 지점
+                        >
+                            <option value="desc">최신순</option>
+                            <option value="asc">오래된순</option>
+                        </select>
+                        <button>접기</button>
+                    </div>
                 </div>
-                <select
-                    className="p-2 border border-gray-300 rounded-lg text-sm"
-                    style={{ transform: 'translateY(3px)' }}
-                    value={sortOrder}
-                    onChange={handleSortChange} // 호출 지점
-                >
-                    <option value="desc">최신순</option>
-                    <option value="asc">오래된순</option>
-                </select>
+                <div className="price-slider-area">
+                    <h3>가격 범위</h3>
+                    <div className="price-slider">
+                        <RangeSlider onPriceChange={onPriceChange} /> {/* onPriceChange 전달 */}
+                    </div>
+                </div>
             </div>
-
-            <h3 className="text-left text-md font-bold mt-10 mb-5">가격 범위</h3>
-            <div className="mb-4 pb-4">
-                <RangeSlider onPriceChange={onPriceChange} /> {/* onPriceChange 전달 */}
-            </div>
-
             {/* 제목 검색 */}
             <div className="mb-4 pb-4">
                 <label className="block text-left text-md font-bold mb-2">상품 검색</label>
@@ -59,6 +66,7 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onP
                     />
                 </div>
             </div>
+            
         </div>
     );
 };

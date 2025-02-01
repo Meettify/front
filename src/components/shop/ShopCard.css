@@ -1,0 +1,21 @@
+.ico-favorite {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 28px;
+}
+
+.item-text-area {
+  padding-left: 4px;
+  padding-top: 16px;
+  text-align: left;
+}
+.item-text-area .description {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+}
+.item-text-area .price {
+  margin-top: 6px;
+  font-weight: bold;
+  font-size: 18px;
+}/*# sourceMappingURL=ShopCard.css.map */

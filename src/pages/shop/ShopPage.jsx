@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaFutbol, FaPlane, FaMusic, FaPalette, FaBook, FaHeartbeat, FaTshirt, FaPaw } from 'react-icons/fa';
 import { IoGridOutline } from "react-icons/io5";
 
+import "./ShopPage.css";
+
 // 카테고리 목록
 const categories = [
     { id: 'all', name: '전체', icon: <IoGridOutline /> },
@@ -20,6 +22,7 @@ const categories = [
     { id: 'FASHION_BEAUTY', name: '패션/뷰티', icon: <FaTshirt /> },
     { id: 'PET_LOVERS', name: '반려동물', icon: <FaPaw /> },
 ];
+console.log("작업중 . 쇼핑페이지")
 
 const ShopPage = () => {
     const {
@@ -109,17 +112,19 @@ const ShopPage = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto mt-12 px-4 flex">
-            <FilterSection
-                title={title}
-                setTitle={setTitle}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-                onSearch={handleSearch} // 검색 함수 전달
-                onPriceChange={handlePriceChange} // 가격 범위 변경 함수 전달
-            />
+        <div className="page-wrap ShopPage">
+            <div className='filter-section-area'>
+                <FilterSection
+                    title={title}
+                    setTitle={setTitle}
+                    sortOrder={sortOrder}
+                    setSortOrder={setSortOrder}
+                    onSearch={handleSearch} // 검색 함수 전달
+                    onPriceChange={handlePriceChange} // 가격 범위 변경 함수 전달
+                />
+            </div>
 
-            <div className="flex-1 pl-8">
+            <div className="items-area">
                 <div className="flex justify-start space-x-4 mb-2">
                     {categories.map((category) => (
                         <button
@@ -140,26 +145,26 @@ const ShopPage = () => {
                     loader={<h4>Loading...</h4>}
                     endMessage={<p>더 이상 상품이 없습니다.</p>}
                 >
-                    <div className="grid grid-cols-4 gap-4">
-                        {shopItems.map((item) => (
-                            <ShopCard
-                                key={item.itemId}
-                                itemId={item.itemId}
-                                title={item.itemName}
-                                description={item.itemDetails}
-                                price={`₩${item.itemPrice}`}
-                                imageUrl={
-                                    item.images?.[0]?.uploadImgUrl
-                                        ? item.images[0].uploadImgUrl
-                                        : 'https://via.placeholder.com/150'
-                                }
-                                onClick={() => handleNavigateToDetail(item.itemId)}
-                            />
-                        ))}
-                    </div>
-                </InfiniteScroll>
-            </div>
+                <div className="shop-card-wrap">
+                    {shopItems.map((item) => (
+                        <ShopCard
+                            key={item.itemId}
+                            itemId={item.itemId}
+                            title={item.itemName}
+                            description={item.itemDetails}
+                            price={`₩${item.itemPrice.toLocaleString()}`}
+                            imageUrl={
+                                item.images?.[0]?.uploadImgUrl
+                                    ? item.images[0].uploadImgUrl
+                                    : 'https://via.placeholder.com/150'
+                            }
+                            onClick={() => handleNavigateToDetail(item.itemId)}
+                        />
+                    ))}
+                </div>
+            </InfiniteScroll>
         </div>
+    </div>
     );
 };
 

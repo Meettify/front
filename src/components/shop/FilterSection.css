@@ -1,0 +1,34 @@
+.FilterSection {
+  padding-right: 20px;
+  border-right: 1px solid #ddd;
+  height: 100%;
+}
+
+.filter-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price-slider-area {
+  text-align: left;
+  margin-top: 24px;
+}
+.price-slider-area h3 {
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .FilterSection {
+    height: auto;
+    border: none;
+  }
+  .filter-box {
+    border-radius: 8px;
+    background: #f0f0f0;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+}/*# sourceMappingURL=FilterSection.css.map */
