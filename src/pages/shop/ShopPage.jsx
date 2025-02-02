@@ -22,7 +22,6 @@ const categories = [
     { id: 'FASHION_BEAUTY', name: '패션/뷰티', icon: <FaTshirt /> },
     { id: 'PET_LOVERS', name: '반려동물', icon: <FaPaw /> },
 ];
-console.log("작업중 . 쇼핑페이지")
 
 const ShopPage = () => {
     const {
@@ -30,6 +29,7 @@ const ShopPage = () => {
         fetchAllCartItems,
     } = useCartStore();
 
+    
     const [shopItems, setShopItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [selectedCategory, setSelectedCategory] = useState('all'); // 선택된 카테고리

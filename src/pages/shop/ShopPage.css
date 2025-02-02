@@ -33,15 +33,21 @@
 .scroll-x-area {
   display: flex;
   overflow-x: auto;
-  padding: 12px;
+  padding: 12px 0;
 }
 
 .btn-category {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  padding: 4px 24px;
+  width: 80px;
+}
+.btn-category .text {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
 }
 .btn-category .icon {
   margin: 0 auto;

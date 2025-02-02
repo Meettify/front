@@ -2,7 +2,9 @@ import { useState } from "react";
 import RoundedButton from '../../components/button/RoundedButton'; // 버튼 컴포넌트
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../hooks/useAuth';
 
+import "./ItemBuyCard.css";
 
 
 //판매 중인 상품인지 체크
@@ -16,20 +18,60 @@ const checkItemState = (state) =>{
 //장바구니보다 많은 수량을 입력했을 때, alert 를 띄워야함.
 const checkItemCount = (itemCount, userCount) =>{
     if(userCount > itemCount){
-        alert("선택 수량이 구매 수량보다 많을 수 없습니다.")
         return false;
     }
     return true;
 }
 
-//상태가 WAIT
 const ItemBuyCard = ({itemDetail, itemId}) =>{
     const nav=useNavigate();
     const [itemCount, setItemCount] = useState(1);
+    const { isAuthenticated, logout, user } = useAuth();
+
+    //input 핸들러
     const handleItemCount = (e) => {
+        if(!checkItemCount(itemDetail.itemCount,itemCount)){
+            setItemCount(itemDetail.itemCount);
+            e.preventDefault();
+            return false;
+        }
         setItemCount(e.target.value);
     }
+
+    //수량 추가 버튼
+    const handleCountPlus = (e) => {
+        if(itemDetail.itemCount == itemCount){
+            return;
+        }
+        if(!checkItemCount(itemDetail.itemCount,itemCount)){
+            e.preventDefault();
+            setItemCount(itemDetail.itemCount);
+            return false;
+        }
+        
+        setItemCount(itemCount+1);
+    }
+
+    //수량 감소 버튼
+    const handleCountMinus = () => {
+        if(itemCount == 1){
+            return;
+        }
+        setItemCount(itemCount - 1);
+    }
+
+    //장바구니 버튼
     const handleCartAdd = (e) => {
+        
+        const authToken = `${sessionStorage.getItem('accessToken')}`;
+        if (!(isAuthenticated && user)) {
+            if(confirm("로그인해야 이용할 수 있는 기능입니다. 로그인 화면으로 이동할까요?")){
+                nav('/login');
+            }
+            
+            return false;
+        }
+
         if(!checkItemState(itemDetail.itemStatus)){
             e.preventDefault();
             return false;
@@ -103,31 +145,39 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
     };
 
     return (
-        <>
-            <div>
-                <label htmlFor="">선택수량: </label>
-                <input 
-                    type="number" 
-                    name="" 
-                    id="" 
-                    min={1} 
-                    max={itemDetail.itemCount}
-                    className='form-control'
-                    value={itemCount}
-                    onChange={handleItemCount}
-                />
+        <div className="ItemBuyCard">
+            <div className="item-count-area">
+                <label className="form-label" htmlFor="">상품 선택 수량</label>
+                <div className="select-count-controls">
+                    <input 
+                        type="number" 
+                        name="" 
+                        id="" 
+                        min={1} 
+                        max={itemDetail.itemCount}
+                        className='control form-control select-count'
+                        value={itemCount}
+                        onChange={handleItemCount}
+                    />
+                    <button onClick={handleCountPlus} className="control btn btn-count-control btn-count-plus">+ 추가</button>
+                    <button onClick={handleCountMinus} className="control btn btn-count-control btn-count-minus">- 감소</button>
+                </div>
+                <div className="order-price-area">
+                    <span className="order-label">주문 금액</span>
+                    <span className="order-price">{Number(itemCount*itemDetail.itemPrice).toLocaleString()} 원</span>
+                </div>
             </div>
             {/* 버튼들 */}
-            <div className="mt-6 flex gap-5 justify-center">
+            <div className="btns-wrap">
                 
-                <RoundedButton onClick={handleCartAdd} className="bg-red-500 hover:bg-red-700 text-white">
+                <RoundedButton onClick={handleCartAdd} className="btn-item-in btn-cart">
                     장바구니
                 </RoundedButton>
-                <RoundedButton onClick={handleOrderNow} className="bg-red-500 hover:bg-red-700 text-white">
+                <RoundedButton onClick={handleOrderNow} className="btn-item-in btn-order">
                     주문하기
                 </RoundedButton>
             </div>
-        </>
+        </div>
     )
 }
 export default ItemBuyCard;

@@ -1,7 +1,19 @@
 .shop-card {
   padding: 20px 0;
+  cursor: pointer;
 }
 
+@media (min-width: 769px) {
+  .shop-card:hover .thumnail-wrap {
+    background: #e8ebf4;
+    transition: all 0.3s;
+  }
+  .shop-card:hover img {
+    transform: scale(120%, 120%);
+    transform-origin: center;
+    transition: all 0.3s;
+  }
+}
 .ico-favorite {
   position: absolute;
   right: 10px;

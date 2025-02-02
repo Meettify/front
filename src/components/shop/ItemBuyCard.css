@@ -1,0 +1,112 @@
+.ItemBuyCard {
+  display: block;
+}
+.ItemBuyCard .form-label {
+  display: block;
+  width: 100%;
+  padding-bottom: 8px;
+}
+.ItemBuyCard .item-count-area {
+  border: 1px solid #ddd;
+  border-bottom: 0;
+  padding: 18px;
+}
+.ItemBuyCard .order-price-area {
+  display: flex;
+  align-items: center;
+  padding-top: 24px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+.ItemBuyCard .order-price-area .order-label {
+  flex: 1 1 auto;
+}
+.ItemBuyCard .order-price-area .order-price {
+  color: #006bdd;
+  margin-right: 4px;
+  font-size: 28px;
+  font-weight: bold;
+}
+.ItemBuyCard .btns-wrap {
+  display: flex;
+}
+.ItemBuyCard .btns-wrap .btn-item-in {
+  flex: 1 1 auto;
+  min-width: 120px;
+  min-height: 48px;
+  border-radius: 0;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+.ItemBuyCard .btns-wrap .btn-order {
+  flex: 2 1 auto;
+  background: #006bdd;
+  border: 1px solid #006bdd;
+  color: #fff;
+}
+
+.select-count-controls {
+  display: flex;
+}
+.select-count-controls .control {
+  margin-right: -1px;
+  position: relative;
+}
+.select-count-controls .control:focus, .select-count-controls .control:active {
+  z-index: 1;
+}
+.select-count-controls .form-control {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+}
+.select-count-controls .select-count {
+  flex: 1 1 auto;
+}
+.select-count-controls .select-count:focus {
+  outline: 0;
+  border: 1px solid #006bdd;
+}
+.select-count-controls .btn-count-control {
+  border: 1px solid #ddd;
+  padding: 0 12px;
+  background: #fff;
+}
+.select-count-controls .btn-count-plus {
+  color: #006bdd;
+}
+.select-count-controls .btn-count-plus:active {
+  border: 1px solid #006bdd;
+  background: rgba(0, 107, 221, 0.1);
+}
+.select-count-controls .btn-count-minus {
+  color: #e93a03;
+}
+.select-count-controls .btn-count-minus:active {
+  border: 1px solid #e93a03;
+  background: rgba(233, 58, 3, 0.1);
+}
+@media (min-width: 769px) {
+  .btn-count-control:hover {
+    z-index: 1;
+  }
+  .btn-count-plus:hover {
+    border: 1px solid #006bdd;
+  }
+  .btn-count-minus:hover {
+    border: 1px solid #e93a03;
+  }
+}
+@media (max-width: 768px) {
+  .ShopDetail {
+    padding-top: 8px;
+  }
+  .ItemBuyCard .form-label {
+    display: none;
+  }
+  .ItemBuyCard .order-price-area {
+    padding-top: 16px;
+  }
+  .ItemBuyCard .order-price-area .order-price {
+    font-size: 24px;
+  }
+}/*# sourceMappingURL=ItemBuyCard.css.map */
