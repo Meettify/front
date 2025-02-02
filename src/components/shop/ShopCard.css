@@ -1,3 +1,7 @@
+.shop-card {
+  padding: 20px 0;
+}
+
 .ico-favorite {
   position: absolute;
   right: 10px;
@@ -18,4 +22,12 @@
   margin-top: 6px;
   font-weight: bold;
   font-size: 18px;
+}
+
+.thumnail-wrap {
+  position: relative;
+  height: 200px;
+  background: #f0f0f0;
+  border-radius: 16px;
+  padding: 20px;
 }/*# sourceMappingURL=ShopCard.css.map */

@@ -125,17 +125,19 @@ const ShopPage = () => {
             </div>
 
             <div className="items-area">
-                <div className="flex justify-start space-x-4 mb-2">
-                    {categories.map((category) => (
-                        <button
-                            key={category.id}
-                            className={`flex flex-col items-center px-4 py-2 ${selectedCategory === category.id ? 'text-blue-500' : 'text-gray-500'}`}
-                            onClick={() => handleCategoryClick(category.id)}
-                        >
-                            <div className="text-2xl">{category.icon}</div>
-                            <div className="text-sm mt-3">{category.name}</div>
-                        </button>
-                    ))}
+                <div className="tabs-icon-area">
+                    <div className="scroll-x-area">
+                        {categories.map((category) => (
+                            <button
+                                key={category.id}
+                                className={`btn-category ${selectedCategory === category.id ? 'text-blue-500' : 'text-gray-500'}`}
+                                onClick={() => handleCategoryClick(category.id)}
+                            >
+                                <span className="icon">{category.icon}</span>
+                                <span className="text">{category.name}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <InfiniteScroll
