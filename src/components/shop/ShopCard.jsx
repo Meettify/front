@@ -37,8 +37,8 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
     };
 
     return (
-        <div onClick={onClick} className="relative overflow-hidden py-5 text-center cursor-pointer transition">
-            <div className="relative bg-gray-200 h-36 flex items-center justify-center rounded-md">
+        <div onClick={onClick} className="shop-card">
+            <div className="thumnail-wrap">
                 <img src={imageUrl} alt={title} className="object-cover h-full w-full rounded-md" />
                 <button className="ico-favorite" onClick={handleStarClick}>
                     {isFavorite(itemId) ? (

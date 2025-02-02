@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RangeSlider from "../shop/RangeSlider";
 import { LuList, LuSearch } from "react-icons/lu";
+import {BsChevronUp} from "react-icons/bs";
 
 import "./FilterSection.css";
 
@@ -20,26 +21,27 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onP
         }
     };
 
+    const handleFilterCollapse = (e) => {
+        const filterBox = document.querySelector(".filter-box");
+        filterBox.classList.toggle("minimum");
+    }
+
     return (
         <div className="FilterSection">
             <div className="filter-box">
                 <div className="filter-top">
-                    <div className="flex items-center space-x-2">
+                    <div className="filter-area-title">
                         <LuList size={16} />
                         <span className="font-semibold">필터</span>
                     </div>
-                    <div>
-                        <select
-                            className="p-2 border border-gray-300 rounded-lg text-sm"
-                            style={{ transform: 'translateY(3px)' }}
+                    <select
+                            className="sortOrder"
                             value={sortOrder}
                             onChange={handleSortChange} // 호출 지점
                         >
                             <option value="desc">최신순</option>
                             <option value="asc">오래된순</option>
                         </select>
-                        <button>접기</button>
-                    </div>
                 </div>
                 <div className="price-slider-area">
                     <h3>가격 범위</h3>
@@ -47,6 +49,11 @@ const FilterSection = ({ title, setTitle, sortOrder, setSortOrder, onSearch, onP
                         <RangeSlider onPriceChange={onPriceChange} /> {/* onPriceChange 전달 */}
                     </div>
                 </div>
+                <button class="btn btn-filter-collapse" onClick={handleFilterCollapse}>
+                    <span className="allow">
+                        <BsChevronUp />
+                    </span>
+                </button>
             </div>
             {/* 제목 검색 */}
             <div className="mb-4 pb-4">

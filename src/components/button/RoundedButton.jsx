@@ -1,11 +1,13 @@
 import React from 'react';
+import "./RoundedButton.css";
+
+
 
 // style={{ padding: '6px 14px', fontSize: '12px' }}
-const RoundedButton = ({ children, onClick, style }) => {
+const RoundedButton = ({ children, onClick, className }) => {
     return (
         <button onClick={onClick}
-            style={style}
-            className="px-6 py-2 border border-gray-500 text-gray-500 rounded-full text-md transition-colors duration-200 hover:bg-blue-500 hover:text-white hover:border-blue-500"
+            className={`RoundedButton ${className}`}
         >
             {children}
         </button >
