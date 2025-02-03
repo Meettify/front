@@ -1,0 +1,109 @@
+.btn-category {
+  color: #898b96;
+  transition: all 0.3s;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+@media (min-width: 769px) {
+  .btn-category:hover.btn-category-all {
+    color: rgba(0, 123, 255, 0.7);
+    background: rgba(0, 123, 255, 0.1);
+  }
+  .btn-category:hover.btn-category-SPORTS {
+    color: rgba(244, 131, 70, 0.7);
+    background: rgba(244, 131, 70, 0.1);
+  }
+  .btn-category:hover.btn-category-TRAVEL {
+    color: rgba(0, 170, 178, 0.7);
+    background: rgba(0, 170, 178, 0.1);
+  }
+  .btn-category:hover.btn-category-MUSIC {
+    color: rgba(226, 171, 0, 0.7);
+    background: rgba(226, 171, 0, 0.1);
+  }
+  .btn-category:hover.btn-category-ART {
+    color: rgba(241, 98, 167, 0.7);
+    background: rgba(241, 98, 167, 0.1);
+  }
+  .btn-category:hover.btn-category-READING {
+    color: rgba(188, 126, 97, 0.7);
+    background: rgba(188, 126, 97, 0.1);
+  }
+  .btn-category:hover.btn-category-HEALTH {
+    color: rgba(241, 79, 79, 0.7);
+    background: rgba(241, 79, 79, 0.1);
+  }
+  .btn-category:hover.btn-category-FASHION_BEAUTY {
+    color: rgba(185, 42, 255, 0.7);
+    background: rgba(185, 42, 255, 0.1);
+  }
+  .btn-category:hover.btn-category-PET_LOVERS {
+    color: rgba(114, 194, 4, 0.7);
+    background: rgba(114, 194, 4, 0.1);
+  }
+}
+.btn-category:active.btn-category-all {
+  color: #007BFF;
+  background: rgba(0, 123, 255, 0.2);
+}
+.btn-category:active.btn-category-SPORTS {
+  color: #f48346;
+  background: rgba(244, 131, 70, 0.2);
+}
+.btn-category:active.btn-category-TRAVEL {
+  color: #00aab2;
+  background: rgba(0, 170, 178, 0.2);
+}
+.btn-category:active.btn-category-MUSIC {
+  color: #e2ab00;
+  background: rgba(226, 171, 0, 0.2);
+}
+.btn-category:active.btn-category-ART {
+  color: #f162a7;
+  background: rgba(241, 98, 167, 0.2);
+}
+.btn-category:active.btn-category-READING {
+  color: #bc7e61;
+  background: rgba(188, 126, 97, 0.2);
+}
+.btn-category:active.btn-category-HEALTH {
+  color: #f14f4f;
+  background: rgba(241, 79, 79, 0.2);
+}
+.btn-category:active.btn-category-FASHION_BEAUTY {
+  color: #b92aff;
+  background: rgba(185, 42, 255, 0.2);
+}
+.btn-category:active.btn-category-PET_LOVERS {
+  color: #72c204;
+  background: rgba(114, 194, 4, 0.2);
+}
+
+.btn-category.active.btn-category-all {
+  color: #007BFF;
+}
+.btn-category.active.btn-category-SPORTS {
+  color: #f48346;
+}
+.btn-category.active.btn-category-TRAVEL {
+  color: #00aab2;
+}
+.btn-category.active.btn-category-MUSIC {
+  color: #e2ab00;
+}
+.btn-category.active.btn-category-ART {
+  color: #f162a7;
+}
+.btn-category.active.btn-category-READING {
+  color: #bc7e61;
+}
+.btn-category.active.btn-category-HEALTH {
+  color: #f14f4f;
+}
+.btn-category.active.btn-category-FASHION_BEAUTY {
+  color: #b92aff;
+}
+.btn-category.active.btn-category-PET_LOVERS {
+  color: #72c204;
+}/*# sourceMappingURL=ShopCategoryTabs.css.map */

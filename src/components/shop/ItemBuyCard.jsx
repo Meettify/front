@@ -62,7 +62,6 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
 
     //장바구니 버튼
     const handleCartAdd = (e) => {
-        
         const authToken = `${sessionStorage.getItem('accessToken')}`;
         if (!(isAuthenticated && user)) {
             if(confirm("로그인해야 이용할 수 있는 기능입니다. 로그인 화면으로 이동할까요?")){
@@ -136,7 +135,7 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
         }
 
         // 'order' 페이지로 전달할 때 결제 금액도 함께 넘겨주기
-        navigate('/order', {
+        nav('/order', {
             state: {
                 selectedCartItems,
                 totalPrice // 결제 금액 전달
@@ -169,7 +168,6 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
             </div>
             {/* 버튼들 */}
             <div className="btns-wrap">
-                
                 <RoundedButton onClick={handleCartAdd} className="btn-item-in btn-cart">
                     장바구니
                 </RoundedButton>
