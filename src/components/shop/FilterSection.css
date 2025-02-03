@@ -52,6 +52,7 @@
   .FilterSection {
     height: auto;
     border: none;
+    padding-right: 0;
   }
   .filter-box {
     padding: 16px;

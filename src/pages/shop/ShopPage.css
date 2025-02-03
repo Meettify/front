@@ -67,6 +67,9 @@
   .filter-section-area {
     width: 100%;
   }
+  .items-area {
+    padding: 0;
+  }
 }
 @media (max-width: 600px) {
   .shop-card-wrap {
