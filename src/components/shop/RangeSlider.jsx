@@ -4,10 +4,12 @@ import 'rc-slider/assets/index.css';
 import RoundedButton from '../button/RoundedButton';
 import "../button/buttons.css";
 import "./RangeSlider.css";
+import { PriceRangeContext } from "../../pages/shop/ShopPage";
 
 
-const RangeSlider = ({ onPriceChange }) => {
-    const [range, setRange] = useState([10000, 1000000]);
+const RangeSlider = React.memo(() => {
+    const {priceRange, updatePriceRange} = useContext(PriceRangeContext);  //현재 적용된 범위
+    const [range, setRange] = useState(priceRange);//실시간 값
     
 
     const handleSliderChange = (newRange) => {
@@ -15,7 +17,7 @@ const RangeSlider = ({ onPriceChange }) => {
     };
 
     const handleButtonClick = () => {
-        onPriceChange(range); // "적용하기" 클릭 시 부모로 가격 범위 전달
+        updatePriceRange(range);
     };
 
     return (
@@ -27,8 +29,8 @@ const RangeSlider = ({ onPriceChange }) => {
             <div className="slider-wrap">
                 <Slider
                     range
-                    min={0}
-                    max={1000000}
+                    min={10000}         //최소범위
+                    max={1000000}       //최대범위
                     defaultValue={range}
                     onChange={handleSliderChange}
                     trackStyle={{ backgroundColor: '#007bff', height: 10 }}
@@ -38,10 +40,10 @@ const RangeSlider = ({ onPriceChange }) => {
             </div>
 
             <div className="w-full flex justify-end mt-4">
-                <RoundedButton className="btn-line-blue btn-slider-on">적용하기</RoundedButton>
+                <RoundedButton className="btn-line-blue btn-slider-on" onClick={handleButtonClick}>적용하기</RoundedButton>
             </div>
         </div >
     );
-};
+});
 
 export default RangeSlider;
