@@ -144,7 +144,7 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
     };
 
     return (
-        <div className="ItemBuyCard">
+        <div className={`ItemBuyCard ${itemDetail.itemStatus === 'WAIT' ? 'wait' : itemDetail.itemStatus === 'SOLD_OUT' ? 'sold-out' : ''}`}>
             <div className="item-count-area">
                 <label className="form-label" htmlFor="">상품 선택 수량</label>
                 <div className="select-count-controls">
@@ -172,7 +172,7 @@ const ItemBuyCard = ({itemDetail, itemId}) =>{
                     장바구니
                 </RoundedButton>
                 <RoundedButton onClick={handleOrderNow} className="btn-item-in btn-order">
-                    주문하기
+                {`${itemDetail.itemStatus === 'WAIT' ? '상품 준비 중' : itemDetail.itemStatus === 'SOLD_OUT' ? '품절' : '주문하기'}`}
                 </RoundedButton>
             </div>
         </div>
