@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useCartStore from '../../stores/useCartStore';
 import { useAuth } from '../../hooks/useAuth';
 import { getCartId } from '../../api/cartAPI';
+import './CartPage.css';
 
 const CartPage = () => {
     const {
@@ -136,81 +137,83 @@ const CartPage = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto mt-12">
-            <h2 className="text-2xl font-bold mb-6">장바구니</h2>
-            {cartItems.length === 0 ? (
-                <p>장바구니에 담긴 상품이 없습니다.</p>
-            ) : (
-                <>
-                    <ul>
-                        {cartItems.map(cartItem => {
-                            const { itemName, itemPrice, images } = getItemDetails(cartItem.itemId);
-                            const parsedPrice = Number(itemPrice) || 0;  // itemPrice가 없으면 0으로 처리
+        <div className='page-wrap CartPage'>
+            <h2>장바구니</h2>
+            <div className='cart-list-wrap'>        
+                {cartItems.length === 0 ? (
+                    <p>장바구니에 담긴 상품이 없습니다.</p>
+                ) : (
+                    <>
+                        <ul>
+                            {cartItems.map(cartItem => {
+                                const { itemName, itemPrice, images } = getItemDetails(cartItem.itemId);
+                                const parsedPrice = Number(itemPrice) || 0;  // itemPrice가 없으면 0으로 처리
 
-                            console.log('Rendered item details:', itemName, 'Price:', parsedPrice); // 가격 디버깅 로그
+                                console.log('Rendered item details:', itemName, 'Price:', parsedPrice); // 가격 디버깅 로그
 
-                            return (
-                                <li key={cartItem.cartItemId} className="flex justify-between items-center mb-4">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedItems.includes(cartItem.itemId)}
-                                            onChange={() => toggleSelectItem(cartItem.itemId)}
-                                            className="mr-4"
-                                        />
-                                        <img
-                                            src={images?.[0]?.uploadImgUrl || 'https://via.placeholder.com/150'}  // 'files' -> 'images'
-                                            alt={itemName || '상품 이미지'}
-                                            className="w-16 h-16 object-cover rounded-md mr-4"
-                                        />
-                                        <div>
-                                            <p className="font-semibold">{itemName || '상품 제목 없음'}</p>
-                                            <p className="text-sm">₩{parsedPrice}</p> {/* 가격 표시 */}
+                                return (
+                                    <li key={cartItem.cartItemId} className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedItems.includes(cartItem.itemId)}
+                                                onChange={() => toggleSelectItem(cartItem.itemId)}
+                                                className="mr-4"
+                                            />
+                                            <img
+                                                src={images?.[0]?.uploadImgUrl || 'https://via.placeholder.com/150'}  // 'files' -> 'images'
+                                                alt={itemName || '상품 이미지'}
+                                                className="w-16 h-16 object-cover rounded-md mr-4"
+                                            />
+                                            <div>
+                                                <p className="font-semibold">{itemName || '상품 제목 없음'}</p>
+                                                <p className="text-sm">₩{parsedPrice}</p> {/* 가격 표시 */}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <button
-                                            onClick={() => handleQuantityChange(cartItem.cartItemId, -1)} // 수량 감소
-                                            className="px-2 py-1 border rounded-l bg-gray-200"
-                                            disabled={cartItem.itemCount <= 1} // 수량이 1 이하로 감소하지 않도록 제한
-                                        >
-                                            -
-                                        </button>
-                                        <p className="px-4">{cartItem.itemCount}</p> {/* 'quantity' 대신 'itemCount' 사용 */}
-                                        <button
-                                            onClick={() => handleQuantityChange(cartItem.cartItemId, 1)} // 수량 증가
-                                            className="px-2 py-1 border rounded-r bg-gray-200"
-                                            disabled={cartItem.itemCount >= getItemDetails(cartItem.itemId).stock} // 재고 초과 방지
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <p className="mr-4">
-                                            합계: ₩{parsedPrice * (cartItem.itemCount || 0)} {/* 'quantity' 대신 'itemCount' 사용 */}
-                                        </p>
-                                        <button
-                                            onClick={() => removeFromCart(cartItem.cartItemId)}
-                                            className="text-red-500"
-                                        >
-                                            삭제
-                                        </button>
-                                    </div>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <div className="text-right mt-8">
-                        <h3 className="text-xl font-bold">총 합계: ₩{calculateTotalPrice()}</h3>
-                        <button
-                            onClick={handleOrder}
-                            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        >
-                            주문하기
-                        </button>
-                    </div>
-                </>
-            )}
+                                        <div className="flex items-center">
+                                            <button
+                                                onClick={() => handleQuantityChange(cartItem.cartItemId, -1)} // 수량 감소
+                                                className="px-2 py-1 border rounded-l bg-gray-200"
+                                                disabled={cartItem.itemCount <= 1} // 수량이 1 이하로 감소하지 않도록 제한
+                                            >
+                                                -
+                                            </button>
+                                            <p className="px-4">{cartItem.itemCount}</p> {/* 'quantity' 대신 'itemCount' 사용 */}
+                                            <button
+                                                onClick={() => handleQuantityChange(cartItem.cartItemId, 1)} // 수량 증가
+                                                className="px-2 py-1 border rounded-r bg-gray-200"
+                                                disabled={cartItem.itemCount >= getItemDetails(cartItem.itemId).stock} // 재고 초과 방지
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <p className="mr-4">
+                                                합계: ₩{parsedPrice * (cartItem.itemCount || 0)} {/* 'quantity' 대신 'itemCount' 사용 */}
+                                            </p>
+                                            <button
+                                                onClick={() => removeFromCart(cartItem.cartItemId)}
+                                                className="text-red-500"
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                        <div className="text-right mt-8">
+                            <h3 className="text-xl font-bold">총 합계: ₩{calculateTotalPrice()}</h3>
+                            <button
+                                onClick={handleOrder}
+                                className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                주문하기
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

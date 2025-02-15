@@ -1,0 +1,18 @@
+.CartPage {
+  background: #ecedf1;
+}
+.CartPage h2 {
+  margin-bottom: 16px;
+  font-size: 32px;
+}
+.CartPage .container {
+  margin: 0 auto;
+  padding: 48px 32px 60px;
+}
+
+.cart-list-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 0;
+  box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.15);
+}/*# sourceMappingURL=CartPage.css.map */
