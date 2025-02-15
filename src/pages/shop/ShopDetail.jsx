@@ -74,7 +74,9 @@ const ShopDetail = () => {
                                 <span className="icon-wrap"><FaMusic /></span>
                                 <span className='category-name'>{itemDetail.itemCategory}</span>
                             </div>
-                            <p className="label status">{itemDetail.itemStatus}</p>
+                            <p className={`label status ${itemDetail.itemStatus === 'WAIT' ? 'status-wait' : itemDetail.itemStatus === 'SOLD_OUT' ? 'status-sold-out' : ''}`}>
+                                {itemDetail.itemStatus}
+                            </p>
                         </div>
                         <h1 className="item-name">{itemDetail.itemName}</h1>
                         <p className="discript">{itemDetail.itemDetails}</p>

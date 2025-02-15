@@ -85,6 +85,19 @@
   border: 1px solid #e93a03;
   background: rgba(233, 58, 3, 0.1);
 }
+
+.ItemBuyCard.wait .form-label,
+.ItemBuyCard.sold-out .form-label {
+  color: #777;
+}
+.ItemBuyCard.wait .btn-order,
+.ItemBuyCard.sold-out .btn-order {
+  pointer-events: none;
+  background: #e0e0e0;
+  color: #777;
+  border-color: #ccc;
+}
+
 @media (min-width: 769px) {
   .btn-count-control:hover {
     z-index: 1;
