@@ -1,220 +1,235 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useCartStore from '../../stores/useCartStore';
+import React, { useState, useEffect, createContext } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { getCartId } from '../../api/cartAPI';
 import './CartPage.css';
 
+import CartItem from '../../components/cart/CartItem';
+import CartFloatingArea from '../../components/cart/CartFloatingArea';
+import axios from "axios";
+
+export const CartTotalPriceContext = createContext();
+
 const CartPage = () => {
-    const {
-        shopItems,
-        cartItems,
-        fetchShopItems,
-        fetchAllCartItems,
-        fetchCartById,
-        removeFromCart,
-        updateCartItemQuantity,
-    } = useCartStore();
-
+    const [cartTotalPrice, setCartTotalPrice] = useState(0);
+    const [cartItemPrices, setCartItemPrices] = useState(new Map());
+    const [cartCheckList, setCartCheckList] = useState(new Map());
+    const [cartId, setCartId] = useState(0);
     const { user } = useAuth();
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [cartId, setCartId] = useState(null); // cartId 상태 관리
-    const navigate = useNavigate();
+    const [isChecked, setIsChecked] = useState(true);
+    const [cartItemList, setCartItemList] = useState([]);
 
-    useEffect(() => {
-        if (!user?.memberEmail) {
-            console.error('유효한 이메일이 없습니다. 사용자 정보:', user);
-            return;
-        }
-
-        // 상품 데이터 로드
-        fetchShopItems();
-
-        // 장바구니 ID 가져오기 및 데이터 로드
-        const loadCartData = async () => {
+    //카트 아이디 셋팅
+    useEffect(()=>{
+        const getCartId = async () => {
             try {
-                const fetchedCartId = await getCartId();
-                console.log('가져온 장바구니 ID:', fetchedCartId);  // 5가 출력되어야 함
-                setCartId(fetchedCartId);
-
-                if (fetchedCartId) {
-                    await fetchCartById(fetchedCartId);
-                } else {
-                    throw new Error('장바구니 ID를 가져오는 데 실패했습니다.');
-                }
-            } catch (error) {
-                console.error('장바구니 데이터를 가져오는 데 실패했습니다.', error);
+                const response = await axios.get(
+                    `http://localhost:8080/api/v1/carts/id`, // URL
+                    {
+                        headers: {
+                            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+                setCartId(response.data);
+            } catch (err) {
+                console.error("카트 아이디 조회 실패 : ", err.response ? err.response.data : err);
             }
         };
 
-        loadCartData(); // 여기서 호출
+        getCartId();
+    }, [user])
 
-    }, [user]); // user가 변경될 때마다 실행
-
-    // 총 합계 계산 (itemCount와 itemPrice를 기반으로)
-    const calculateTotalPrice = () => {
-        return selectedItems.reduce((total, itemId) => {
-            const cartItem = cartItems.find(cartItem => cartItem.itemId === itemId);
-            if (!cartItem) return total;
-
-            const { itemPrice } = getItemDetails(itemId);
-            console.log('Item details for itemId:', itemId, 'Price:', itemPrice);  // 각 아이템의 가격 출력
-
-            const parsedPrice = Number(itemPrice || 0);  // 가격이 없으면 0으로 처리
-            if (parsedPrice === 0) {
-                console.warn(`Price for item ${itemId} is zero or undefined!`);
+    //카트 리스트 셋팅
+    const getCartList = async ()=>{
+        if(cartId > 0){
+            try {
+                const response = await axios.get(
+                    `http://localhost:8080/api/v1/carts/cart-items`, // URL
+                    {
+                        headers: {
+                            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+                const updatedItems = response.data.map(data => {
+                    data.item.cartItemId = data.cartItemId;
+                    return data.item;
+                });
+                setCartItemList(updatedItems);
+            } catch (err) {
+                console.error("장바구니 상품 조회 실패 : ", err.response ? err.response.data : err);
             }
-
-            return total + parsedPrice * (cartItem.itemCount || 0);  // itemCount로 계산
-        }, 0);
-    };
-
-    // 선택된 아이템 토글
-    const toggleSelectItem = (itemId) => {
-        if (selectedItems.includes(itemId)) {
-            setSelectedItems(selectedItems.filter(id => id !== itemId));
-        } else {
-            setSelectedItems([...selectedItems, itemId]);
         }
-    };
-
-    // 주문하기 클릭
-    const handleOrder = () => {
-        if (selectedItems.length === 0) {
-            alert('선택된 상품이 없습니다.');
-            return;
-        }
-
-        // 선택된 아이템에 대해 상품명도 포함시켜서 처리
-        const selectedCartItems = selectedItems.map(itemId => {
-            const cartItem = cartItems.find(item => item.itemId === itemId);
-            const itemDetails = getItemDetails(itemId);
-            return {
-                ...cartItem,
-                itemName: itemDetails.itemName, // 상품명 추가
-                itemPrice: itemDetails.itemPrice, // 가격 추가
-                itemCount: cartItem.itemCount, // 'quantity' 대신 'itemCount' 사용
-            };
+    }
+    
+    //초기 로딩시 카트 아이템 가져오고 셋팅
+    useEffect(()=>{
+        getCartList();
+    }, [user, cartId]);
+    
+    //아이템 가격들 변환(수량 * 기존 아이템 가격)
+    const changeItemPrice = (key, value) => {
+        setCartItemPrices(prevMap => {
+            const newMap = new Map(prevMap); // 새로운 Map 생성 (불변성 유지)
+            newMap.set(key, value); // 데이터 추가
+            return newMap; // 새로운 Map을 상태로 설정
         });
-
-        // selectedCartItems에 상품명이 포함된 상태로 주문 페이지로 이동
-        navigate('/order', { state: { selectedCartItems } });
     };
 
-    // 아이템 상세 정보 가져오기 (상품명, 가격 등)
-    const getItemDetails = (itemId) => {
-        const item = shopItems.find(item => item.itemId === itemId);
-        if (!item) {
-            console.warn(`Item with ID ${itemId} not found.`);
-            return { stock: 0, itemPrice: 0, itemName: 'Unknown', images: [] };  // 'files' 대신 'images'
+    //체크리스트 변환
+    const changeCheckList = (key, value) => {
+        setCartCheckList(prevMap => {
+            const newMap = new Map(prevMap); // 새로운 Map 생성 (불변성 유지)
+            newMap.set(key, value); // 데이터 추가
+            return newMap; // 새로운 Map을 상태로 설정
+        });
+    };
+
+    // 모든 value 가 true인지 확인하는 함수
+    const areAllTrue = () => {
+        return Array.from(cartCheckList.values()).every(value => value === true);
+    };
+
+    // 모든 value를 반전시키는 함수
+    const toggleAll = () => {
+        const newValue = !areAllTrue(); // 현재 모든 값이 true면 false로, 아니면 true로 설정
+
+        setCartCheckList(prevMap => {
+            const newMap = new Map();
+            prevMap.forEach((_, key) => {
+                newMap.set(key, newValue);
+            });
+            return newMap;
+        });
+    };
+
+    //전체 선택
+    const handleAllCheck = (e) => {
+        setIsChecked(!isChecked);
+        toggleAll();
+    }
+
+    //개별로 전체 선택하면 자동으로 선택 외에는 선택 풀기
+    useEffect(()=>{
+        if(areAllTrue()){
+            setIsChecked(true);
+        }else{
+            setIsChecked(false);
         }
-        console.log('Item details for itemId:', itemId, 'Price:', item.itemPrice);  // 가격 출력
-        return item;
+    },[cartCheckList]);
+
+    //체크리스트 맵에서 true 인 값들의 키 배열을 반환
+    const getKeysWithTrueValue = () => {
+        return [...cartCheckList.entries()]
+        .filter(([_, value]) => value === true) // value가 true인 것만 필터링
+        .map(([key]) => key); // key만 추출
     };
 
-    // 수량 변경 처리
-    const handleQuantityChange = (cartItemId, increment) => {
-        const targetItem = cartItems.find(item => item.cartItemId === cartItemId);
-        if (targetItem) {
-            const { stock } = getItemDetails(targetItem.itemId);
-            const newQuantity = targetItem.itemCount + increment; // 'quantity' 대신 'itemCount' 사용
+    //맵에서 키 배열을 받아 해당 키들을 삭제하는 함수
+    const removeKeysFromMap = (map, keys) => {
+        const newMap = new Map(map);
+        keys.forEach((key) => newMap.delete(key)); // 배열을 순회하며 삭제
+        return newMap;
+    };
 
-            if (newQuantity > stock) {
-                alert(`재고를 초과할 수 없습니다. 현재 재고: ${stock}`);
-                return;
-            }
+    //백엔드에서 키값을 매개변수로 받아 삭제하는 함수
+    const deleteItemInCart = async (cartItemId) => {
+        try {
+            const response = await axios.delete(
+                `http://localhost:8080/api/v1/carts/${cartItemId}`, // URL
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+                        "Content-Type": "application/json"
+                    },
+                    data: {} // 일부 서버에서는 DELETE 요청에도 body를 요구함
+                }
+            );
 
-            if (newQuantity < 1) {
-                alert('수량은 최소 1개 이상이어야 합니다.');
-                return;
-            }
-
-            // 수량 업데이트
-            updateCartItemQuantity(cartItemId, newQuantity);
-        } else {
-            console.error(`Cart item with ID ${cartItemId} not found.`);
+            //카트 리스트 다시 데이터 로드
+            getCartList();
+            console.log("삭제 성공", response.data);
+        } catch (err) {
+            console.error("장바구니에서 상품 삭제 실패 : ", err.response ? err.response.data : err);
         }
     };
+
+    //선택된 아이템 삭제
+    const handleBtnChkDelete = async () => {
+        //선택된 아이템의 itemId 값들의 배열
+        const trueCheckList = getKeysWithTrueValue();
+
+        //cartItemId 값들의 배열
+        console.log(cartItemList);
+        const cartItemIds = cartItemList
+        .filter(item => trueCheckList.includes(item.itemId))
+        .map(item => item.cartItemId);
+
+        console.log(cartItemIds);
+
+        
+        //가격 리스트 맵에서 삭제
+        removeKeysFromMap(cartItemPrices, trueCheckList);
+
+        //체크 리스트 맵에서 삭제
+        removeKeysFromMap(cartCheckList, trueCheckList);
+
+        //백엔드에서 삭제
+        cartItemIds.forEach(key => deleteItemInCart(key));
+    }
+
+    // 카트 주문 총액 계산
+    useEffect(()=>{
+        setCartTotalPrice(Array.from(cartItemPrices.values()).reduce((acc, value) => acc + value, 0));
+    }, [cartItemPrices]);
 
     return (
+        <CartTotalPriceContext.Provider value={{cartItemPrices, changeItemPrice, changeCheckList, cartCheckList}}>
         <div className='page-wrap CartPage'>
             <h2>장바구니</h2>
-            <div className='cart-list-wrap'>        
-                {cartItems.length === 0 ? (
+            <div className='cart-list-wrap'>
+                <div className="list-top-area">
+                    <div className="list-top-left">
+                        <div className="custom-check-wrap circle-check-wrap all-check-wrap">
+                            <input
+                            type="checkbox"
+                            name=""
+                            id="allCheck"
+                            checked={isChecked}
+                            onChange={handleAllCheck}
+                            />
+                            <label htmlFor="allCheck"><span className='text'>전체 선택</span></label>
+                        </div>
+                    </div>
+                    <div className="list-top-right">
+                        <button 
+                        className="btn btn-text btn-chk-delete"
+                        onClick={handleBtnChkDelete}
+                        >선택 삭제</button>
+                    </div>
+                </div>
+                <div className="list-content-area">
+                {cartItemList.length === 0? (
                     <p>장바구니에 담긴 상품이 없습니다.</p>
                 ) : (
                     <>
-                        <ul>
-                            {cartItems.map(cartItem => {
-                                const { itemName, itemPrice, images } = getItemDetails(cartItem.itemId);
-                                const parsedPrice = Number(itemPrice) || 0;  // itemPrice가 없으면 0으로 처리
-
-                                console.log('Rendered item details:', itemName, 'Price:', parsedPrice); // 가격 디버깅 로그
-
-                                return (
-                                    <li key={cartItem.cartItemId} className="flex justify-between items-center mb-4">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedItems.includes(cartItem.itemId)}
-                                                onChange={() => toggleSelectItem(cartItem.itemId)}
-                                                className="mr-4"
-                                            />
-                                            <img
-                                                src={images?.[0]?.uploadImgUrl || 'https://via.placeholder.com/150'}  // 'files' -> 'images'
-                                                alt={itemName || '상품 이미지'}
-                                                className="w-16 h-16 object-cover rounded-md mr-4"
-                                            />
-                                            <div>
-                                                <p className="font-semibold">{itemName || '상품 제목 없음'}</p>
-                                                <p className="text-sm">₩{parsedPrice}</p> {/* 가격 표시 */}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <button
-                                                onClick={() => handleQuantityChange(cartItem.cartItemId, -1)} // 수량 감소
-                                                className="px-2 py-1 border rounded-l bg-gray-200"
-                                                disabled={cartItem.itemCount <= 1} // 수량이 1 이하로 감소하지 않도록 제한
-                                            >
-                                                -
-                                            </button>
-                                            <p className="px-4">{cartItem.itemCount}</p> {/* 'quantity' 대신 'itemCount' 사용 */}
-                                            <button
-                                                onClick={() => handleQuantityChange(cartItem.cartItemId, 1)} // 수량 증가
-                                                className="px-2 py-1 border rounded-r bg-gray-200"
-                                                disabled={cartItem.itemCount >= getItemDetails(cartItem.itemId).stock} // 재고 초과 방지
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <p className="mr-4">
-                                                합계: ₩{parsedPrice * (cartItem.itemCount || 0)} {/* 'quantity' 대신 'itemCount' 사용 */}
-                                            </p>
-                                            <button
-                                                onClick={() => removeFromCart(cartItem.cartItemId)}
-                                                className="text-red-500"
-                                            >
-                                                삭제
-                                            </button>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                        <div className="text-right mt-8">
-                            <h3 className="text-xl font-bold">총 합계: ₩{calculateTotalPrice()}</h3>
-                            <button
-                                onClick={handleOrder}
-                                className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                주문하기
-                            </button>
-                        </div>
+                        {cartItemList.map(item => {
+                            return(
+                                <>
+                                    <div key={item.itemId}>
+                                        <CartItem itemId={item.itemId} itemCount={item.itemCount} cartId={cartId}/>
+                                    </div>
+                                </>
+                            )
+                        })}
                     </>
                 )}
+                </div>
+                <CartFloatingArea cartTotalPrice={cartTotalPrice}/>
             </div>
         </div>
+        </CartTotalPriceContext.Provider>
     );
 };
 

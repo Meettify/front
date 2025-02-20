@@ -2,7 +2,7 @@
   background: #ecedf1;
 }
 .CartPage h2 {
-  margin-bottom: 16px;
+  margin-top: 24px;
   font-size: 32px;
 }
 .CartPage .container {
@@ -10,9 +10,118 @@
   padding: 48px 32px 60px;
 }
 
-.cart-list-wrap {
+.list-top-area {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+}
+.list-top-area .list-top-left {
+  flex: 1 1 auto;
+  justify-items: flex-start;
+}
+
+.all-check-wrap input {
+  display: none;
+}
+.all-check-wrap label {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 24px;
+  padding-left: 28px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+.all-check-wrap label .text {
+  margin-left: 8px;
+}
+.all-check-wrap label::before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 200px;
+  background: #FFFFFF;
+  border: 1px solid #ccc;
+  transition: all 0.2s;
+  content: "";
+}
+.all-check-wrap label::after {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  background: url("/src/assets/images/cart/ico_check.svg") no-repeat;
+  background-position: center center;
+  content: "";
+}
+.all-check-wrap label:hover::before {
+  background: #e6f2ff;
+  border: 1px solid #99caff;
+}
+.all-check-wrap label:active::before {
+  background: #b3d7ff;
+  border: 1px solid #4da2ff;
+}
+.all-check-wrap input:checked ~ label::before {
+  background: #007AFF;
+  border: 1px solid #007AFF;
+}
+.all-check-wrap input:checked ~ label::after {
+  display: block;
+}
+
+.list-bottom-area {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 28px;
+  border-radius: 8px;
+  border: 2px solid #007AFF;
   background: #fff;
-  border-radius: 16px;
-  padding: 24px 0;
+  z-index: 10;
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s;
+}
+.list-bottom-area .total-price-area {
+  display: flex;
+  justify-content: space-between;
+  color: #333;
+  font-size: 18px;
+}
+.list-bottom-area .btns-wrap {
+  padding-top: 30px;
+}
+.list-bottom-area .cart-total-price {
+  color: #007AFF;
+  font-weight: bold;
+  font-size: 28px;
+}
+.list-bottom-area .btn-order {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  width: 100%;
+  border-radius: 8px;
+  background: #007AFF;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+}
+.list-bottom-area.floating {
+  position: fixed;
+  border: 0;
+  border-top: 2px solid #007AFF;
+  border-radius: 0;
+  padding-left: 120px;
+  padding-right: 120px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
 }/*# sourceMappingURL=CartPage.css.map */

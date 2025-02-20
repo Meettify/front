@@ -33,7 +33,6 @@
 }
 
 .item-info-wrap {
-  border-top: 2px solid #9d22b8;
   width: 100%;
   padding: 20px 10px;
   text-align: left;
@@ -71,8 +70,6 @@
   align-content: center;
   line-height: 1;
   white-space: nowrap;
-  background: rgba(157, 34, 184, 0.1);
-  color: #9d22b8;
   gap: 8px;
   border-radius: 100px;
 }
@@ -91,6 +88,70 @@
 .label.status-sold-out {
   background: rgba(51, 51, 51, 0.1);
   color: #555;
+}
+
+.category-all-wrap {
+  border-top: 2px solid #007BFF;
+}
+.category-all-wrap .category {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007BFF;
+}
+.category-sports-wrap {
+  border-top: 2px solid #f48346;
+}
+.category-sports-wrap .category {
+  background: rgba(244, 131, 70, 0.1);
+  color: #f48346;
+}
+.category-travel-wrap {
+  border-top: 2px solid #00aab2;
+}
+.category-travel-wrap .category {
+  background: rgba(0, 170, 178, 0.1);
+  color: #00aab2;
+}
+.category-music-wrap {
+  border-top: 2px solid #e2ab00;
+}
+.category-music-wrap .category {
+  background: rgba(226, 171, 0, 0.1);
+  color: #e2ab00;
+}
+.category-art-wrap {
+  border-top: 2px solid #f162a7;
+}
+.category-art-wrap .category {
+  background: rgba(241, 98, 167, 0.1);
+  color: #f162a7;
+}
+.category-reading-wrap {
+  border-top: 2px solid #bc7e61;
+}
+.category-reading-wrap .category {
+  background: rgba(188, 126, 97, 0.1);
+  color: #bc7e61;
+}
+.category-health-wrap {
+  border-top: 2px solid #f14f4f;
+}
+.category-health-wrap .category {
+  background: rgba(241, 79, 79, 0.1);
+  color: #f14f4f;
+}
+.category-fashion_beauty-wrap {
+  border-top: 2px solid #b92aff;
+}
+.category-fashion_beauty-wrap .category {
+  background: rgba(185, 42, 255, 0.1);
+  color: #b92aff;
+}
+.category-pet_lovers-wrap {
+  border-top: 2px solid #72c204;
+}
+.category-pet_lovers-wrap .category {
+  background: rgba(114, 194, 4, 0.1);
+  color: #72c204;
 }
 
 @media (max-width: 1000px) {

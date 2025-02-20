@@ -7,17 +7,6 @@ const useCartStore = create((set, get) => ({
   cartItems: [], // 장바구니 데이터
   cartId: null,  // cartId 추가
 
-  // **상점 상품 로드**
-  fetchShopItems: async () => {
-    try {
-      const items = await shopAPI.getItemList();
-      const confirmedItems = items.filter(item => item.itemStatus === 'SELL');
-      set({ shopItems: confirmedItems });
-    } catch (error) {
-      console.error('상품 데이터 로드 실패:', error);
-    }
-  },
-
   // **장바구니 ID 가져오기 및 설정**
   fetchCartId: async () => {
     try {
@@ -29,6 +18,19 @@ const useCartStore = create((set, get) => ({
       throw error;
     }    
   },
+
+  // **상점 상품 로드**
+  fetchShopItems: async () => {
+    try {
+      const items = await shopAPI.getItemList();
+      const confirmedItems = items.filter(item => item.itemStatus === 'SELL');
+      set({ shopItems: confirmedItems });
+    } catch (error) {
+      console.error('상품 데이터 로드 실패:', error);
+    }
+  },
+
+  
 
   // **장바구니 데이터 로드**
   fetchCartById: async (cartId) => {
