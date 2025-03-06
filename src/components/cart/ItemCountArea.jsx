@@ -24,6 +24,7 @@ const ItemCountArea = React.memo(({itemMaxCount, itemCount, itemPrice, cartId, i
                     }
                 }
             );
+            
         } catch (err) {
             console.error("장바구니 수량 변환 실패 : ", err);
         }
@@ -34,7 +35,13 @@ const ItemCountArea = React.memo(({itemMaxCount, itemCount, itemPrice, cartId, i
     }
 
     const handleItemCount = (e) => {
-        setCurrentItemCount(e.target.value); 
+        if(e.target.value > itemMaxCount){
+            setCurrentItemCount(itemMaxCount);     
+        }else if(e.target.value < 1){
+            setCurrentItemCount(0);
+        }else{
+            setCurrentItemCount(e.target.value); 
+        }
     }
 
     //수량 추가 버튼
@@ -48,7 +55,7 @@ const ItemCountArea = React.memo(({itemMaxCount, itemCount, itemPrice, cartId, i
 
     //수량 감소 버튼
     const handleCountMinus = () => {
-        if(currentItemCount == 1){
+        if(currentItemCount < 1){
             return;
         }
         setCurrentItemCount(currentItemCount - 1);

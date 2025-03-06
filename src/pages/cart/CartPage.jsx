@@ -1,21 +1,33 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import './CartPage.css';
+import { useNavigate } from "react-router-dom";
 
 import CartItem from '../../components/cart/CartItem';
-import CartFloatingArea from '../../components/cart/CartFloatingArea';
 import axios from "axios";
 
 export const CartTotalPriceContext = createContext();
 
 const CartPage = () => {
-    const [cartTotalPrice, setCartTotalPrice] = useState(0);
-    const [cartItemPrices, setCartItemPrices] = useState(new Map());
-    const [cartCheckList, setCartCheckList] = useState(new Map());
-    const [cartId, setCartId] = useState(0);
-    const { user } = useAuth();
-    const [isChecked, setIsChecked] = useState(true);
-    const [cartItemList, setCartItemList] = useState([]);
+    const [cartTotalPrice, setCartTotalPrice] = useState(0);            //장바구니 총 금액
+    const [cartItemList, setCartItemList] = useState([]);               //카트 아이템 리스트
+    const [cartItemPrices, setCartItemPrices] = useState(new Map());    //아이템별 총 금액(금액 * 수량)
+    const [cartCheckList, setCartCheckList] = useState(new Map());      //아이템 체크상태인지
+    const [cartId, setCartId] = useState(0);                            //카트 아이디
+    const { user } = useAuth();                                         //유저
+    const [isChecked, setIsChecked] = useState(true);                   //전체 선택 체크박스     
+    const navigate = useNavigate();                                     // useNavigate() 훅 사용                  
+    
+
+    useEffect(() => {
+        const $body = document.querySelector("body"); // 단일 요소 선택
+        $body.classList.add("CartPageWrap");
+    
+        return () => {
+            $body.classList.remove("CartPageWrap"); // 정리(cleanup)
+        };
+
+    }, []);
 
     //카트 아이디 셋팅
     useEffect(()=>{
@@ -44,7 +56,7 @@ const CartPage = () => {
         if(cartId > 0){
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/api/v1/carts/cart-items`, // URL
+                    `http://localhost:8080/api/v1/carts/${cartId}`, // URL
                     {
                         headers: {
                             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
@@ -52,10 +64,7 @@ const CartPage = () => {
                         }
                     }
                 );
-                const updatedItems = response.data.map(data => {
-                    data.item.cartItemId = data.cartItemId;
-                    return data.item;
-                });
+                const updatedItems = response.data.cartItems;
                 setCartItemList(updatedItems);
             } catch (err) {
                 console.error("장바구니 상품 조회 실패 : ", err.response ? err.response.data : err);
@@ -146,9 +155,6 @@ const CartPage = () => {
                     data: {} // 일부 서버에서는 DELETE 요청에도 body를 요구함
                 }
             );
-
-            //카트 리스트 다시 데이터 로드
-            getCartList();
             console.log("삭제 성공", response.data);
         } catch (err) {
             console.error("장바구니에서 상품 삭제 실패 : ", err.response ? err.response.data : err);
@@ -161,14 +167,11 @@ const CartPage = () => {
         const trueCheckList = getKeysWithTrueValue();
 
         //cartItemId 값들의 배열
-        console.log(cartItemList);
-        const cartItemIds = cartItemList
-        .filter(item => trueCheckList.includes(item.itemId))
-        .map(item => item.cartItemId);
-
-        console.log(cartItemIds);
-
         
+        const cartItemIds = cartItemList
+        .map(cartItem => cartItem.cartItemId);
+
+
         //가격 리스트 맵에서 삭제
         removeKeysFromMap(cartItemPrices, trueCheckList);
 
@@ -177,12 +180,41 @@ const CartPage = () => {
 
         //백엔드에서 삭제
         cartItemIds.forEach(key => deleteItemInCart(key));
+
+        //카트 리스트 다시 데이터 로드
+        getCartList();
+
+        //새로고침
+        window.location.reload();
     }
 
     // 카트 주문 총액 계산
     useEffect(()=>{
         setCartTotalPrice(Array.from(cartItemPrices.values()).reduce((acc, value) => acc + value, 0));
     }, [cartItemPrices]);
+
+
+    //주문하기로 보내는 데이터
+    const sendOrderData = () => {
+        //선택된 아이템의 itemId 값들의 배열
+        const trueCheckList = getKeysWithTrueValue();
+
+        const jsonData = {   
+            //체크한 아이템 정보
+            "cartItems" : cartItemList.filter(cartItem => trueCheckList.includes(cartItem.item.itemId)),
+            
+            //주문 총액
+            "cartTotalPrice" : cartTotalPrice
+        }
+        jsonData.cartItems.forEach(item => 
+            item.itemTotalPrice = item.itemCount * item.itemPrice
+        );
+        
+        const jsonString = JSON.stringify(jsonData);
+        sessionStorage.setItem("orderItems", jsonString);
+        
+        navigate("/order");
+    };
 
     return (
         <CartTotalPriceContext.Provider value={{cartItemPrices, changeItemPrice, changeCheckList, cartCheckList}}>
@@ -214,11 +246,11 @@ const CartPage = () => {
                     <p>장바구니에 담긴 상품이 없습니다.</p>
                 ) : (
                     <>
-                        {cartItemList.map(item => {
+                        {cartItemList.map(cartItem => {
                             return(
                                 <>
-                                    <div key={item.itemId}>
-                                        <CartItem itemId={item.itemId} itemCount={item.itemCount} cartId={cartId}/>
+                                    <div key={cartItem.cartId}>
+                                        <CartItem itemId={cartItem.item.itemId} itemCount={cartItem.itemCount} cartId={cartId}/>
                                     </div>
                                 </>
                             )
@@ -226,7 +258,15 @@ const CartPage = () => {
                     </>
                 )}
                 </div>
-                <CartFloatingArea cartTotalPrice={cartTotalPrice}/>
+                <div className="list-bottom-area">
+                    <div className="total-price-area">
+                        <span className='label'>주문 금액</span>
+                        <span className='cart-total-price'>{`${cartTotalPrice.toLocaleString()}원`}</span>
+                    </div>
+                    <div className="btns-wrap">
+                        <button className="btn btn-primary btn-order" onClick={sendOrderData}>주문하기</button>
+                    </div>
+                </div>
             </div>
         </div>
         </CartTotalPriceContext.Provider>

@@ -41,7 +41,7 @@ const CartItem = React.memo(({itemId, itemCount, cartId}) => {
             cat.id.toUpperCase() === itemDetail?.itemCategory.toUpperCase()
         );
         setCategory(foundCategory);
-        //console.log("데이터", itemDetail);
+        console.log("데이터", itemDetail);
     }, [itemDetail]);
 
     useEffect(() => {
