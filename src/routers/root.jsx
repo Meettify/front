@@ -24,8 +24,9 @@ const SignupSuccess = lazy(() =>
 );
 const Cart = lazy(() => import("../pages/cart/CartPage"));
 const Order = lazy(() => import("../pages/order/OrderPage"));
-const Success = lazy(() => import("../pages/payment/SuccessPage"));
-const Fail = lazy(() => import("../pages/payment/FailPage"));
+const Order2 = lazy(() => import("../pages/order/OrderPage2"));
+const Success = lazy(() => import("../pages/order/SuccessPage"));
+const Fail = lazy(() => import("../pages/order/FailPage"));
 const Contact = lazy(() => import("../pages/support/ContactPage"));
 const MyQuestion = lazy(() => import("../pages/Question/MyQuestionsPage"));
 const Notice = lazy(() => import("../pages/admin/NoticePage"));
@@ -124,7 +125,7 @@ const root = createBrowserRouter(
           path: "order",
           element: (
             <Suspense fallback={<Loading />}>
-              <Order />
+              <Order2 />
             </Suspense>
           ),
         },

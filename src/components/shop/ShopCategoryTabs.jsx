@@ -19,7 +19,7 @@ const ShopCategoryTabs = React.memo(()=>{
                         className={`btn-category btn-category-${category.id} ${selectedCategory === category.id ? 'active' : ''}`}
                         onClick={() => handleCategoryClick(category.id)}
                     >
-                        <span className="icon">{category.icon}</span>
+                        <span className="icon">{category.icon()}</span>
                         <span className="text">{category.name}</span>
                     </button>
                 ))}

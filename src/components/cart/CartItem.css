@@ -1,0 +1,189 @@
+.CartItem {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  padding: 22px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.15);
+}
+.CartItem.category-all-wrap .category {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007BFF;
+}
+.CartItem.category-sports-wrap .category {
+  background: rgba(244, 131, 70, 0.1);
+  color: #f48346;
+}
+.CartItem.category-travel-wrap .category {
+  background: rgba(0, 170, 178, 0.1);
+  color: #00aab2;
+}
+.CartItem.category-music-wrap .category {
+  background: rgba(226, 171, 0, 0.1);
+  color: #e2ab00;
+}
+.CartItem.category-art-wrap .category {
+  background: rgba(241, 98, 167, 0.1);
+  color: #f162a7;
+}
+.CartItem.category-reading-wrap .category {
+  background: rgba(188, 126, 97, 0.1);
+  color: #bc7e61;
+}
+.CartItem.category-health-wrap .category {
+  background: rgba(241, 79, 79, 0.1);
+  color: #f14f4f;
+}
+.CartItem.category-fashion_beauty-wrap .category {
+  background: rgba(185, 42, 255, 0.1);
+  color: #b92aff;
+}
+.CartItem.category-pet_lovers-wrap .category {
+  background: rgba(114, 194, 4, 0.1);
+  color: #72c204;
+}
+.CartItem .checkbox {
+  display: none;
+}
+.CartItem .img-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 180px;
+  height: 180px;
+  margin-left: 20px;
+  margin-right: 24px;
+  border-radius: 8px;
+  background: #f0f0f0;
+}
+.CartItem .item-info-area {
+  flex: 1 1 auto;
+  padding: 4px 0;
+  text-align: left;
+}
+.CartItem .item-info-area .label-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.CartItem .item-info-area .label {
+  display: inline-flex;
+  padding: 0 8px;
+  height: 24px;
+  align-items: center;
+  align-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  font-size: 12px;
+  gap: 4px;
+  border-radius: 100px;
+}
+.CartItem .item-info-area .label .icon-wrap {
+  position: relative;
+  top: -1px;
+}
+.CartItem .item-info-area .label.status {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bFF;
+}
+.CartItem .item-info-area .label.status-wait {
+  background: #333333;
+  color: white;
+}
+.CartItem .item-info-area .label.status-sold-out {
+  background: rgba(51, 51, 51, 0.1);
+  color: #555;
+}
+.CartItem .item-info-area .text-area {
+  padding: 0 6px;
+  color: #333;
+}
+.CartItem .item-info-area .item-name {
+  display: block;
+  font-size: 18px;
+}
+.CartItem .item-info-area .item-price {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+}
+.CartItem .item-info-area .item-store-count {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  color: #999;
+}
+.CartItem .item-total-price {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #007AFF;
+}
+.CartItem .select-count {
+  width: 180px;
+  padding: 0 8px;
+  outline: 0;
+}
+.CartItem .control {
+  min-height: 36px;
+  min-width: 60px;
+  border: 1px solid #d9d9d9;
+  border-radius: 0;
+  margin-right: -1px;
+  line-height: 36px;
+  box-sizing: border-box;
+}
+.CartItem .btn-count-control {
+  text-align: center;
+}
+.CartItem .btn-count-plus {
+  color: #007AFF;
+}
+.CartItem .btn-count-minus {
+  color: #F14F4F;
+}
+
+@media (max-width: 768px) {
+  .CartItem {
+    padding: 24px;
+    flex-wrap: wrap;
+  }
+  .CartItem .img-wrap {
+    width: 160px;
+    height: 160px;
+  }
+  .item-total-price {
+    flex: 1 1 100%;
+    padding-top: 20px;
+    padding-right: 12px;
+    text-align: right;
+  }
+  .CartItem .ItemCountArea {
+    display: flex;
+    width: 100%;
+  }
+  .CartItem .ItemCountArea input {
+    flex: 1 1 auto;
+    width: auto;
+  }
+}
+@media (max-width: 600px) {
+  .CartItem {
+    margin-bottom: 24px;
+  }
+  .CartItem .img-wrap {
+    flex: 1 1 auto;
+    width: 100%;
+    margin: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .CartItem .item-total-price {
+    text-align: left;
+  }
+}/*# sourceMappingURL=CartItem.css.map */

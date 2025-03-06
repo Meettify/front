@@ -8,6 +8,8 @@ import ItemBuyCard from '../../components/shop/ItemBuyCard';
 import "./ShopDetail.css";
 import { FaFutbol, FaPlane, FaMusic, FaPalette, FaBook, FaHeartbeat, FaTshirt, FaPaw } from 'react-icons/fa';
 import { BsChevronLeft } from "react-icons/bs";
+import "../../stores/shopCategory";
+import categories from '../../stores/shopCategory';
 
 
 const ShopDetail = () => {
@@ -17,6 +19,8 @@ const ShopDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { addToCart, cartItems } = useShopStore();
+    const [category, setCategory] = useState(null);
+    
     
 
     useEffect(() => {
@@ -31,9 +35,16 @@ const ShopDetail = () => {
             }
         };
 
+        
         fetchItem();
     }, [itemId]);
-    
+
+    useEffect(()=>{
+        const foundCategory = categories.find(cat => 
+            cat.id.toUpperCase() === itemDetail?.itemCategory.toUpperCase()
+        );
+        setCategory(foundCategory);
+    },[itemDetail]);
     
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>{error}</p>;
@@ -68,11 +79,11 @@ const ShopDetail = () => {
                     </div>
 
                     {/* 상품 정보 */}
-                    <div className="item-info-wrap">
+                    <div className={`item-info-wrap category-${category?.id.toLowerCase()}-wrap` }>
                         <div className='label-area'>
-                            <div className="label category">
-                                <span className="icon-wrap"><FaMusic /></span>
-                                <span className='category-name'>{itemDetail.itemCategory}</span>
+                            <div className={`label category`}>
+                                <span className="icon-wrap">{category?.icon()}</span>
+                                <span className='category-name'>{itemDetail?.itemCategory}</span>
                             </div>
                             <p className={`label status ${itemDetail.itemStatus === 'WAIT' ? 'status-wait' : itemDetail.itemStatus === 'SOLD_OUT' ? 'status-sold-out' : ''}`}>
                                 {itemDetail.itemStatus}

@@ -15,6 +15,7 @@ const checkItemState = (state) =>{
     }
     return true;
 }
+
 //장바구니보다 많은 수량을 입력했을 때, alert 를 띄워야함.
 const checkItemCount = (itemCount, userCount) =>{
     if(userCount > itemCount){
