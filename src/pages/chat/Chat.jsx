@@ -20,61 +20,62 @@ const Chat = () => {
   const stompClientRef = useRef(null);
   const roomId = new URLSearchParams(window.location.search).get("roomId");
   const currentUser = localStorage.getItem("nickName");
-  const KAKAO_API_KEY = process.env.REACT_APP_KAKAO_API_KEY;
+  const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+  const navigate = useNavigate();
 
   const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL; // 환경변수에서 API base URL을 가져옴
 
   // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken"); // 세션에서 액세스 토큰을 가져옴
-    const socket = new SockJS(`${BASE_URL}/ws/chat`); // WebSocket 연결
+    const socket = new SockJS(`http://localhost:8080/ws/chat`); // WebSocket 연결
     const client = Stomp.over(socket);
     stompClientRef.current = client;
 
     // STOMP 연결
     client.connect(
       { Authorization: `Bearer ${token}` },
-      (frame) => {
-        setConnected(true);
-        console.log("STOMP 연결 성공", frame);
-
-        // 해당 채팅방에 대한 메시지 구독
-        client.subscribe(`/exchange/chat.exchange/room.${roomId}`, (msg) => {
+      () => {
+        client.subscribe(`/topic/${roomId}`, (msg) => {
           const receivedMessage = JSON.parse(msg.body);
-          if (receivedMessage.type === "PLACE") {
-            const place = JSON.parse(receivedMessage.message);
-            setMessages((prev) => [...prev, { type: "PLACE", place }]);
-          } else {
-            setMessages((prev) => [...prev, receivedMessage]);
-          }
+          setMessages((prev) => [...prev, receivedMessage]);
         });
+
+        client.send(
+          `/send/${roomId}`,
+          {},
+          JSON.stringify({
+            sender: currentUser,
+            message: `${currentUser}님이 입장했습니다.`,
+            roomId,
+            type: "ENTER",
+            timestamp: new Date().toLocaleString(),
+          })
+        );
       },
       (error) => {
-        console.error("STOMP 연결 실패:", error);
-        alert("STOMP 연결 실패! 서버가 실행 중인지 확인하세요.");
+        console.error("WebSocket 연결 실패:", error);
+        alert("WebSocket 연결 실패! 서버가 실행 중인지 확인하세요.");
       }
     );
 
-    // 채팅방 목록 가져오기
-    fetch(`${BASE_URL}/chat/rooms`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setChatRooms(data))
-      .catch((error) => console.error("채팅방 목록 가져오기 실패:", error));
-
     return () => {
-      if (client.connected) client.disconnect();
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect(() => {
+          console.log("WebSocket 연결 해제");
+        });
+        stompClientRef.current = null;
+      }
     };
   }, [roomId]);
 
   // 메시지 보내는 기능
   const sendMessage = (message, type = "TALK") => {
+    if (!message.trim()) return;
+
     const token = localStorage.getItem("accessToken");
     stompClientRef.current?.send(
-      `/pub/chat.message.${roomId}`,
+      `/send/${roomId}`,
       { Authorization: `Bearer ${token}` },
       JSON.stringify({
         sender: currentUser,
@@ -125,7 +126,7 @@ const Chat = () => {
       .then((res) => res.json())
       .then(() => {
         alert("채팅방에서 나갔습니다.");
-        window.location.href = "/"; // 홈으로 이동
+        navigate("/"); // 홈으로 이동
       })
       .catch((error) => console.error("채팅방 나가기 실패:", error));
   };
@@ -141,7 +142,7 @@ const Chat = () => {
               <li
                 key={room.roomId}
                 className={`p-2 rounded cursor-pointer ${
-                  room.roomId === Number(roomId)
+                  room.roomId === (roomId ? Number(roomId) : null)
                     ? "bg-blue-100"
                     : "hover:bg-gray-100"
                 }`}
