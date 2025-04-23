@@ -1,9 +1,10 @@
 // Chat 컴포넌트
 import { useEffect, useState, useRef } from "react";
 import SockJS from "sockjs-client";
-import { Stomp } from "@stomp/stompjs";
+import { Stomp, Client } from "@stomp/stompjs";
 import Modal from "../../components/chat/Modal";
-import MapSearch from "../../components/chat/MapSerach";
+import MapSearch from "../../components/chat/MapSearch";
+import { useNavigate } from "react-router-dom";
 
 if (typeof window !== "undefined") {
   window.global = window;
@@ -17,78 +18,144 @@ const Chat = () => {
   const [roomMembers, setRoomMembers] = useState([]);
   const [connected, setConnected] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [currentUser, setCurrentUser] = useState("");
   const stompClientRef = useRef(null);
   const roomId = new URLSearchParams(window.location.search).get("roomId");
-  const currentUser = localStorage.getItem("nickName");
   const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+  const token = sessionStorage.getItem("accessToken");
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-  const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL; // 환경변수에서 API base URL을 가져옴
-
-  // WebSocket 연결 및 STOMP 클라이언트 설정
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken"); // 세션에서 액세스 토큰을 가져옴
-    const socket = new SockJS(`http://localhost:8080/ws/chat`); // WebSocket 연결
-    const client = Stomp.over(socket);
-    stompClientRef.current = client;
+    const nickname = localStorage.getItem("nickName");
+    if (nickname) setCurrentUser(nickname);
+  }, []);
 
-    // STOMP 연결
-    client.connect(
-      { Authorization: `Bearer ${token}` },
-      () => {
+  // 접속중인 채팅방 가져오기
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/chat/rooms`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setChatRooms(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("채팅방 목록 불러오기 실패:", error);
+        setChatRooms([]);
+      }
+    };
+    fetchRooms();
+  }, [BASE_URL, token]);
+
+  // 채팅 내용 가져오기
+  useEffect(() => {
+    if (roomId) {
+      fetch(`${BASE_URL}/chat/${roomId}/messages`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setMessages(Array.isArray(data) ? data : []))
+        .catch((err) => {
+          console.warn("메시지 조회 중 오류:", err.message);
+          setMessages([]);
+        });
+    }
+  }, [roomId, BASE_URL, token]);
+
+  // 웹소켓 연결
+  useEffect(() => {
+    if (!roomId || !token || !currentUser) return;
+
+    const client = new Client({
+      webSocketFactory: () => new WebSocket("http://localhost:8080/ws/chat"),
+      connectHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+      debug: (str) => console.log("[STOMP]", str),
+      reconnectDelay: 5000,
+      onConnect: () => {
+        setConnected(true);
+
         client.subscribe(`/topic/${roomId}`, (msg) => {
-          const receivedMessage = JSON.parse(msg.body);
-          setMessages((prev) => [...prev, receivedMessage]);
+          const received = JSON.parse(msg.body);
+          if (!received.sender) received.sender = "알 수 없음";
+          if (!received.writeTime)
+            received.writeTime = new Date().toISOString();
+          setMessages((prev) => [...prev, received]);
         });
 
-        client.send(
-          `/send/${roomId}`,
-          {},
-          JSON.stringify({
+        client.publish({
+          destination: `/send/${roomId}`,
+          body: JSON.stringify({
             sender: currentUser,
             message: `${currentUser}님이 입장했습니다.`,
-            roomId,
+            roomId: roomId,
             type: "ENTER",
-            timestamp: new Date().toLocaleString(),
-          })
-        );
+            writeTime: new Date().toISOString(),
+          }),
+        });
+        console.log("보내는 메시지:", {
+          sender: currentUser,
+          message: `${currentUser}님이 입장했습니다.`,
+          roomId: roomId,
+          type: "ENTER",
+          writeTime: new Date().toISOString(),
+        });
       },
-      (error) => {
-        console.error("WebSocket 연결 실패:", error);
-        alert("WebSocket 연결 실패! 서버가 실행 중인지 확인하세요.");
-      }
-    );
+      onStompError: (frame) => {
+        console.error("❌ STOMP 오류:", frame.headers["message"]);
+      },
+      onWebSocketError: (event) => {
+        console.error("❌ WebSocket 오류:", event);
+      },
+    });
+
+    client.activate();
+    stompClientRef.current = client;
 
     return () => {
       if (stompClientRef.current) {
-        stompClientRef.current.disconnect(() => {
-          console.log("WebSocket 연결 해제");
-        });
-        stompClientRef.current = null;
+        stompClientRef.current.deactivate();
       }
     };
-  }, [roomId]);
+  }, [roomId, token, currentUser]);
 
-  // 메시지 보내는 기능
-  const sendMessage = (message, type = "TALK") => {
-    if (!message.trim()) return;
+  useEffect(() => {
+    if (!window.kakao) {
+      const script = document.createElement("script");
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${
+        import.meta.env.VITE_KAKAO_API_KEY
+      }&libraries=services`;
+      script.async = true;
+      script.onload = () => {
+        console.log("카카오 맵 스크립트 로드됨");
+      };
+      document.head.appendChild(script);
+    }
+  }, []);
 
-    const token = localStorage.getItem("accessToken");
-    stompClientRef.current?.send(
-      `/send/${roomId}`,
-      { Authorization: `Bearer ${token}` },
-      JSON.stringify({
-        sender: currentUser,
-        message,
-        roomId,
-        type,
-        timestamp: new Date().toISOString(),
-      })
-    );
-    if (type === "TALK") setNewMessage("");
+  const sendMessage = () => {
+    if (!newMessage.trim() || !currentUser) return;
+
+    const newMsg = {
+      sender: currentUser,
+      message: newMessage,
+      roomId,
+      type: "TALK",
+      // 백엔드에서 time을 설정하므로 프론트에서 굳이 넣지 않아도 됩니다
+    };
+
+    stompClientRef.current.publish({
+      destination: `/send/${roomId}`,
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(newMsg),
+    });
+
+    // ❌ 절대 setMessages 하지 마세요 (중복 방지)
+    setNewMessage(""); // 입력창 초기화만!
   };
 
-  // 현재 채팅방 멤버 리스트 가져오기
   useEffect(() => {
     if (roomId) {
       fetch(`${BASE_URL}/chat/room/${roomId}`, {
@@ -102,20 +169,32 @@ const Chat = () => {
     }
   }, [roomId]);
 
-  // 장소 공유
   const sharePlace = (place) => {
-    const message = JSON.stringify({
-      title: place.title,
-      address: place.address,
-      lat: place.lat,
-      lng: place.lng,
-      mapUrl: `https://map.kakao.com/link/map/${place.title},${place.lat},${place.lng}`, // Kakao Maps 링크
+    const newMsg = {
+      sender: currentUser,
+      roomId,
+      type: "PLACE",
+      writeTime: new Date().toISOString(),
+      place: {
+        title: place.title,
+        address: place.address,
+        lat: place.lat,
+        lng: place.lng,
+        mapUrl: `https://map.kakao.com/link/map/${place.title},${place.lat},${place.lng}`,
+      },
+    };
+
+    stompClientRef.current.publish({
+      destination: `/send/${roomId}`,
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(newMsg),
     });
-    sendMessage(message, "PLACE");
-    setIsModalOpen(false); // 지도 공유 모달 닫기
+
+    // 클라이언트에도 즉시 반영
+    setMessages((prev) => [...prev, newMsg]);
+    setIsModalOpen(false);
   };
 
-  //채팅방 나가기
   const leaveRoom = () => {
     fetch(`${BASE_URL}/chat/${roomId}`, {
       method: "DELETE",
@@ -126,43 +205,41 @@ const Chat = () => {
       .then((res) => res.json())
       .then(() => {
         alert("채팅방에서 나갔습니다.");
-        navigate("/"); // 홈으로 이동
+        navigate("/");
       })
       .catch((error) => console.error("채팅방 나가기 실패:", error));
   };
 
+  const currentRoom = chatRooms.find(
+    (room) => String(room.roomId) === String(roomId)
+  );
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* 채팅방 목록 */}
-      <div className="w-1/4 bg-white border-r p-4">
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      <div className="w-1/4 bg-white border-r p-4 flex flex-col">
         <h2 className="text-xl font-bold mb-4">채팅방 목록</h2>
-        <ul className="space-y-2">
-          {Array.isArray(chatRooms) && chatRooms.length > 0 ? (
-            chatRooms.map((room) => (
-              <li
-                key={room.roomId}
-                className={`p-2 rounded cursor-pointer ${
-                  room.roomId === (roomId ? Number(roomId) : null)
-                    ? "bg-blue-100"
-                    : "hover:bg-gray-100"
-                }`}
-                onClick={() =>
-                  (window.location.href = `?roomId=${room.roomId}`)
-                }
-              >
-                {room.roomName}
-              </li>
-            ))
-          ) : (
-            <li>채팅방이 없습니다.</li>
-          )}
+        <ul className="space-y-2 overflow-y-auto flex-1">
+          {chatRooms.map((room) => (
+            <li
+              key={room.roomId}
+              className={`p-2 rounded cursor-pointer ${
+                room.roomId === (roomId ? Number(roomId) : null)
+                  ? "bg-blue-100"
+                  : "hover:bg-gray-100"
+              }`}
+              onClick={() => (window.location.href = `?roomId=${room.roomId}`)}
+            >
+              {room.roomName}
+            </li>
+          ))}
         </ul>
       </div>
 
-      {/* 채팅창 */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-white border-r h-screen">
         <div className="p-4 border-b flex justify-between items-center">
-          <h3 className="text-lg font-bold">채팅방 {roomId}</h3>
+          <h3 className="text-lg font-bold">
+            {currentRoom ? currentRoom.roomName : `채팅방 ${roomId}`}
+          </h3>
           <button
             onClick={leaveRoom}
             className="bg-red-500 text-white px-4 py-2 rounded"
@@ -170,89 +247,104 @@ const Chat = () => {
             나가기
           </button>
         </div>
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex items-start ${
+              className={`flex ${
                 msg.sender === currentUser ? "justify-end" : "justify-start"
               }`}
             >
-              <div
-                className={`max-w-xs p-4 rounded-lg shadow-md ${
-                  msg.sender === currentUser
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-black border"
-                }`}
-              >
-                {msg.type === "PLACE" ? (
-                  <div
-                    className="p-4 bg-gray-100 rounded shadow cursor-pointer"
-                    onClick={() => {
-                      const kakaoMapLink = `https://map.kakao.com/link/map/${msg.place.title},${msg.place.lat},${msg.place.lng}`;
-                      window.open(kakaoMapLink, "_blank");
-                    }}
-                  >
-                    <div className="flex items-center space-x-4">
-                      {/* Kakao Static Map으로 지도 미리보기 */}
+              <div className="max-w-xs">
+                {msg.sender !== currentUser && (
+                  <div className="text-xs text-gray-500 mb-1">{msg.sender}</div>
+                )}
+
+                <div
+                  className={`p-3 rounded-lg shadow-md whitespace-pre-wrap break-words ${
+                    msg.sender === currentUser
+                      ? "bg-blue-500 text-white rounded-br-none"
+                      : "bg-gray-200 text-black rounded-bl-none"
+                  }`}
+                >
+                  {msg.type === "PLACE" && msg.place ? (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => window.open(msg.place.mapUrl, "_blank")}
+                    >
                       <img
-                        src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=200x150`}
-                        alt="map preview"
-                        className="w-24 h-24 rounded"
+                        src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=400x200`}
+                        alt="map"
+                        className="rounded mb-2"
                       />
                       <div>
                         <strong>{msg.place.title}</strong>
-                        <p>{msg.place.address}</p>
+                        <p className="text-sm text-gray-600">
+                          {msg.place.address}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <p className="break-words">{msg.message}</p>
-                )}
-                {/* 시간 표시 */}
-                <span
-                  className={`text-xs mt-2 ${
+                  ) : (
+                    <p>{msg.message}</p>
+                  )}
+                </div>
+
+                <div
+                  className={`text-xs mt-1 ${
                     msg.sender === currentUser
-                      ? "text-gray-200"
-                      : "text-gray-500"
+                      ? "text-right text-gray-300"
+                      : "text-left text-gray-500"
                   }`}
                 >
-                  {new Date(msg.timestamp).toLocaleString("ko-KR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                  {msg.writeTime && !isNaN(Date.parse(msg.writeTime))
+                    ? new Date(msg.writeTime).toLocaleTimeString("ko-KR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "시간 오류"}
+                </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="p-4 border-t flex">
+
+        <div className="p-4 border-t flex items-center gap-2">
           <input
             type="text"
             value={newMessage}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage(newMessage);
+            }}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="메시지를 입력하세요"
             className="w-full p-2 border rounded"
           />
           <button
             onClick={() => sendMessage(newMessage)}
-            className="bg-blue-500 text-white p-2 rounded ml-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
           >
             전송
           </button>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="ml-2 bg-green-500 text-white p-2 rounded"
-          >
-            주소 공유
-          </button>
+          {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white w-4/5 h-4/5 rounded-lg shadow-lg overflow-hidden relative">
+                <button
+                  className="absolute top-2 right-2 text-xl"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ✖
+                </button>
+                <MapSearch onSelectPlace={sharePlace} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 접속 인원 */}
-      <div className="w-1/4 bg-white border-l p-4">
+      <div className="w-1/4 bg-white border-l p-4 flex flex-col">
         <h2 className="text-lg font-bold mb-4">접속 인원</h2>
-        <ul className="space-y-2">
+        <ul className="space-y-2 overflow-y-auto flex-1">
           {roomMembers.map((member) => (
             <li
               key={member.nickName}
@@ -265,18 +357,6 @@ const Chat = () => {
           ))}
         </ul>
       </div>
-
-      {/* 장소 공유 모달 */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        content={
-          <MapSearch
-            onSelectPlace={(place) => sharePlace(place)}
-            setSearchResults={setSearchResults}
-          />
-        }
-      />
     </div>
   );
 };

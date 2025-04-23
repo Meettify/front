@@ -39,12 +39,3 @@ const useChatStore = create((set) => ({
 
 export default useChatStore;
 
-
-
-// const useChatRoomStore = create((set) => ({
-//   roomId: null, // 초기 roomId 값은 null
-//   setRoomId: (id) => set({ roomId: id }), // roomId 상태를 설정하는 함수
-//   resetRoomId: () => set({ roomId: null }), // roomId를 초기화하는 함수
-//   chatRoomExists: false, // 채팅방 존재 여부
-//   setChatRoomExists: (exists) => set({ chatRoomExists: exists }), // 채팅방 존재 여부 설정 함수
-// }));

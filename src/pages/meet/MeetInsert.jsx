@@ -170,11 +170,7 @@ const MeetInsert = () => {
         </div>
 
         {/* 오른쪽: 추천 상품 사이드바 */}
-        <div className="w-1/4 p-4">
-          <div className="bg-gray-200 h-full p-4 rounded-xl min-h-[500px]">
-            <MeetSideMenu />
-          </div>
-        </div>
+        <MeetSideMenu />
       </div>
 
       <div className="w-full flex justify-center mt-10">
