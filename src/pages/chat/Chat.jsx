@@ -173,7 +173,6 @@ const Chat = () => {
       sender: currentUser,
       roomId,
       type: "PLACE",
-      writeTime: new Date().toISOString(),
       place: {
         title: place.title,
         address: place.address,
@@ -183,14 +182,17 @@ const Chat = () => {
       },
     };
 
+    // 서버에도 publish 해서 저장시킨다
     stompClientRef.current.publish({
       destination: `/send/${roomId}`,
       headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify(newMsg),
     });
 
-    // 클라이언트에도 즉시 반영
-    setMessages((prev) => [...prev, newMsg]);
+    console.log("Kakao Key:", KAKAO_API_KEY);
+    console.log("위도(lat):", newMsg.place.lat);
+    console.log("경도(lng):", newMsg.place.lng);
+
     setIsModalOpen(false);
   };
 
@@ -213,10 +215,6 @@ const Chat = () => {
     (room) => String(room.roomId) === String(roomId)
   );
 
-  if (typeof window !== "undefined") {
-    window.global = window;
-  }
-
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       <div className="w-1/4 bg-white border-r p-4 flex flex-col">
@@ -238,9 +236,8 @@ const Chat = () => {
         </ul>
       </div>
 
-      {/* 가운데 - 채팅 메인 */}
-      <div className="flex flex-col flex-1 bg-white border-r">
-        {/* 방 제목 + 나가기 */}
+      {/* 중간 메인 부분 제목 & 나가기 버튼 */}
+      <div className="flex-1 flex flex-col bg-white border-r h-screen">
         <div className="p-4 border-b flex justify-between items-center">
           <h3 className="text-lg font-bold">
             {currentRoom ? currentRoom.roomName : `채팅방 ${roomId}`}
@@ -253,8 +250,8 @@ const Chat = () => {
           </button>
         </div>
 
-        {/* 채팅 메시지 영역 (스크롤) */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+        {/* 중간 메인 부분 채팅 내용 부분 */}
+        <div className="flex-1 min-h-0  max-h-[1350px]  overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -281,14 +278,14 @@ const Chat = () => {
                       className="cursor-pointer"
                       onClick={() => window.open(msg.place.mapUrl, "_blank")}
                     >
-                      <img
+                      {/* <img
                         src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=400x200&markers=color:red|label:P|${msg.place.lat},${msg.place.lng}`}
                         alt="지도 미리보기"
                         className="rounded w-full h-auto mb-2"
                         onError={(e) => {
                           e.target.src = "/fallback-map.png";
                         }}
-                      />
+                      /> */}
                       <div>
                         <strong>{msg.place.title}</strong>
                         <p className="text-sm text-gray-600">
@@ -321,7 +318,7 @@ const Chat = () => {
         </div>
 
         {/* 채팅 입력창 줄 */}
-        <div className="p-4 border-t flex items-center gap-2 overflow-hidden">
+        <div className="flex-none p-4 border-t flex items-center gap-2 overflow-hidden">
           <input
             type="text"
             value={newMessage}
