@@ -14,7 +14,8 @@ const useChatStore = create((set) => ({
 
       const fetchedMeeting = await getMeetingDetail(meetId);
       setMeeting(fetchedMeeting);
-      setMeetRole(fetchedMeeting.meetRole);
+      setMeetRole(fetchedMeeting.meetPermissionDTO?.meetRole || null);
+
 
       const roomName = fetchedMeeting.meetDetailDTO.meetName;
       console.log(`[DEBUG] Room Name: ${roomName}`);

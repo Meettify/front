@@ -1,77 +1,78 @@
 import request from "./request";
 import axios from "axios";
 
+// ✅ JWT 토큰이 필요한 API에는 Authorization 헤더 추가 필요
+
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
-// 소모임 등록 API
+const getAuthToken = () => {
+  const token = sessionStorage.getItem("accessToken");
+  return token ? `Bearer ${token}` : null;
+};
+
+// 🔐 모임 생성 - 인증 필요
 export const postMeetInsert = async (data) => {
-    try {
-        const response = await request.post({
-            url: `${BASE_URL}/meets`,
-            data,
-        });
-        return response; // 전체 응답 객체를 반환
-    } catch (error) {
-        console.error('소모임 등록 오류:', error);
-        if (error.response) {
-            return error.response; // 에러 시에도 전체 응답 반환
-        } else {
-            return { status: 500, message: '서버에 연결할 수 없습니다.' };
-        }
-    }
+  try {
+    const token = getAuthToken();
+    const response = await request.post({
+      url: `${BASE_URL}/meets`,
+      data,
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("소모임 등록 오류:", error);
+    return error.response || { status: 500, message: "서버에 연결할 수 없습니다." };
+  }
 };
 
-// 소모임 가입 승인 및 회원 조회 API
+// 🔐 회원 리스트 조회 - 관리자 권한 필요
 export const getMembersList = async (meetId) => {
-    try {
-        const response = await request.get({
-            url: `${BASE_URL}/meets/${meetId}/members`,
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('회원 리스트 조회 오류:', error);
-
-        if (error.response) {
-            return error.response;
-        } else {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        }
-    }
+  try {
+    const token = getAuthToken();
+    const response = await request.get({
+      url: `${BASE_URL}/meets/${meetId}/members`,
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("회원 리스트 조회 오류:", error);
+    return error.response || { status: 500, message: "서버에 연결할 수 없습니다." };
+  }
 };
 
+// 🔐 모임 삭제 - 관리자 권한 필요
 export const deleteMeet = async (meetId) => {
-    try {
-        const response = await request.del({
-            url: `/meets/${meetId}`, 
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        return response; 
-    } catch (error) {
-        console.error('소모임 삭제 오류:', error);
-        if (error.response) {
-            return error.response; 
-        } else {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        }
-    }
+  try {
+    const token = getAuthToken();
+    const response = await request.del({
+      url: `${BASE_URL}/meets/${meetId}`,
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("소모임 삭제 오류:", error);
+    return error.response || { status: 500, message: "서버에 연결할 수 없습니다." };
+  }
 };
 
 // 소모임 리스트 조회 API
 export const getMeetList = async (page = 0, size = 10, sort = "meetName", category = "") => {
     try {
+        const token = getAuthToken();
         const response = await request.get({
             url: `${BASE_URL}/meets`,
+            headers: {
+                Authorization: token,
+            },
             params: {
                 page,
                 size,
@@ -97,16 +98,17 @@ export const getMeetList = async (page = 0, size = 10, sort = "meetName", catego
 // 소모임 상세 조회 API
 export const getMeetingDetail = async (meetId) => {
     try {
+        const token = getAuthToken();  // 토큰 가져오기
         const response = await request.get({
             url: `${BASE_URL}/meets/${meetId}`,
             headers: {
+                Authorization: token,  // ⬅️ 토큰 추가!
                 "Content-Type": "application/json",
             }
         });
         return response.data;
     } catch (error) {
         console.error('소모임 상세 조회 오류:', error);
-
         if (error.response) {
             return error.response.data;
         } else {
@@ -117,6 +119,7 @@ export const getMeetingDetail = async (meetId) => {
         }
     }
 };
+
 
 // 소모임 수정 API
 export const updateMeet = async (meetId, updateMeetDTO, newImages = []) => {
@@ -151,52 +154,42 @@ export const updateMeet = async (meetId, updateMeetDTO, newImages = []) => {
     }
 };
 
-// 소모임 가입 신청 API
+// 🔐 모임 가입 신청 - 인증 필요
 export const postMeetJoin = async (meetId) => {
-    try {
-        const response = await request.post({
-            url: `${BASE_URL}/meets/${meetId}/members`, // 가입 신청 엔드포인트 수정
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        return response.data; // 가입 신청 성공 응답 반환
-    } catch (error) {
-        console.error('가입 신청 오류:', error);
-        if (error.response) {
-            return error.response;
-        } else {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        }
-    }
+  try {
+    const token = getAuthToken();
+    const response = await request.post({
+      url: `${BASE_URL}/meets/${meetId}/members`,
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("가입 신청 오류:", error);
+    return error.response || { status: 500, message: "서버에 연결할 수 없습니다." };
+  }
 };
 
 
-// 회원 역할 업데이트 API
+// 🔐 회원 역할 업데이트 - 관리자 권한 필요
 export const updateMemberRole = async (meetId, meetMemberId, newRole) => {
-    try {
-        const response = await request.put({
-            url: `${BASE_URL}/meets/admin/${meetId}/${meetMemberId}`,  // 엔드포인트 수정
-            data: { newRole },
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        return response;
-    } catch (error) {
-        console.error('회원 역할 업데이트 오류:', error);
-        if (error.response) {
-            return error.response;
-        } else {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        }
-    }
+  try {
+    const token = getAuthToken();
+    const response = await request.put({
+      url: `${BASE_URL}/meets/admin/${meetId}/${meetMemberId}`,
+      data: { newRole },
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("회원 역할 업데이트 오류:", error);
+    return error.response || { status: 500, message: "서버에 연결할 수 없습니다." };
+  }
 };
 
 // 전체 검색 API
@@ -226,19 +219,6 @@ export const searchMeets = async (totalKeyword) => {
         }
     }
 };
-
-// 로그인된 사용자의 인증 토큰 (JWT 등)을 헤더에 포함시킬 필요가 있음
-const getAuthToken = () => {
-    const token = `${sessionStorage.getItem('accessToken')}`;
-    if (token) {
-        console.log('Access Token:', token);// 토큰이 존재하면 사용 (예: API 요청 헤더에 포함)
-        return token;
-        } else {
-            console.log('토큰이 존재하지 않습니다.');
-            return null;
-        };
-};
-
 
 // 모임 게시판 리스트 API (axios 사용)
 export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') => {

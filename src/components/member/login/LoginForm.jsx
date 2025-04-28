@@ -37,6 +37,7 @@ const LoginForm = () => {
       localStorage.setItem("refreshToken", result.data.refreshToken); // 로컬 스토리지에 리프레시 토큰 저장
       localStorage.setItem("memberId", result.data.memberId);
       localStorage.setItem("nickName", result.data.nickName);
+      localStorage.setItem("memberEmail", result.data.memberEmail);
       console.log(`result.data.memberId : ${result.data.memberId}`);
       closeModal("login");
       goToHome();

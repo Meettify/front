@@ -1,147 +1,164 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Modal from "./Modal"; // Modal 컴포넌트를 임포트
 
-function MapSearch({ onSelectPlace }) {
+function MapSearch({ onSelectPlace, onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState({
-    lat: 37.5665, // 기본값: 서울 시청
-    lng: 126.978,
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [map, setMap] = useState(null);
+  const [marker, setMarker] = useState(null);
 
-  // 사용자의 현재 위치 가져오기
+  const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+
+  // 카카오 맵 초기화
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("현재 위치를 가져오는데 실패했습니다:", error);
-        }
-      );
-    }
+    if (!window.kakao || !window.kakao.maps) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const latlng = new window.kakao.maps.LatLng(lat, lng);
+        setCurrentLocation({ lat, lng });
+
+        const mapContainer = document.getElementById("mainMap");
+        const kakaoMap = new window.kakao.maps.Map(mapContainer, {
+          center: latlng,
+          level: 3,
+        });
+
+        const userMarker = new window.kakao.maps.Marker({
+          map: kakaoMap,
+          position: latlng,
+          title: "현재 위치",
+        });
+
+        setMarker(userMarker);
+        setMap(kakaoMap);
+
+        // 현재 위치로 기본 장소 설정
+        setSelectedPlace({
+          title: "현재 위치",
+          address: "현재 위치",
+          lat,
+          lng,
+        });
+      },
+      (err) => {
+        alert("위치 정보를 가져올 수 없습니다.");
+        console.error(err);
+      }
+    );
   }, []);
 
-  // 주소 검색
+  // 검색 실행
   const handleSearch = async () => {
     try {
-      const response = await axios.get(
-        `/api/v1/naver/${encodeURIComponent(searchQuery)}`
-      );
-      setSearchResults(response.data); // 검색 결과 저장
-      renderMap(response.data); // 지도 렌더링
-    } catch (error) {
-      alert("검색에 실패했습니다. 다시 시도해주세요."); // 사용자 알림
-      console.error("검색 실패:", error);
+      const res = await axios.get(`${BASE_URL}/naver`, {
+        params: { query: searchQuery },
+      });
+
+      const cleaned = res.data.map((place) => ({
+        ...place,
+        title: place.title.replace(/<[^>]+>/g, ""),
+        address: place.address.replace(/<[^>]+>/g, ""),
+      }));
+
+      setSearchResults(cleaned);
+      if (cleaned[0]) updateMap(cleaned[0]);
+    } catch (err) {
+      alert("검색 실패");
+      console.error(err);
     }
   };
 
-  // 주소 화면
-  const renderMap = (places) => {
-    const kakao = window.kakao;
-    const container = document.getElementById("map");
-    const options = {
-      center: places.length
-        ? new kakao.maps.LatLng(places[0].lat, places[0].lng)
-        : new kakao.maps.LatLng(currentLocation.lat, currentLocation.lng), // 현재 위치를 지도 중심으로 설정
-      level: places.length ? 3 : 11, // 검색 결과가 없으면 확대 수준 변경
-    };
-    const map = new kakao.maps.Map(container, options);
+  // 지도 업데이트
+  const updateMap = (place) => {
+    if (!map) return;
 
-    places.forEach((place) => {
-      const marker = new kakao.maps.Marker({
-        map,
-        position: new kakao.maps.LatLng(place.lat, place.lng),
-        title: place.title,
-      });
+    const latlng = new window.kakao.maps.LatLng(place.lat, place.lng);
+    map.setCenter(latlng);
 
-      const infoWindow = new kakao.maps.InfoWindow({
-        content: `<div style="padding:5px;">${place.title}</div>`,
-      });
+    if (marker) marker.setMap(null);
 
-      kakao.maps.event.addListener(marker, "mouseover", () => {
-        infoWindow.open(map, marker);
-      });
-
-      kakao.maps.event.addListener(marker, "mouseout", () => {
-        infoWindow.close();
-      });
-
-      kakao.maps.event.addListener(marker, "click", () => {
-        setSelectedPlace(place); // 선택한 장소 상태 업데이트
-        setIsModalOpen(true); // 모달 열기
-      });
+    const newMarker = new window.kakao.maps.Marker({
+      map,
+      position: latlng,
+      title: place.title,
     });
-  };
 
-  // 모달을 닫는 함수
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // 모달 닫기
+    setMarker(newMarker);
+    setSelectedPlace(place);
   };
 
   return (
-    <div className="flex">
-      {/* 지도 영역 */}
-      <div className="w-1/2">
-        <div id="map" className="w-full h-64 mt-4"></div>
+    <div className="fixed inset-0 z-50 flex bg-black bg-opacity-30">
+      {/* 왼쪽: 지도 영역 */}
+      <div className="flex-1 bg-white">
+        <div id="mainMap" className="w-full h-full" />
       </div>
 
-      {/* 검색 결과 리스트 */}
-      <div className="w-1/2 p-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="검색어를 입력하세요"
-          className="w-full border rounded p-2"
-        />
-        <button
-          onClick={handleSearch}
-          className="mt-2 bg-primary text-white p-2 rounded w-full"
-        >
-          검색
-        </button>
-        <ul className="mt-4">
-          {searchResults.map((place, index) => (
-            <li
-              key={index}
-              className={`mb-2 p-2 rounded ${
-                selectedPlace && selectedPlace.title === place.title
-                  ? "bg-blue-100" // 선택된 장소 강조
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <strong>{place.title}</strong>
-                  <p className="text-gray-500">{place.address}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedPlace(place); // 장소 선택
-                    setIsModalOpen(true); // 모달 열기
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  공유하기
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* 오른쪽: 검색 + 결과 + 공유 */}
+      <div className="w-[460px] h-full bg-white shadow-xl p-4 flex flex-col">
+        {/* 상단 검색창 */}
+        <div className="border-b pb-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="검색어를 입력하세요"
+              className="flex-grow border rounded px-3 py-2"
+            />
+            <button onClick={onClose} className="text-xl hover:text-gray-500">
+              ✖
+            </button>
+          </div>
+          <button
+            onClick={handleSearch}
+            className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+          >
+            🔍 검색
+          </button>
+        </div>
 
-      {/* 모달 컴포넌트 표시 */}
-      {isModalOpen && (
-        <Modal place={selectedPlace} onClose={handleCloseModal} onShare={onSelectPlace} />
-      )}
+        {/* 검색 결과 목록 */}
+        <div className="overflow-y-auto flex-1 py-4">
+          <ul className="space-y-3">
+            {searchResults.map((place, idx) => (
+              <li
+                key={idx}
+                onClick={() => updateMap(place)}
+                className={`cursor-pointer p-3 border rounded-md shadow-sm hover:shadow transition ${
+                  selectedPlace?.title === place.title
+                    ? "bg-blue-100 border-blue-300"
+                    : "bg-white"
+                }`}
+              >
+                <strong className="block font-medium mb-1">
+                  {place.title}
+                </strong>
+                <p className="text-gray-600 text-sm">{place.address}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* 공유 버튼 */}
+        {selectedPlace && (
+          <button
+            onClick={() => {
+              onSelectPlace(selectedPlace);
+              onClose();
+            }}
+            className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-lg"
+          >
+            📍 공유하기
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import useAuthStore from "../../stores/useAuthStore";
 import useChatStore from "../../stores/useChatStore";
 import { checkChatRoom } from "../../api/chatAPI";
 import CreateChatRoomModal from "../../components/chat/CreateChatRoomModal";
+import { getMembersList } from "../../api/meetAPI"; // 추가
 
 const MeetDetail = () => {
   const { meetId } = useParams();
@@ -23,12 +24,47 @@ const MeetDetail = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { user } = useAuthStore((state) => state);
+
   const {
     fetchData,
     roomId: roomIdFromStore,
     setRoomId,
     chatRoomExists,
   } = useChatStore();
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const userEmail = localStorage.getItem("memberEmail"); // 👉 useEffect 안으로 이동
+      if (!userEmail) {
+        console.warn("로그인된 사용자 이메일이 없습니다.");
+        setMeetRole("OUTSIDER");
+        return;
+      }
+
+      try {
+        const members = await getMembersList(meetId);
+        console.log("회원 응답 전체:", members);
+
+        const me = members.find((m) => {
+          console.log("접속중인 유저 이메일 : ", userEmail);
+          console.log("가져온 유저 이메일 : ", m.email);
+          return m.email === userEmail;
+        });
+        console.log("chatRoomExists:", chatRoomExists); // ❓ true 여야 버튼이 뜸
+
+        if (me) {
+          setMeetRole(me.meetRole); // MEMBER, ADMIN, WAITING 등
+        } else {
+          setMeetRole("OUTSIDER");
+        }
+      } catch (err) {
+        console.warn("회원 목록 조회 실패", err);
+        setMeetRole("OUTSIDER");
+      }
+    };
+
+    fetchRole();
+  }, [meetId]);
 
   useEffect(() => {
     fetchData(meetId, setMeeting, setMeetRole, setLoading);
@@ -165,19 +201,22 @@ const MeetDetail = () => {
           </div>
 
           <div className="flex justify-center flex-wrap gap-4 mt-8">
-            <MeetJoin
-              meetId={meetId}
-              onSubmit={async () => {
-                try {
-                  const response = await postMeetJoin(meetId);
-                  alert(response?.data?.message || "가입 요청 완료");
-                } catch (error) {
-                  console.error("가입 신청 오류:", error);
-                  alert("가입 신청에 실패했습니다.");
-                }
-              }}
-              className="bg-blue-500 hover:bg-blue-600"
-            />
+            {/* ✅ 가입 신청 버튼 */}
+            {meetRole !== null && !["ADMIN", "MEMBER"].includes(meetRole) && (
+              <MeetJoin
+                meetId={meetId}
+                onSubmit={async () => {
+                  try {
+                    const response = await postMeetJoin(meetId);
+                    alert(response?.data?.message || "가입 요청 완료");
+                  } catch (error) {
+                    console.error("가입 신청 오류:", error);
+                    alert("가입 신청에 실패했습니다.");
+                  }
+                }}
+                className="bg-blue-500 hover:bg-blue-600"
+              />
+            )}
 
             {meetRole === "ADMIN" && (
               <RoundedButton
@@ -203,16 +242,27 @@ const MeetDetail = () => {
                 채팅방 생성
               </RoundedButton>
             )}
-
-            {chatRoomExists &&
-              (meetRole === "ADMIN" || meetRole === "MEMBER") && (
-                <RoundedButton
-                  onClick={handleEnterChat}
-                  className="bg-green-500 hover:bg-green-600"
-                >
-                  채팅방 입장
-                </RoundedButton>
-              )}
+            {/* ✅ 채팅방 입장 / 생성 */}
+            {meetRole !== null && (
+              <>
+                {!chatRoomExists && meetPermissionDTO?.canEdit && (
+                  <RoundedButton
+                    onClick={handleEnterChat}
+                    className="bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    채팅방 생성
+                  </RoundedButton>
+                )}
+                {chatRoomExists && ["ADMIN", "MEMBER"].includes(meetRole) && (
+                  <RoundedButton
+                    onClick={handleEnterChat}
+                    className="bg-green-500 hover:bg-green-600"
+                  >
+                    채팅방 입장
+                  </RoundedButton>
+                )}
+              </>
+            )}
           </div>
         </div>
         <MeetSideMenu />

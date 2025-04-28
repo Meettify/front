@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from "react";
 import SockJS from "sockjs-client";
 import { Stomp, Client } from "@stomp/stompjs";
-import Modal from "../../components/chat/Modal";
 import MapSearch from "../../components/chat/MapSearch";
 import { useNavigate } from "react-router-dom";
 
@@ -214,6 +213,10 @@ const Chat = () => {
     (room) => String(room.roomId) === String(roomId)
   );
 
+  if (typeof window !== "undefined") {
+    window.global = window;
+  }
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       <div className="w-1/4 bg-white border-r p-4 flex flex-col">
@@ -235,7 +238,9 @@ const Chat = () => {
         </ul>
       </div>
 
-      <div className="flex-1 flex flex-col bg-white border-r h-screen">
+      {/* 가운데 - 채팅 메인 */}
+      <div className="flex flex-col flex-1 bg-white border-r">
+        {/* 방 제목 + 나가기 */}
         <div className="p-4 border-b flex justify-between items-center">
           <h3 className="text-lg font-bold">
             {currentRoom ? currentRoom.roomName : `채팅방 ${roomId}`}
@@ -248,7 +253,8 @@ const Chat = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* 채팅 메시지 영역 (스크롤) */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -258,7 +264,9 @@ const Chat = () => {
             >
               <div className="max-w-xs">
                 {msg.sender !== currentUser && (
-                  <div className="text-xs text-gray-500 mb-1">{msg.sender}</div>
+                  <div className="text-xs text-gray-500 mb-1 text-left">
+                    {msg.sender}
+                  </div>
                 )}
 
                 <div
@@ -274,9 +282,12 @@ const Chat = () => {
                       onClick={() => window.open(msg.place.mapUrl, "_blank")}
                     >
                       <img
-                        src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=400x200`}
-                        alt="map"
-                        className="rounded mb-2"
+                        src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=400x200&markers=color:red|label:P|${msg.place.lat},${msg.place.lng}`}
+                        alt="지도 미리보기"
+                        className="rounded w-full h-auto mb-2"
+                        onError={(e) => {
+                          e.target.src = "/fallback-map.png";
+                        }}
                       />
                       <div>
                         <strong>{msg.place.title}</strong>
@@ -309,7 +320,8 @@ const Chat = () => {
           ))}
         </div>
 
-        <div className="p-4 border-t flex items-center gap-2">
+        {/* 채팅 입력창 줄 */}
+        <div className="p-4 border-t flex items-center gap-2 overflow-hidden">
           <input
             type="text"
             value={newMessage}
@@ -318,31 +330,45 @@ const Chat = () => {
             }}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="메시지를 입력하세요"
-            className="w-full p-2 border rounded"
+            className="flex-grow p-2 border rounded min-w-0 max-w-[70%]"
           />
+
+          {/* ✅ 여기 주소 공유 버튼 넣기 */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex-shrink-0 bg-gray-500 text-white px-4 py-2 rounded whitespace-nowrap"
+          >
+            주소 공유
+          </button>
+
           <button
             onClick={() => sendMessage(newMessage)}
-            className="bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
+            className="flex-shrink-0 bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
           >
             전송
           </button>
-          {isModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white w-4/5 h-4/5 rounded-lg shadow-lg overflow-hidden relative">
-                <button
-                  className="absolute top-2 right-2 text-xl"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  ✖
-                </button>
-                <MapSearch onSelectPlace={sharePlace} />
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* 🗺️ 지도 공유 모달 */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white w-4/5 h-4/5 rounded-lg shadow-lg overflow-hidden relative">
+              <button
+                className="absolute top-2 right-2 text-xl"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ✖
+              </button>
+              <MapSearch
+                onSelectPlace={sharePlace}
+                onClose={() => setIsModalOpen(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="w-1/4 bg-white border-l p-4 flex flex-col">
+      <div className="w-[180px] bg-white border-l p-4 flex flex-col">
         <h2 className="text-lg font-bold mb-4">접속 인원</h2>
         <ul className="space-y-2 overflow-y-auto flex-1">
           {roomMembers.map((member) => (
