@@ -210,7 +210,7 @@ const MeetDetail = () => {
                     <img
                       src={imgUrl}
                       alt={`모임 이미지 ${idx + 1}`}
-                      className="w-full h-80 aspect-video object-cover rounded-lg"
+                      className="w-full aspect-video object-cover rounded-lg"
                     />
                   </SwiperSlide>
                 ))}
@@ -222,7 +222,7 @@ const MeetDetail = () => {
             )}
 
             {/* 제목/위치 */}
-            <div className="text-center mt-6">
+            <div className="text-center mt-4">
               <h2 className="text-3xl font-bold text-gray-800 mb-1">
                 {meetName}
               </h2>
@@ -230,7 +230,7 @@ const MeetDetail = () => {
             </div>
 
             {/* 소개 */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-inner mt-6 max-h-[200px] overflow-y-auto">
+            <div className="bg-gray-50 p-6 rounded-lg shadow-inner mt-0 min-h-[350px] max-h-[500px] overflow-y-auto">
               <h3 className="text-xl font-semibold text-gray-700 mb-2">
                 모임 소개
               </h3>
@@ -240,7 +240,7 @@ const MeetDetail = () => {
             </div>
 
             {/* 최대 인원 */}
-            <p className="text-center text-base text-gray-600 mt-4">
+            <p className="text-center text-base text-gray-600 mt-6">
               👥 최대 인원: {meetMaximum}
             </p>
 
