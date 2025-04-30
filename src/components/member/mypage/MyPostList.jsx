@@ -2,6 +2,7 @@ import React from "react";
 import { useMyPage } from "../../../hooks/useMypage";
 import useNavigation from "../../../hooks/useNavigation";
 
+// 마이페이지에서 작성한 문의글 보기
 const MyPostList = () => {
   const { posts, currentPage, totalPages, setCurrentPage, setPosts } =
     useMyPage();
