@@ -16,7 +16,12 @@ export const useAuth = () => {
         const userData = await getMember(storedMemberId);
         
         if(userData){
-          login(userData);
+            login({
+              id: userData.memberId,
+              email: userData.memberEmail,
+              nickName: userData.nickName,
+              role: userData.memberRole, // ✅ 이 부분 중요
+          });
         }
       };
       fetchData();
