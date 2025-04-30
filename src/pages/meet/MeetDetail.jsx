@@ -10,6 +10,12 @@ import useChatStore from "../../stores/useChatStore";
 import { checkChatRoom } from "../../api/chatAPI";
 import CreateChatRoomModal from "../../components/chat/CreateChatRoomModal";
 import { getMembersList } from "../../api/meetAPI"; // 추가
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+import "swiper/css"; // 기본 스타일
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const MeetDetail = () => {
   const { meetId } = useParams();
@@ -180,16 +186,35 @@ const MeetDetail = () => {
                       }
                     }
                   }}
-                  className="bg-gray-500 hover:bg-gray-600"
+                  className="bg-rose-500 hover:bg-rose-600 text-white"
                 >
                   삭제하기
                 </RoundedButton>
               )}
             </div>
 
-            {/* 이미지 */}
-            {imageUrl ? (
-              <DetailImage image={imageUrl} />
+            {/* 이미지 슬라이더 */}
+            {images && images.length > 0 ? (
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={10}
+                slidesPerView={1}
+                navigation
+                pagination={{ clickable: true }}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                loop={true}
+                className="w-full max-w-4xl mx-auto rounded-lg"
+              >
+                {images.map((imgUrl, idx) => (
+                  <SwiperSlide key={idx}>
+                    <img
+                      src={imgUrl}
+                      alt={`모임 이미지 ${idx + 1}`}
+                      className="w-full h-80 aspect-video object-cover rounded-lg"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             ) : (
               <div className="h-80 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600">
                 이미지 없음
@@ -240,7 +265,7 @@ const MeetDetail = () => {
               {meetRole === "ADMIN" && (
                 <RoundedButton
                   onClick={() => navigate(`/meets/${meetId}/members`)}
-                  className="bg-green-500 hover:bg-green-600"
+                  className="bg-sky-500 hover:bg-sky-600 text-white"
                 >
                   회원 조회
                 </RoundedButton>
@@ -248,7 +273,7 @@ const MeetDetail = () => {
 
               <RoundedButton
                 onClick={() => navigate(`/meetBoards/list/${meetId}`)}
-                className="bg-green-500 hover:bg-green-600"
+                className="bg-teal-400 hover:bg-teal-500 text-white"
               >
                 모임 커뮤니티
               </RoundedButton>
@@ -257,7 +282,7 @@ const MeetDetail = () => {
                 (chatRoomExists && ["ADMIN", "MEMBER"].includes(meetRole) ? (
                   <RoundedButton
                     onClick={handleEnterChat}
-                    className="bg-green-500 hover:bg-green-600"
+                    className="bg-indigo-400 hover:bg-indigo-500 text-white"
                   >
                     채팅방 입장
                   </RoundedButton>
@@ -265,7 +290,7 @@ const MeetDetail = () => {
                   meetPermissionDTO?.canEdit && (
                     <RoundedButton
                       onClick={handleEnterChat}
-                      className="bg-yellow-500 hover:bg-yellow-600"
+                      className="bg-cyan-500 hover:bg-cyan-600 text-white"
                     >
                       채팅방 생성
                     </RoundedButton>
