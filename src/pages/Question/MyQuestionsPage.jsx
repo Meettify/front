@@ -1,42 +1,83 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useQuestionsStore from "../../stores/useQuestionsStore";  // 질문을 가져오는 store
+import useQuestionsStore from "../../stores/useQuestionsStore";
 
 const MyQuestionsPage = () => {
   const navigate = useNavigate();
-  const { questions, loading, error, fetchMyQuestions } = useQuestionsStore();  // 질문 목록과 불러오기 함수
+  const { questions, fetchMyQuestions, loading, error } = useQuestionsStore();
+
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchMyQuestions(0, 10);  // 첫 번째 페이지, 10개 항목
-  }, [fetchMyQuestions]);
-
-  console.log("Questions:", questions); // 디버깅: 받아온 데이터 확인
-
-  if (loading) {
-    return <p>로딩 중...</p>;
-  }
-
-  if (error) {
-    return <p>문제를 가져오는 중 오류가 발생했습니다: {error}</p>;
-  }
+    const fetchData = async () => {
+      const result = await fetchMyQuestions(page, 10); // 한 페이지에 10개
+      if (result?.totalPage !== undefined) {
+        setTotalPages(result.totalPage);
+      }
+    };
+    fetchData();
+  }, [page]);
 
   return (
-    <div className="max-w-5xl mx-auto mt-12 px-4 text-left">
-      <h2 className="text-4xl font-bold mb-6">내 문의 목록</h2>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow max-w-5xl mx-auto mt-12 px-4 text-left">
+        <h2 className="text-4xl font-bold mb-8 text-center">내 문의 목록</h2>
 
-      {/* 질문 목록을 출력 */}
-      <ul>
-        {questions.length === 0 ? (
-          <li>작성한 문의가 없습니다.</li>
+        {loading ? (
+          <p className="text-center">로딩 중...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">에러: {error}</p>
+        ) : questions.length === 0 ? (
+          <p className="text-center text-gray-600">작성한 문의가 없습니다.</p>
         ) : (
-          questions.map((question) => (
-            <li key={question.questionId} className="mb-4 border p-4 rounded-md shadow-sm">
-              <h3 className="font-semibold">{question.title}</h3>
-              <p>{question.content}</p>
-            </li>
-          ))
+          <>
+            {/* 카드형 목록 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {questions.map((question) => (
+                <div
+                  key={question.questionId}
+                  onClick={() => navigate(`/question/${question.questionId}`)}
+                  className="border p-4 rounded-lg shadow hover:shadow-md transition bg-white cursor-pointer"
+                >
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    {question.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {question.content}
+                  </p>
+                  {question.regTime && (
+                    <p className="text-xs text-gray-400 mt-2">
+                      작성일: {question.regTime}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* 페이징 UI */}
+            <div className="mt-10 flex justify-center items-center space-x-4 text-sm">
+              <button
+                onClick={() => setPage((p) => Math.max(p - 1, 0))}
+                disabled={page === 0}
+                className="px-3 py-1 border rounded disabled:opacity-40"
+              >
+                이전
+              </button>
+              <span>
+                {page + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page + 1 >= totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-40"
+              >
+                다음
+              </button>
+            </div>
+          </>
         )}
-      </ul>
+      </main>
     </div>
   );
 };
