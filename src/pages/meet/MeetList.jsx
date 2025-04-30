@@ -5,14 +5,14 @@ import MeetSideMenu from "../../components/meet/MeetSideMenu";
 import SectionText from "../../components/text/SectionText";
 import MeetListSearch from "../../components/meet/MeetListSearch";
 import useNavigation from "../../hooks/useNavigation";
-import RoundedButton from "../../components/button/RoundedButton";
 import { getMeetList } from "../../api/meetAPI";
 
 const MeetList = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category") || "";
   const totalKeyword = searchParams.get("totalKeyword") || "";
-  const { goToMeetDetail, goToMeetInsert } = useNavigation();
+  const { goToMeetDetail } = useNavigation();
+
   const [meetData, setMeetData] = useState([]);
   const [filteredMeetData, setFilteredMeetData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,9 +25,9 @@ const MeetList = () => {
       setLoading(true);
       try {
         const data = await getMeetList(currentPage, 12, "meetName", category);
-        console.log("API 응답 데이터:", data); // 응답 데이터 확인
+        console.log("모임 리스트 :", data);
         setMeetData(data.meets || []);
-        setTotalPages(data.totalPage); // totalPage가 올바르게 설정되는지 확인
+        setTotalPages(data.totalPage || 1);
       } catch (error) {
         console.error("API 호출 중 오류:", error);
       } finally {
@@ -46,62 +46,79 @@ const MeetList = () => {
   }, [searchTerm, meetData]);
 
   return (
-    <div className="container mx-auto mt-20 w-full flex">
-      <div className="w-5/6 bg-gray-100 flex flex-col p-2">
+    <div className="container mx-auto mt-20 w-full min-h-screen flex">
+      {/* 왼쪽: 모임 카드 리스트 */}
+      <div className="w-5/6 flex flex-col p-2 min-h-[1000px]">
         <div className="flex justify-between items-center mb-4">
           <SectionText
             title="모임 리스트."
             subtitle="선택한 카테고리의 모임입니다."
           />
         </div>
+
         <MeetListSearch
           onChange={(value) => setSearchTerm(value)}
           value={searchTerm}
         />
-        <div className="flex flex-wrap justify-start mt-2">
-          {loading ? (
-            <div className="w-full text-center mt-4">로딩 중...</div>
-          ) : filteredMeetData.length > 0 ? (
-            filteredMeetData.map((meet) => (
-              <div className="w-1/4 p-2" key={meet.meetId}>
+
+        <div className="flex-1 flex flex-col justify-between">
+          {/* 모임 카드 영역 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+            {loading ? (
+              <div className="col-span-3 text-center text-gray-500">
+                로딩 중...
+              </div>
+            ) : filteredMeetData.length > 0 ? (
+              filteredMeetData.map((meet) => (
                 <MeetCard
+                  key={meet.meetId}
                   meetId={meet.meetId}
                   imageUrls={meet.imageUrls}
                   title={meet.meetName}
-                  description={meet.description}
                   tags={meet.tags}
                   isMeetPage={false}
-                  onTitleClick={() => goToMeetDetail(meet.meetId)}
+                  isMember={meet.member} // ✅ 서버에서 받은 값 그대로 전달
+                  onCardClick={() => goToMeetDetail(meet.meetId)}
                 />
+              ))
+            ) : (
+              <div className="col-span-3 text-center text-gray-500">
+                모임이 없습니다.
               </div>
-            ))
-          ) : (
-            <div className="w-full text-center mt-4">모임이 없습니다.</div>
-          )}
-        </div>
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            className="mr-2 bg-blue-500 text-white py-1 px-4 rounded disabled:opacity-50"
-          >
-            이전
-          </button>
-          <span>
-            {currentPage + 1} / {totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={currentPage + 1 >= totalPages}
-            className="ml-2 bg-blue-500 text-white py-1 px-4 rounded disabled:opacity-50"
-          >
-            다음
-          </button>
+            )}
+          </div>
+
+          {/* 페이지네이션 항상 하단 고정 */}
+          <div className="flex justify-center items-center mt-4 mb-12">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              disabled={currentPage === 0}
+              className="bg-blue-500 text-white py-2 px-4 rounded disabled:bg-gray-300"
+            >
+              이전
+            </button>
+            <span className="text-gray-700 mx-4">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+              }
+              disabled={currentPage + 1 >= totalPages}
+              className="bg-blue-500 text-white py-2 px-4 rounded disabled:bg-gray-300"
+            >
+              다음
+            </button>
+          </div>
         </div>
       </div>
-      <MeetSideMenu />
+
+      {/* 오른쪽: 추천 상품 */}
+      <div className="w-1/6 flex flex-col min-h-[720px]">
+        <div className="sticky top-24">
+          <MeetSideMenu />
+        </div>
+      </div>
     </div>
   );
 };

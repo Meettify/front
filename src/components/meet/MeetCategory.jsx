@@ -1,26 +1,15 @@
+// src/pages/meet/MeetCategory.jsx
 import React, { useState } from "react";
 import useNavigation from "../../hooks/useNavigation";
-import MeetSideMenu from "./MeetSideMenu";
-import MeetCard from "./MeetCard";
+import MeetCategoryCard from "./MeetCategoryCard";
 import SectionText from "../../components/text/SectionText";
 import MeetCategoryData from "./MeetCategoryData";
-import MeetListSearch from "./MeetListSearch";
 
 const MeetCategory = () => {
   const { goToCategoryList, goToMeetDetail, goToMeetInsert } = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleButtonClick = (id, isCategory, categoryTitle) => {
-    if (isCategory && categoryTitle) {
-      goToCategoryList(categoryTitle);
-    } else {
-      goToMeetDetail(id, categoryTitle);
-    }
-  };
-
-  const normalizeString = (str) => {
-    return str.toLowerCase().replace(/\s+/g, "");
-  };
+  const normalizeString = (str) => str.toLowerCase().replace(/\s+/g, "");
 
   const filteredCategoryData =
     searchTerm === ""
@@ -32,8 +21,9 @@ const MeetCategory = () => {
         );
 
   return (
-    <div className="bg-gray-100 flex-1 h-full">
-      <div className="container mx-auto mt-20 w-full flex justify-between items-center px-4">
+    <div className="bg-gray-100 flex flex-col py-12">
+      {/* 상단 */}
+      <div className="container mx-auto mt-24 mb-8 flex justify-between items-center px-6">
         <SectionText title="모든 모임." subtitle="오늘도, 소통하기 좋은 날." />
         <button
           onClick={goToMeetInsert}
@@ -43,33 +33,16 @@ const MeetCategory = () => {
         </button>
       </div>
 
-      <div className="container mx-auto w-full flex">
-        <div className="w-5/6 bg-gray-100 flex flex-wrap p-2">
-          <div className="flex flex-wrap justify-start w-full mt-4">
-            {filteredCategoryData.length > 0 ? (
-              filteredCategoryData.map((meet) => (
-                <div
-                  key={meet.categoryId}
-                  className="w-1/4 p-2"
-                  onClick={() =>
-                    handleButtonClick(meet.categoryId, true, meet.categoryTitle)
-                  }
-                >
-                  <MeetCard
-                    meetId={meet.categoryId}
-                    imageUrls={[meet.image]} // 배열로 변경
-                    title={meet.title}
-                    isMeetPage={true}
-                    onTitleClick={() => goToCategoryList(meet.categoryTitle)}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="w-full text-center mt-4">모임이 없습니다.</div>
-            )}
-          </div>
-        </div>
-        <MeetSideMenu />
+      {/* 카테고리 그리드 */}
+      <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 pb-64">
+        {filteredCategoryData.map((meet) => (
+          <MeetCategoryCard
+            key={meet.categoryId}
+            imageUrls={[meet.image]}
+            title={meet.title}
+            onCardClick={() => goToCategoryList(meet.categoryTitle)} // 👈 클릭하면 카테고리 이동
+          />
+        ))}
       </div>
     </div>
   );

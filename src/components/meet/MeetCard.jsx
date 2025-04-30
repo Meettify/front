@@ -1,70 +1,72 @@
 import React, { useState } from "react";
 import MeetJoin from "./MeetJoin";
-import useNavigation from "../../hooks/useNavigation";
 
 const MeetCard = ({
   meetId,
-  imageUrls,
+  imageUrls = [],
   title,
   description,
   tags = [],
-  isMeetPage,
-  onTitleClick,
+  isMeetPage = false,
+  isMember = false,
+  onCardClick, // ✅ 클릭 이벤트는 여기로 받음
 }) => {
-  const { goToMeetList } = useNavigation();
   const [imgError, setImgError] = useState(false);
+  const imageUrl = imageUrls.length > 0 ? imageUrls[0] : null;
 
   const handleImgError = () => {
     setImgError(true);
   };
 
-  // 첫 번째 이미지 URL을 가져오기
-  const imageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
-
   return (
-    <div className="card">
-      <div className="card-top card-img-frame">
+    <div
+      className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col h-full cursor-pointer"
+      onClick={onCardClick} // ✅ 카드 전체 클릭
+    >
+      {/* 이미지 */}
+      <div className="h-40 md:h-48 w-full overflow-hidden">
         {imgError || !imageUrl ? (
-          <div className="bg-gray-300 h-full w-full flex items-center justify-center">
+          <div className="bg-gray-300 w-full h-full flex items-center justify-center">
             이미지 없음
           </div>
         ) : (
           <img
             src={imageUrl}
             alt={title}
-            className="h-36 w-full object-cover"
+            className="object-cover w-full h-full"
             onError={handleImgError}
           />
         )}
       </div>
-      <div className="p-4 text-left h-47">
-        <h3
-          className="font-bold text-lg mb-1 cursor-pointer"
-          onClick={onTitleClick}
-        >
-          {title}
-        </h3>
-        <p className="text-gray-600 text-sm mb-4">{description}</p>
+
+      {/* 텍스트 내용 */}
+      <div className="p-4 flex flex-col flex-1 justify-between">
+        <h3 className="font-bold text-lg text-gray-800 text-center">{title}</h3>
+
         {tags.length > 0 && (
-          <div className="text-gray-400 text-xs mb-4">
+          <div className="flex flex-wrap justify-center gap-1 text-gray-400 text-xs">
             {tags.map((tag, index) => (
-              <span key={index} className="mr-1">
-                #{tag}
-              </span>
+              <span key={index}>#{tag}</span>
             ))}
           </div>
         )}
-        <div className="flex justify-between items-center">
-          <div className="ml-auto">
-            {!isMeetPage && (
+
+        {/* 가입신청 버튼 */}
+        {!isMeetPage && (
+          <div className="mt-4">
+            {isMember ? (
+              <div className="text-green-500 text-center font-semibold">
+                가입 완료
+              </div>
+            ) : (
               <MeetJoin
                 meetId={meetId}
-                buttonText={"가입 신청하기"}
                 onSubmit={() => console.log("가입 신청 완료")}
+                className="w-full"
               />
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

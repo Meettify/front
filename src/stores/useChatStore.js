@@ -8,13 +8,12 @@ const useChatStore = create((set) => ({
   setRoomId: (roomId) => set({ roomId }),
   setChatRoomExists: (exists) => set({ chatRoomExists: exists }),
 
-  fetchData: async (meetId, setMeeting, setMeetRole, setLoading) => {
+  fetchData: async (meetId, setMeeting, setLoading) => {
     try {
       const { setRoomId, setChatRoomExists } = useChatStore.getState();
 
       const fetchedMeeting = await getMeetingDetail(meetId);
       setMeeting(fetchedMeeting);
-      setMeetRole(fetchedMeeting.meetPermissionDTO?.meetRole || null);
 
 
       const roomName = fetchedMeeting.meetDetailDTO.meetName;

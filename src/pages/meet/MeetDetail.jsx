@@ -51,6 +51,8 @@ const MeetDetail = () => {
           return m.email === userEmail;
         });
         console.log("chatRoomExists:", chatRoomExists); // ❓ true 여야 버튼이 뜸
+        console.log("가져온 데이터 : ", me);
+        console.log("가져온 데이터 중 권한 확인 : ", me.meetRole);
 
         if (me) {
           setMeetRole(me.meetRole); // MEMBER, ADMIN, WAITING 등
@@ -62,12 +64,15 @@ const MeetDetail = () => {
         setMeetRole("OUTSIDER");
       }
     };
-
     fetchRole();
   }, [meetId]);
 
   useEffect(() => {
-    fetchData(meetId, setMeeting, setMeetRole, setLoading);
+    console.log("변경된 역할:", meetRole); // 값이 바뀔 때 확인
+  }, [meetRole]);
+
+  useEffect(() => {
+    fetchData(meetId, setMeeting, setLoading);
   }, [meetId, fetchData]);
 
   const handleEnterChat = async () => {
@@ -140,134 +145,145 @@ const MeetDetail = () => {
   const { meetPermissionDTO } = meeting;
 
   return (
-    <div className="bg-gray-100">
-      <div className="container mx-auto mt-20 w-full max-w-7xl px-4 flex gap-6 items-start pb-16">
+    <div className="bg-gray-100 min-h-screen pt-24 pb-32 px-4 flex justify-center">
+      <div className="w-full max-w-7xl flex gap-8 items-start">
+        {/* 왼쪽 콘텐츠 */}
         <div className="flex-1">
-          <div className="flex justify-end mb-4 gap-2">
-            {meetPermissionDTO.canEdit && (
-              <RoundedButton onClick={() => navigate(`/meet/update/${meetId}`)}>
-                수정하기
-              </RoundedButton>
-            )}
-            {meetPermissionDTO.canDelete && (
-              <RoundedButton
-                onClick={async () => {
-                  if (window.confirm("정말로 이 모임을 삭제하시겠습니까?")) {
-                    try {
-                      const response = await deleteMeet(meetId);
-                      if (response.status === 200) {
-                        alert("모임이 성공적으로 삭제되었습니다.");
-                        navigate("/meet/list");
-                      } else {
-                        alert("모임 삭제에 실패했습니다. 다시 시도해 주세요.");
+          {/* 카드 전체 */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-between min-h-[calc(100vh-200px)]">
+            {/* 수정/삭제 버튼 */}
+            <div className="flex justify-end gap-2 mb-6">
+              {meetPermissionDTO.canEdit && (
+                <RoundedButton
+                  onClick={() => navigate(`/meet/update/${meetId}`)}
+                >
+                  수정하기
+                </RoundedButton>
+              )}
+              {meetPermissionDTO.canDelete && (
+                <RoundedButton
+                  onClick={async () => {
+                    if (window.confirm("정말로 이 모임을 삭제하시겠습니까?")) {
+                      try {
+                        const response = await deleteMeet(meetId);
+                        if (response.status === 200) {
+                          alert("모임이 성공적으로 삭제되었습니다.");
+                          navigate("/meet/list");
+                        } else {
+                          alert(
+                            "모임 삭제에 실패했습니다. 다시 시도해 주세요."
+                          );
+                        }
+                      } catch (error) {
+                        console.error("모임 삭제 오류:", error);
+                        alert("모임 삭제에 실패했습니다.");
                       }
-                    } catch (error) {
-                      console.error("모임 삭제 오류:", error);
-                      alert("모임 삭제에 실패했습니다.");
                     }
-                  }
-                }}
-                className="bg-gray-500 hover:bg-gray-600"
-              >
-                삭제하기
-              </RoundedButton>
-            )}
-          </div>
+                  }}
+                  className="bg-gray-500 hover:bg-gray-600"
+                >
+                  삭제하기
+                </RoundedButton>
+              )}
+            </div>
 
-          <div className="mb-6">
+            {/* 이미지 */}
             {imageUrl ? (
               <DetailImage image={imageUrl} />
             ) : (
-              <div className="h-80 w-full bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+              <div className="h-80 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600">
                 이미지 없음
               </div>
             )}
-          </div>
 
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-2">{meetName}</h2>
-            <p className="text-sm text-gray-600">📍 {meetLocation}</p>
-          </div>
+            {/* 제목/위치 */}
+            <div className="text-center mt-6">
+              <h2 className="text-3xl font-bold text-gray-800 mb-1">
+                {meetName}
+              </h2>
+              <p className="text-gray-600 text-base">📍 {meetLocation}</p>
+            </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-            <h3 className="text-lg font-semibold mb-2">모임 소개</h3>
-            <p className="text-gray-700 whitespace-pre-line">
-              {meetDescription}
+            {/* 소개 */}
+            <div className="bg-gray-50 p-6 rounded-lg shadow-inner mt-6 max-h-[200px] overflow-y-auto">
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                모임 소개
+              </h3>
+              <p className="text-gray-700 text-base whitespace-pre-line">
+                {meetDescription}
+              </p>
+            </div>
+
+            {/* 최대 인원 */}
+            <p className="text-center text-base text-gray-600 mt-4">
+              👥 최대 인원: {meetMaximum}
             </p>
-          </div>
 
-          <div className="text-center text-sm text-gray-600 mb-6">
-            👥 최대 인원: {meetMaximum}
-          </div>
+            {/* 버튼들 */}
+            <div className="flex justify-center flex-wrap gap-4 mt-6">
+              {meetRole !== null && !["ADMIN", "MEMBER"].includes(meetRole) && (
+                <MeetJoin
+                  meetId={meetId}
+                  onSubmit={async () => {
+                    try {
+                      const response = await postMeetJoin(meetId);
+                      alert(response?.data?.message || "가입 요청 완료");
+                    } catch (error) {
+                      console.error("가입 신청 오류:", error);
+                      alert("가입 신청에 실패했습니다.");
+                    }
+                  }}
+                  className="bg-blue-500 hover:bg-blue-600"
+                />
+              )}
 
-          <div className="flex justify-center flex-wrap gap-4 mt-8">
-            {/* ✅ 가입 신청 버튼 */}
-            {meetRole !== null && !["ADMIN", "MEMBER"].includes(meetRole) && (
-              <MeetJoin
-                meetId={meetId}
-                onSubmit={async () => {
-                  try {
-                    const response = await postMeetJoin(meetId);
-                    alert(response?.data?.message || "가입 요청 완료");
-                  } catch (error) {
-                    console.error("가입 신청 오류:", error);
-                    alert("가입 신청에 실패했습니다.");
-                  }
-                }}
-                className="bg-blue-500 hover:bg-blue-600"
-              />
-            )}
+              {meetRole === "ADMIN" && (
+                <RoundedButton
+                  onClick={() => navigate(`/meets/${meetId}/members`)}
+                  className="bg-green-500 hover:bg-green-600"
+                >
+                  회원 조회
+                </RoundedButton>
+              )}
 
-            {meetRole === "ADMIN" && (
               <RoundedButton
-                onClick={() => navigate(`/meets/${meetId}/members`)}
+                onClick={() => navigate(`/meetBoards/list/${meetId}`)}
                 className="bg-green-500 hover:bg-green-600"
               >
-                회원 조회
+                모임 커뮤니티
               </RoundedButton>
-            )}
 
-            <RoundedButton
-              onClick={() => navigate(`/meetBoards/list/${meetId}`)}
-              className="bg-green-500 hover:bg-green-600"
-            >
-              모임 커뮤니티
-            </RoundedButton>
-
-            {!chatRoomExists && meetPermissionDTO.canEdit && (
-              <RoundedButton
-                onClick={handleEnterChat}
-                className="bg-yellow-500 hover:bg-yellow-600"
-              >
-                채팅방 생성
-              </RoundedButton>
-            )}
-            {/* ✅ 채팅방 입장 / 생성 */}
-            {meetRole !== null && (
-              <>
-                {!chatRoomExists && meetPermissionDTO?.canEdit && (
-                  <RoundedButton
-                    onClick={handleEnterChat}
-                    className="bg-yellow-500 hover:bg-yellow-600"
-                  >
-                    채팅방 생성
-                  </RoundedButton>
-                )}
-                {chatRoomExists && ["ADMIN", "MEMBER"].includes(meetRole) && (
+              {meetRole !== null &&
+                (chatRoomExists && ["ADMIN", "MEMBER"].includes(meetRole) ? (
                   <RoundedButton
                     onClick={handleEnterChat}
                     className="bg-green-500 hover:bg-green-600"
                   >
                     채팅방 입장
                   </RoundedButton>
-                )}
-              </>
-            )}
+                ) : (
+                  meetPermissionDTO?.canEdit && (
+                    <RoundedButton
+                      onClick={handleEnterChat}
+                      className="bg-yellow-500 hover:bg-yellow-600"
+                    >
+                      채팅방 생성
+                    </RoundedButton>
+                  )
+                ))}
+            </div>
           </div>
         </div>
-        <MeetSideMenu />
+
+        {/* 오른쪽 사이드 메뉴 */}
+        <div className="w-1/4 hidden xl:block">
+          <div className="sticky top-28">
+            <MeetSideMenu />
+          </div>
+        </div>
       </div>
 
+      {/* 채팅방 생성 모달 */}
       <CreateChatRoomModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

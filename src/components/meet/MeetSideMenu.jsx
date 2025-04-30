@@ -19,13 +19,13 @@ const MeetSideMenu = () => {
     );
 
   return (
-    <aside className="w-[300px] bg-white p-6 rounded-xl shadow ml-auto">
+    <aside className="w-[300px] max-h-[720px] min-h-[400px] overflow-y-auto bg-white p-6 rounded-xl shadow ml-auto">
       <h3 className="text-lg font-semibold text-gray-900 text-center mb-6">
         오늘의 쇼핑. 당신에게 추천하는 제품.
       </h3>
       <div className="space-y-6">
-        {itemList.slice(0, 4).length > 0 ? (
-          itemList.slice(0, 4).map((item) => (
+        {itemList.slice(0, 3).length > 0 ? (
+          itemList.slice(0, 3).map((item) => (
             <div key={item.itemId} className="text-center">
               <div className="w-full h-48 overflow-hidden rounded-md bg-gray-100 flex justify-center items-center">
                 <img
