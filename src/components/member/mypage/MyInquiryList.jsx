@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useMyPage } from "../../../hooks/useMypage";
 
+// 마이페이지 내 문의글 보기
 const MyInquiryList = () => {
   const navigate = useNavigate();
   const {
