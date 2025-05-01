@@ -2,7 +2,11 @@ import { create } from 'zustand';
 
 const useMypageStore = create((set) => ({
     // 마이페이지 모임
-    meetJoinList : [],
+    meetJoinList: [],
+    hasNextMeetPage: true,
+    meetJoinPage: 1,
+    setHasNextMeetPage: (value) => set({ hasNextMeetPage: value }),
+    setMeetJoinPage: (page) => set({ meetJoinPage: page }),
 
     // 마이페이지 커뮤니티
     posts : [],
@@ -23,7 +27,15 @@ const useMypageStore = create((set) => ({
     myOrderCurrentPage: 1,
     myOrderListCount: 0,
 
-    setMeetJoinList: (meets) => {set({ meetJoinList: meets });},
+    setMeetJoinList: (updater) =>
+  set((state) => ({
+    meetJoinList:
+      typeof updater === 'function'
+        ? updater(state.meetJoinList)
+        : Array.isArray(updater)
+        ? updater
+        : [],
+  })),
 
     setPosts: (posts) => set({ posts }),
     setTotalPages: (totalPages) => set({ totalPages }),

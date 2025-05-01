@@ -14,6 +14,9 @@ export const useMyPage = () => {
     const { 
         meetJoinList,
         setMeetJoinList, 
+        setHasNextMeetPage,
+        meetJoinPage,
+        setMeetJoinPage,
         posts, 
         setPosts, 
         currentPage, 
@@ -44,45 +47,59 @@ export const useMyPage = () => {
     } = useMypageStore();
 
     // 마이페이지 모임 - S
-    useEffect(() => {
-        const fetchMeets = async () => {
-            try {
-                const response = await getMeetJoinList();
+useEffect(() => {
+  const fetchMeets = async () => {
+    try {
+      const response = await getMeetJoinList(meetJoinPage, 10); // ✅ 페이지 전달
 
-                if (response.length <= 0) {
-                    return [];
-                }
+      // ✅ 응답 유효성 먼저 확인
+      if (!response || !Array.isArray(response.content)) {
+        setMeetJoinList([]); // 초기화 또는 무시
+        setHasNextMeetPage(false);
+        return;
+      }
+        
+        console.log('받은 데이터:', response);
+console.log('content:', response.content);
+console.log('hasNext:', response.hasNext);
 
-                if (Array.isArray(response) && response.length > 0) {
-                    const roleOrder = {
-                        'ADMIN': 1,
-                        'MEMBER': 2,
-                        'WAITING': 3,
-                        'DORMANT': 4,
-                        'EXPEL': 5,
-                    };
+      const content = response.content;
 
-                    const formattedMeets = response
-                        .map(meet => ({
-                            meetMemberId: meet.meetMemberId,
-                            meetId: meet.meetId,
-                            meetName: meet.meetName,
-                            meetLocation: meet.location,
-                            category: meet.category,
-                            meetMaximum: meet.maximum,
-                            images: meet.imageUrls.length > 0 ? meet.imageUrls[0] : null,
-                            meetRole: meet.meetRole,
-                        }))
-                        .sort((a, b) => roleOrder[a.meetRole] - roleOrder[b.meetRole]);
+      const roleOrder = {
+        ADMIN: 1,
+        MEMBER: 2,
+        WAITING: 3,
+        DORMANT: 4,
+        EXPEL: 5,
+      };
 
-                    setMeetJoinList(formattedMeets);
-                }
-            } catch (error) {
-                console.error('Error fetching meet join list:', error);
-            }
-        };
-        fetchMeets();
-    }, []);
+      const formattedMeets = content
+        .map((meet) => ({
+          meetMemberId: meet.meetMemberId,
+          meetId: meet.meetId,
+          meetName: meet.meetName,
+          meetLocation: meet.location,
+          category: meet.category,
+          meetMaximum: meet.maximum,
+          images: meet.imageUrls?.[0] ?? null,
+          meetRole: meet.meetRole,
+        }))
+        .sort((a, b) => roleOrder[a.meetRole] - roleOrder[b.meetRole]);
+
+      setMeetJoinList((prev) => {
+          const combined = [...prev, ...formattedMeets];
+          // 중복도 방지함
+    const uniqueById = Array.from(new Map(combined.map(item => [item.meetId, item])).values());
+    return uniqueById;
+});
+      setHasNextMeetPage(response.hasNext); // ✅ Slice의 hasNext
+    } catch (error) {
+      console.error("Error fetching meet join list:", error);
+    }
+  };
+
+  fetchMeets();
+}, [meetJoinPage]);
     // 마이페이지 모임 - E
 
     // 마이페이지 커뮤니티 - S

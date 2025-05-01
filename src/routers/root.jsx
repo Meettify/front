@@ -33,6 +33,7 @@ const Notice = lazy(() => import("../pages/admin/NoticePage"));
 const NoticeAdd = lazy(() => import("../pages/admin/NoticeAdd"));
 const NoticeDetail = lazy(() => import("../pages/admin/NoticeDetailPage"));
 const Checkout = lazy(() => import("../pages/payment/CheckoutPage"));
+const QuestionDetail = lazy(() => import("../pages/Question/QuestionDetail"));
 
 const root = createBrowserRouter(
   [
@@ -158,6 +159,14 @@ const root = createBrowserRouter(
           element: (
             <Suspense fallback={<Loading />}>
               <MyQuestion />
+            </Suspense>
+          ),
+        },
+        {
+          path: "question/:questionId",
+          element: (
+            <Suspense fallback={<Loading />}>
+              <QuestionDetail />
             </Suspense>
           ),
         },
