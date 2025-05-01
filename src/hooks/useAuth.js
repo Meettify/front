@@ -20,7 +20,8 @@ export const useAuth = () => {
               id: userData.memberId,
               email: userData.memberEmail,
               nickName: userData.nickName,
-              role: userData.memberRole, // ✅ 이 부분 중요
+              role: userData.memberRole, 
+              createdAt: userData.createdAt
           });
         }
       };

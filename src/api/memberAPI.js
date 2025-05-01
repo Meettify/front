@@ -125,10 +125,10 @@ export const getMember = async (memberId) => {
 }
 
 // 마이페이지 가입한 모임 리스트 API
-export const getMeetJoinList = async () => {
+export const getMeetJoinList = async (page = 1, size = 10) => {
     try {
         const response = await request.get({
-            url: `${BASE_URL}/meets/my-meet`,
+            url: `${BASE_URL}/meets/my-meet?page=${page}&size=${size}`,
         });
         return response.data;
     } catch (error) {
