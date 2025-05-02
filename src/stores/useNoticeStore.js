@@ -12,19 +12,42 @@ const useNoticeStore = create((set, get) => ({
   loading: false, // 로딩 상태
   error: null, // 오류 상태
   page: 1, // 현재 페이지 (디폴트 1)
+  pageSize: 10,
+  totalPage: 0,
+  hasNextPage: false,
+  hasPreviousPage: false,
+  nowPageNumber: 1,
+  isFirstPage: true,
+  isLastPage: false,
 
   //공지사항 전체 조회
   fetchNotices: async (page = 1, size = 10, sort = 'desc') => {
     set({ loading: true, error: null, notices: [] }); // 로딩 시작, 에러 및 기존 데이터를 초기화
     try {
       const response = await getNoticeList(page, size, sort); // API 호출
-      const { communities, totalPage } = response; // 'communities' 배열을 notices에 설정
+        const {
+          communities,
+          totalPage,
+          pageSize,
+          hasNextPage,
+          hasPreviousPage,
+          nowPageNumber,
+          isFirstPage,
+          isLastPage,
+        } = response;
   
       console.log('API Response:', response);
   
       // 데이터를 상태에 저장
       set({
         notices: communities || [], // 'communities' 배열을 notices에 할당
+        pageSize: pageSize || 10,
+        totalPage,
+        hasNextPage,
+        hasPreviousPage,
+        nowPageNumber,
+        isFirstPage,
+        isLastPage,
         loading: false, // 로딩 끝
       });
   

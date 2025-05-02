@@ -18,6 +18,10 @@ import "../../../styles/MemberMypageSlider.css";
 const MemberMypage = () => {
   const location = useLocation();
 
+  if (user?.role === "ADMIN") {
+    return <Navigate to="/admin" replace />;
+  }
+
   const { goToCart, goToMeetDetail, goToComm, goToShop, goToSupport } =
     useNavigation();
   const { user, isAuthenticated, logout } = useAuth();
