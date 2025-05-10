@@ -47,8 +47,8 @@ const MeetBoard = () => {
   }, [meetId, currentPage, sortOrder, setMeetId, fetchPosts]);
 
   const handleSortChange = (event) => {
-    setSortOrder(event.target.value);
-    setCurrentPage(1);
+    setSortOrder(event.target.value); // 최신순 → 오래된순 등으로 state 변경
+    setCurrentPage(1); // 정렬이 바뀌면 첫 페이지부터 다시 시작
   };
 
   const handlePageChange = (page) => {
@@ -60,7 +60,7 @@ const MeetBoard = () => {
   return (
     <div className="max-w-5xl mx-auto mt-12 px-4 min-h-screen pb-32">
       <div className="text-3xl font-semibold mb-4 text-left">
-        {meetName} 게시글 둘러보기.
+        [{meetName}] 둘러보기
       </div>
 
       {/* 커뮤니티 안내 문구 + 규칙 */}
