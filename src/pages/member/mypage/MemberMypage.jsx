@@ -18,10 +18,6 @@ import "../../../styles/MemberMypageSlider.css";
 const MemberMypage = () => {
   const location = useLocation();
 
-  if (user?.role === "ADMIN") {
-    return <Navigate to="/admin" replace />;
-  }
-
   const { goToCart, goToMeetDetail, goToComm, goToShop, goToSupport } =
     useNavigation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -44,6 +40,10 @@ const MemberMypage = () => {
     slidesToShow: 5,
     slidesToScroll: 5,
   };
+
+  if (user?.role === "ADMIN") {
+    return <Navigate to="/admin" replace />;
+  }
 
   const handleDetailClick = (category, meetId) => {
     goToMeetDetail(meetId, category);
