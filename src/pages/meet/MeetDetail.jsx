@@ -272,7 +272,11 @@ const MeetDetail = () => {
               )}
 
               <RoundedButton
-                onClick={() => navigate(`/meetBoards/list/${meetId}`)}
+                onClick={() =>
+                  navigate(`/meetBoards/list/${meetId}`, {
+                    state: { meetName: meeting?.meetDetailDTO.meetName },
+                  })
+                }
                 className="bg-teal-400 hover:bg-teal-500 text-white"
               >
                 모임 커뮤니티
