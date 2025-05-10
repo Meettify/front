@@ -74,8 +74,8 @@ const useNotificationSSE = () => {
   };
 
   useEffect(() => {
-    if (user && user.memberEmail) {
-      console.log("[SSE] SSE 연결 시작. 사용자 이메일:", user.memberEmail);
+    if (user && user.email) {
+      console.log("[SSE] SSE 연결 시작. 사용자 이메일:", user.email);
       connectToSSE();
     }
 

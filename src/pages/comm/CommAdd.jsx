@@ -37,7 +37,7 @@ const CommAdd = () => {
   const quillRef = useRef(null);
 
   useEffect(() => {
-    if (!user || !user.memberEmail) {
+    if (!user || !user.email) {
       navigate("/");
     }
   }, [user, navigate]);
