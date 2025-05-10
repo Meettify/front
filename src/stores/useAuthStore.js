@@ -3,26 +3,39 @@ import { persist } from 'zustand/middleware';
 
 const useAuthStore = create(persist((set) => ({
   user: {
-    memberEmail: '',
-    memberName: '',
+    id: '',
+    email: '',
     nickName: '',
-    memberAddr: '',
-    memberAddrDetail: '',
-    memberZipCode: '',
-    memberRole: '',
+    role: '', 
+    createdAt: '',
+    memberName: '',
+    memberAddr: {
+      memberZipCode: '',
+      memberAddr: '',
+      memberAddrDetail: '',
+    }
   },
   isAuthenticated: false,
-  memberId: null,
+  id: null,
 
   login: (userData) => {
     console.log('Logging in with userData:', userData);  // 데이터 확인
     set({
       user: { 
-        ...userData, 
-        memberRole: userData.memberRole || 'USER'
+      id: userData.id || userData.memberId, 
+      email: userData.email,
+      nickName: userData.nickName,
+      role: userData.role || 'USER',
+      createdAt: userData.createdAt,
+      memberName: userData.memberName,
+      memberAddr: {
+        memberZipCode: userData.memberZipCode,
+        memberAddr: userData.memberAddr,
+        memberAddrDetail: userData.memberAddrDetail,
+        }
       },
       isAuthenticated: true, 
-      memberId: userData.memberId || localStorage.getItem('memberId')
+      id: userData.id || localStorage.getItem('memberId')
     });
     localStorage.removeItem('undefined');
   },
