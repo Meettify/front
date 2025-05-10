@@ -290,11 +290,17 @@ const CommDetail = () => {
       </div>
 
       {/* 댓글 목록 */}
-      <div className="mt-6">
+      <div className="mt-6 mb-32">
+        <h2 className="text-xl font-semibold mb-4 text-left">
+          댓글 ({comments.length})
+        </h2>
+
         {comments.length > 0 ? (
-          comments.map((comment) => renderComment(comment))
+          <ul className="space-y-4 min-h-[200px]">
+            {comments.map((comment) => renderComment(comment))}
+          </ul>
         ) : (
-          <p className="text-gray-500">댓글이 없습니다.</p>
+          <p className="text-gray-500 min-h-[200px]">댓글이 없습니다.</p>
         )}
       </div>
 
