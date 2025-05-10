@@ -78,10 +78,10 @@ fetchPostDetail: async (communityId) => {
   },
 
   // 게시물 수정
-  updatePost: async (communityId, title, content, remainImgId = [], files = []) => {
+  updatePost: async (id, title, content, remainImgId, files) => {
     set({ loading: true });
     try {
-      await updateCommunityPost(communityId, title, content, remainImgId, files);
+      await updateCommunityPost(id, title, content, remainImgId, files);
       set({ loading: false });
     } catch (error) {
       console.error('게시글 수정 오류:', error);
