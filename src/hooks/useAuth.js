@@ -21,7 +21,13 @@ export const useAuth = () => {
               email: userData.memberEmail,
               nickName: userData.nickName,
               role: userData.memberRole, 
-              createdAt: userData.createdAt
+              createdAt: userData.createdAt,
+              memberName: userData.memberName,
+              memberAddr: {
+                memberZipCode: userData.memberZipCode,
+                memberAddr: userData.memberAddr,
+                memberAddrDetail: userData.memberAddrDetail,
+              }
           });
         }
       };
