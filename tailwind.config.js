@@ -21,6 +21,8 @@ export default {
   },
   plugins: [
     require('tailwind-scrollbar')({ nocompatible: true }), // tailwind-scrollbar 플러그인 추가
+    require('@tailwindcss/typography')
+    
   ],
   variants: {
     scrollbar: ['rounded'], // rounded 속성에 대한 변형 추가
