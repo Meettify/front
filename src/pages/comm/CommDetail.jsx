@@ -12,7 +12,9 @@ import { TiDelete } from "react-icons/ti";
 import { BiReplyAll } from "react-icons/bi";
 
 const CommDetail = () => {
-  const { id: communityId } = useParams();
+  const { id: boardId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { fetchPostDetail, postDetail, deletePost } = useCommStore();
   const {
     comments = [],
@@ -20,286 +22,283 @@ const CommDetail = () => {
     addComment,
     updateComment,
     deleteComment,
+    pagination,
   } = useCommentStore();
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   const [commentContent, setCommentContent] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
   const [replyingCommentId, setReplyingCommentId] = useState(null);
   const [replyContent, setReplyContent] = useState("");
-  const isFirstLoad = useRef(true); // 첫 로드 확인을 위한 useRef 사용
+  const [currentPage, setCurrentPage] = useState(1);
+  const isFirstLoad = useRef(true);
+
+  console.log("id 체크 :", user.id);
+  console.log("user 전체 구조:", user);
 
   useEffect(() => {
     const fetchDetail = async () => {
-      try {
-        console.log("fetchDetail 호출");
-        await fetchPostDetail(communityId);
-        await fetchComments(communityId);
-      } catch (error) {
-        console.error("게시물 조회 실패:", error);
-      }
+      await fetchPostDetail(boardId);
+      await fetchComments(boardId, currentPage);
     };
 
-    if (communityId && isFirstLoad.current) {
+    if (boardId && isFirstLoad.current) {
       fetchDetail();
       isFirstLoad.current = false;
     }
-  }, [communityId]);
+  }, [boardId]);
 
-  const handleCommentChange = (e) => setCommentContent(e.target.value);
+  useEffect(() => {
+    if (boardId) fetchComments(boardId, currentPage);
+  }, [currentPage]);
+
+  const deleteComm = async (boardId) => {
+    try {
+      await deletePost(boardId);
+      navigate("/comm");
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
+
   const handleCommentSubmit = async () => {
     if (!commentContent.trim()) return;
-    try {
-      await addComment(communityId, commentContent);
-      setCommentContent("");
-    } catch (error) {
-      console.error("댓글 등록 중 오류:", error);
-    }
+    await addComment(boardId, commentContent);
+    setCommentContent("");
+    fetchComments(boardId, currentPage);
   };
 
-  const handleReplyChange = (e) => setReplyContent(e.target.value);
-  const handleEditComment = (comment) => {
-    setEditingCommentId(comment.commentId);
-    setEditingContent(comment.comment);
+  const handleReplySubmit = async (parentId) => {
+    if (!replyContent.trim()) return;
+    await addComment(boardId, replyContent, parentId);
+    setReplyContent("");
+    setReplyingCommentId(null);
+    fetchComments(boardId, currentPage);
   };
 
-  const handleEditChange = (e) => setEditingContent(e.target.value);
   const confirmEdit = async () => {
-    try {
-      await updateComment(communityId, editingCommentId, editingContent);
-      setEditingCommentId(null);
-      setEditingContent("");
-      await fetchComments(communityId);
-    } catch (error) {
-      console.error("댓글 수정 중 오류:", error);
-    }
-  };
-
-  const cancelEdit = () => {
+    await updateComment(boardId, editingCommentId, editingContent);
     setEditingCommentId(null);
     setEditingContent("");
+    fetchComments(boardId, currentPage);
   };
 
   const handleDeleteComment = async (commentId) => {
-    try {
-      await deleteComment(communityId, commentId);
-      await fetchComments(communityId);
-    } catch (error) {
-      console.error("댓글 삭제 중 오류:", error);
-    }
+    await deleteComment(boardId, commentId);
+    fetchComments(boardId, currentPage);
   };
 
-  const handleReply = (commentId) => {
-    if (replyingCommentId === commentId) {
-      setReplyingCommentId(null);
-    } else {
-      setReplyingCommentId(commentId);
-      setReplyContent("");
-    }
+  const renderComment = (comment, depth = 0) => {
+    const isAuthor = user?.id === comment.memberId;
+    const isEditing = editingCommentId === comment.commentId;
+    const isReplying = replyingCommentId === comment.commentId;
+
+    return (
+      <div
+        key={comment.commentId}
+        className={`mt-4 p-4 rounded border ${
+          depth > 0 ? "ml-4 bg-gray-50 border-l-4 border-gray-200" : "bg-white"
+        }`}
+      >
+        <div className="flex justify-between">
+          <div>
+            <strong>{comment.nickName}</strong>
+            <div className="text-sm text-gray-500">
+              {new Date(comment.createdAt).toLocaleString()}
+            </div>
+          </div>
+          {isAuthor && !isEditing && (
+            <div className="flex gap-2 text-sm">
+              <button onClick={() => setReplyingCommentId(comment.commentId)}>
+                <BiReplyAll /> 답글
+              </button>
+              <button
+                onClick={() => {
+                  setEditingCommentId(comment.commentId);
+                  setEditingContent(comment.comment);
+                }}
+              >
+                <LiaEdit /> 수정
+              </button>
+              <button onClick={() => handleDeleteComment(comment.commentId)}>
+                <TiDelete /> 삭제
+              </button>
+            </div>
+          )}
+        </div>
+
+        {isEditing ? (
+          <div className="mt-2">
+            <textarea
+              className="w-full p-2 border rounded"
+              value={editingContent}
+              onChange={(e) => setEditingContent(e.target.value)}
+            />
+            <div className="flex justify-end gap-2 mt-2">
+              <RoundedCancelButton onClick={() => setEditingCommentId(null)}>
+                취소
+              </RoundedCancelButton>
+              <RoundedButton onClick={confirmEdit}>수정 완료</RoundedButton>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 text-left">{comment.comment}</div>
+        )}
+
+        {isReplying && (
+          <div className="mt-3">
+            <textarea
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              placeholder="답글 입력"
+              className="w-full p-2 border rounded"
+            />
+            <div className="flex justify-end mt-2 gap-2">
+              <RoundedCancelButton onClick={() => setReplyingCommentId(null)}>
+                취소
+              </RoundedCancelButton>
+              <RoundedButton
+                onClick={() => handleReplySubmit(comment.commentId)}
+              >
+                답글 등록
+              </RoundedButton>
+            </div>
+          </div>
+        )}
+
+        {comment.children?.map((child) => renderComment(child, depth + 1))}
+      </div>
+    );
   };
 
-  const submitReply = async () => {
-    if (!replyContent.trim()) return;
-    try {
-      await addComment(communityId, replyContent, replyingCommentId);
-      setReplyingCommentId(null);
-      setReplyContent("");
-      await fetchComments(communityId);
-    } catch (error) {
-      console.error("답글 등록 중 오류:", error);
-    }
+  const renderPagination = () => {
+    const totalPage = pagination?.totalPage || 1;
+    if (totalPage <= 1) return null;
+
+    const pages = Array.from({ length: totalPage }, (_, i) => i + 1);
+
+    return (
+      <div className="flex justify-center mt-6 gap-2">
+        {currentPage > 1 && (
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-1 rounded bg-gray-300"
+          >
+            &lt;
+          </button>
+        )}
+        {pages.map((page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-3 py-1 rounded ${
+              currentPage === page ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        {currentPage < totalPage && (
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-1 rounded bg-gray-300"
+          >
+            &gt;
+          </button>
+        )}
+      </div>
+    );
   };
 
   if (!postDetail) return <p>Loading...</p>;
 
-  const isAuthor = user?.nickName === postDetail.nickName;
-
   return (
-    <div className="text-left max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-2">{postDetail.title}</h1>
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-gray-500">
-          <span>{postDetail.nickName}</span>
-          <span className="block text-sm">
-            작성일: {new Date(postDetail.regTime).toLocaleString()}{" "}
-            {/* 날짜와 시간 포맷 */}
-          </span>
+    <div className="max-w-2xl mx-auto p-4">
+      {/* 제목 */}
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        {postDetail.title}
+      </h1>
+
+      <div className="flex justify-between items-start mb-4 mt-10">
+        {/* 왼쪽: 닉네임 + 날짜 + 조회수 */}
+        <div>
+          <p className="text-lg font-semibold text-gray-800">
+            {postDetail.nickName}
+          </p>
+          <div className="flex items-center text-sm text-gray-500 gap-2 mt-1">
+            <span>{new Date(postDetail.regTime).toLocaleDateString()}</span>
+            <span className="text-gray-400">·</span>
+            <span>
+              {new Date(postDetail.regTime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            <span className="text-gray-400">·</span>
+            <span>조회수 {postDetail.viewCount ?? 0}</span>
+          </div>
         </div>
-        <div className="flex items-center">
-          <CiRead className="mr-1" />
-          <span>{postDetail.viewCount}</span>
-        </div>
+
+        {/* 오른쪽: 수정/삭제 버튼 */}
+        {user?.nickName === postDetail.nickName && (
+          <div className="flex gap-2">
+            <RoundedButton onClick={() => navigate(`/comm/edit/${boardId}`)}>
+              수정
+            </RoundedButton>
+            <RoundedDeleteButton onClick={() => deleteComm(boardId)}>
+              삭제
+            </RoundedDeleteButton>
+          </div>
+        )}
       </div>
 
       <div
+        className="mb-6 mt-20"
         dangerouslySetInnerHTML={{ __html: postDetail.content }}
-        className="text-gray-700 mb-6"
       />
 
-      {Array.isArray(postDetail.images) && postDetail.images.length > 0 && (
-        <div className="mt-4">
+      {postDetail.images && postDetail.images.length > 0 && (
+        <div className="mb-6">
           {postDetail.images
-            .filter(
-              (image) => image.uploadImgUrl && image.originalImgName !== "blob"
-            ) // 조건 추가
-            .map((image, index) => (
+            .filter((img) => img.uploadImgUrl && img.originalImgName !== "blob")
+            .map((img, index) => (
               <img
                 key={index}
-                src={image.uploadImgUrl}
-                alt={`첨부 이미지 ${index + 1}`}
-                className="w-full mb-4 rounded"
+                src={img.uploadImgUrl}
+                alt="첨부 이미지"
+                className="mb-4 w-full rounded"
               />
             ))}
         </div>
       )}
 
-      {isAuthor && (
-        <div className="flex justify-end space-x-3 pb-5">
-          <RoundedCancelButton
-            onClick={() => navigate(`/comm/edit/${communityId}`)}
-          >
-            수정
-          </RoundedCancelButton>
-          <RoundedDeleteButton
-            onClick={async () => {
-              await deletePost(communityId);
-              navigate("/comm");
-            }}
-          >
-            삭제
-          </RoundedDeleteButton>
-        </div>
-      )}
-
-      <div className="border-t border-gray-200 pt-5">
-        <input
-          type="text"
-          className="flex-grow p-2 border rounded"
-          placeholder="댓글을 입력하세요..."
+      {/* 댓글 입력 */}
+      <div className="border-t pt-4 mt-6">
+        <textarea
+          className="w-full border p-2 rounded mb-2"
+          placeholder="댓글 입력"
           value={commentContent}
-          onChange={handleCommentChange}
+          onChange={(e) => setCommentContent(e.target.value)}
         />
         <RoundedButton
           onClick={handleCommentSubmit}
           disabled={!commentContent.trim()}
         >
-          등록하기
+          댓글 등록
         </RoundedButton>
       </div>
 
-      <div className="mt-5 space-y-4">
+      {/* 댓글 목록 */}
+      <div className="mt-6">
         {comments.length > 0 ? (
-          comments.map((comment) => {
-            const isCommentAuthor = user?.nickName === comment.nickName;
-            const isEditing = editingCommentId === comment.commentId;
-            const isReplying = replyingCommentId === comment.commentId;
-
-            return (
-              <div
-                key={comment.commentId}
-                className="bg-white border rounded-lg p-4 shadow-sm"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="font-semibold text-gray-800">
-                      {comment.nickName}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </div>
-                  </div>
-                  {isCommentAuthor && !isEditing && (
-                    <div className="flex gap-2 text-sm text-gray-500">
-                      <button
-                        onClick={() => handleReply(comment.commentId)}
-                        className="hover:text-blue-500"
-                      >
-                        <BiReplyAll className="inline-block mr-1" />
-                        답글
-                      </button>
-                      <button
-                        onClick={() => handleEditComment(comment)}
-                        className="hover:text-green-500"
-                      >
-                        <LiaEdit className="inline-block mr-1" />
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(comment.commentId)}
-                        className="hover:text-red-500"
-                      >
-                        <TiDelete className="inline-block mr-1" />
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {isEditing ? (
-                  <div className="mt-2 flex gap-2">
-                    <input
-                      type="text"
-                      value={editingContent}
-                      onChange={handleEditChange}
-                      className="flex-grow border p-2 rounded"
-                    />
-                    <button onClick={confirmEdit} className="text-green-600">
-                      확인
-                    </button>
-                    <button onClick={cancelEdit} className="text-red-600">
-                      취소
-                    </button>
-                  </div>
-                ) : (
-                  <div className="mt-2 text-gray-700 whitespace-pre-line">
-                    {comment.comment}
-                  </div>
-                )}
-
-                {isReplying && (
-                  <div className="mt-3 ml-4">
-                    <input
-                      type="text"
-                      value={replyContent}
-                      onChange={handleReplyChange}
-                      placeholder="답글을 입력하세요..."
-                      className="w-full border p-2 rounded mb-2"
-                    />
-                    <RoundedButton
-                      onClick={submitReply}
-                      disabled={!replyContent.trim()}
-                    >
-                      답글 등록
-                    </RoundedButton>
-                  </div>
-                )}
-
-                {comment.children &&
-                  comment.children.map((child) => (
-                    <div
-                      key={child.commentId}
-                      className="ml-4 mt-4 p-3 border-l-4 border-gray-200 bg-gray-50 rounded"
-                    >
-                      <div className="font-medium text-sm text-gray-800">
-                        {child.nickName}
-                      </div>
-                      <div className="text-gray-700 text-sm mt-1">
-                        {child.comment}
-                      </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {new Date(child.createdAt).toLocaleString()}
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            );
-          })
+          comments.map((comment) => renderComment(comment))
         ) : (
           <p className="text-gray-500">댓글이 없습니다.</p>
         )}
       </div>
+
+      {renderPagination()}
     </div>
   );
 };
