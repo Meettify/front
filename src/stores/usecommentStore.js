@@ -6,26 +6,32 @@ const useCommentStore = create((set) => ({
   comments: [], // 초기화 시 빈 배열로 설정
   error: null,
 
-  fetchComments: async (communityId) => {
-    try {
-      const response = await commentAPI.getComments(communityId);
-      console.log('댓글 목록 응답:', response);
+fetchComments: async (communityId, page = 1) => {
+  try {
+    const response = await commentAPI.getComments(communityId, page);
+    set({
+      comments: response.comments || [],
+      pagination: {
+        totalPage: response.totalPage,
+        nowPageNumber: response.nowPageNumber,
+        pageSize: response.pageSize,
+        hasNextPage: response.hasNextPage,
+        hasPreviousPage: response.hasPreviousPage,
+        isFirstPage: response.isFirstPage,
+        isLastPage: response.isLastPage,
+      },
+    });
+  } catch (error) {
+    console.error('댓글 목록 조회 실패:', error);
+    set({ error });
+  }
+},
 
-      // 댓글 상태를 올바르게 설정합니다.
-      set({ comments: response.comments || [] }); 
-    } catch (error) {
-      console.error('댓글 목록 조회 실패:', error);
-      set({ error });
-    }
-  },
 
   // 댓글 추가
   addComment: async (communityId, comment, parentId = null) => {
     try {
       const newComment = await commentAPI.createComment(communityId, comment, parentId);
-      set((state) => ({
-        comments: [...(state.comments || []), newComment], // comments가 항상 배열로 처리되도록 보장
-      }));
     } catch (error) {
       console.error('댓글 생성 실패:', error);
       set({ error });
