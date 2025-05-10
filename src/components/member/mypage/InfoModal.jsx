@@ -78,7 +78,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
           <>
             <div className="ml-2 text-left text-md">
               <h2 className="text-zinc-800 ">{user.nickName}</h2>
-              <h2 className="text-zinc-500 mb-3">{user.memberEmail}</h2>
+              <h2 className="text-zinc-500 mb-3">{user.email}</h2>
             </div>
 
             <hr className="border-blue-300" />
