@@ -16,21 +16,20 @@ export const createComment = async (communityId, comment, parentId = null) => {
   }
 };
 
-export const getComments = async (page = 1, size = 10, sort = 'desc') => {
+// 댓글 조회
+export const getComments = async (communityId, page = 1, size = 10, sort = 'desc') => {
   try {
     const response = await request.get({
       url: `${BASE_URL}/${communityId}/comment/commentList`,
-      params: page && size ? { page, size, sort } : undefined,
+      params: { page: page - 1, size, sort },
     });
-    console.log('댓글 목록 응답:', response);
-
-    // `comments` 속성 유무를 확인하고 반환
-    return response.data ? response.data : { comments: [] };
+    return response.data;
   } catch (error) {
-    console.error('게시물 조회 중 오류 발생:', error);
+    console.error('댓글 조회 실패:', error);
     throw error;
   }
 };
+
 
 
 

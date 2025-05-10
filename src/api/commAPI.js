@@ -29,31 +29,32 @@ export const createCommunityPost = async (title, content, files = []) => {
   }
 };
 
-export const updateCommunityPost = async (
-  communityId, 
-  title, 
-  content, 
-  remainImgId = [], 
-  files = []
-) => {
+export const updateCommunityPost = async (communityId, title, content, remainImgId, files) => {
   try {
+
+    // FormData 구성
     const formData = new FormData();
 
-    // API 요청 본문 형식 설정
-    const communityData = JSON.stringify({ title, content, remainImgId });
-    formData.append('community', new Blob([communityData], { type: 'application/json' }));
+    const requestDto = {
+      title,
+      content,
+      remainImgId
+    };
+      console.log("remainImgId 확인:", requestDto.remainImgId);
 
-    // remainImgId 배열 개별 추가
-    remainImgId.forEach(id => formData.append('remainImgId', id));
+    const jsonBlob = new Blob([JSON.stringify(requestDto)], {
+      type: "application/json",
+    });
+    formData.append("community", jsonBlob); // @RequestPart("community")
 
-    // 파일 처리
     if (files.length > 0) {
-      files.forEach(file => formData.append('files', file));
+      files.forEach((file) => formData.append("files", file)); // @RequestPart("files")
     } else {
-      formData.append('files', new Blob([]));
+      // 빈 파일이 아님을 명시적으로 보내고 싶다면 이 방식 가능
+      formData.append("files", new Blob([]));
     }
 
-    // 요청 데이터 로그
+    // 요청 로그 확인 
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
@@ -61,7 +62,10 @@ export const updateCommunityPost = async (
     const response = await request.put({
       url: `${BASE_URL}/${communityId}`,
       data: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` // 필요 시
+      },
     });
 
     return response.data;
