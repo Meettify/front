@@ -154,7 +154,7 @@ const CommPage = () => {
             ) : (
               posts.map((post, index) => (
                 <tr
-                  key={post.boardId}
+                  key={post.communityId}
                   className="border-b border-gray-200 hover:bg-gray-100"
                 >
                   <td className="p-2 text-center">
@@ -162,7 +162,7 @@ const CommPage = () => {
                   </td>
                   <td className="p-2 text-left">
                     <Link
-                      to={`/comm/detail/${post.boardId}`}
+                      to={`/comm/detail/${post.communityId}`}
                       className="text-black hover:underline"
                     >
                       {post.title}
