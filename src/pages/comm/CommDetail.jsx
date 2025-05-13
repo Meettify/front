@@ -12,7 +12,7 @@ import { TiDelete } from "react-icons/ti";
 import { BiReplyAll } from "react-icons/bi";
 
 const CommDetail = () => {
-  const { id: boardId } = useParams();
+  const { id: communityId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { fetchPostDetail, postDetail, deletePost } = useCommStore();
@@ -35,21 +35,30 @@ const CommDetail = () => {
 
   console.log("id 체크 :", user.id);
   console.log("user 전체 구조:", user);
+  console.log("boardId 체크 : " + communityId);
+
+  useEffect(() => {
+    if (postDetail) {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }, 10);
+    }
+  }, [postDetail, comments]);
 
   useEffect(() => {
     const fetchDetail = async () => {
-      await fetchPostDetail(boardId);
-      await fetchComments(boardId, currentPage);
+      await fetchPostDetail(communityId);
+      await fetchComments(communityId, currentPage);
     };
 
-    if (boardId && isFirstLoad.current) {
+    if (communityId && isFirstLoad.current) {
       fetchDetail();
       isFirstLoad.current = false;
     }
-  }, [boardId]);
+  }, [communityId]);
 
   useEffect(() => {
-    if (boardId) fetchComments(boardId, currentPage);
+    if (communityId) fetchComments(communityId, currentPage);
   }, [currentPage]);
 
   const deleteComm = async (boardId) => {
@@ -64,24 +73,24 @@ const CommDetail = () => {
 
   const handleCommentSubmit = async () => {
     if (!commentContent.trim()) return;
-    await addComment(boardId, commentContent);
+    await addComment(communityId, commentContent);
     setCommentContent("");
-    fetchComments(boardId, currentPage);
+    fetchComments(communityId, currentPage);
   };
 
   const handleReplySubmit = async (parentId) => {
     if (!replyContent.trim()) return;
-    await addComment(boardId, replyContent, parentId);
+    await addComment(communityId, replyContent, parentId);
     setReplyContent("");
     setReplyingCommentId(null);
-    fetchComments(boardId, currentPage);
+    fetchComments(communityId, currentPage);
   };
 
   const confirmEdit = async () => {
-    await updateComment(boardId, editingCommentId, editingContent);
+    await updateComment(communityId, editingCommentId, editingContent);
     setEditingCommentId(null);
     setEditingContent("");
-    fetchComments(boardId, currentPage);
+    fetchComments(communityId, currentPage);
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -131,6 +140,7 @@ const CommDetail = () => {
         {isEditing ? (
           <div className="mt-2">
             <textarea
+              autoFocus={false}
               className="w-full p-2 border rounded"
               value={editingContent}
               onChange={(e) => setEditingContent(e.target.value)}
@@ -153,6 +163,7 @@ const CommDetail = () => {
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="답글 입력"
               className="w-full p-2 border rounded"
+              autoFocus={false}
             />
             <div className="flex justify-end mt-2 gap-2">
               <RoundedCancelButton onClick={() => setReplyingCommentId(null)}>
@@ -243,10 +254,12 @@ const CommDetail = () => {
         {/* 오른쪽: 수정/삭제 버튼 */}
         {user?.nickName === postDetail.nickName && (
           <div className="flex gap-2">
-            <RoundedButton onClick={() => navigate(`/comm/edit/${boardId}`)}>
+            <RoundedButton
+              onClick={() => navigate(`/comm/edit/${communityId}`)}
+            >
               수정
             </RoundedButton>
-            <RoundedDeleteButton onClick={() => deleteComm(boardId)}>
+            <RoundedDeleteButton onClick={() => deleteComm(communityId)}>
               삭제
             </RoundedDeleteButton>
           </div>
@@ -277,6 +290,7 @@ const CommDetail = () => {
       <div className="border-t pt-4 mt-6">
         <textarea
           className="w-full border p-2 rounded mb-2"
+          autoFocus={false}
           placeholder="댓글 입력"
           value={commentContent}
           onChange={(e) => setCommentContent(e.target.value)}
