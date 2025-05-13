@@ -39,7 +39,11 @@ const root = createBrowserRouter(
   [
     {
       path: "/",
-      element: <BasicLayout />,
+      element: (
+        <>
+          <BasicLayout />
+        </>
+      ),
       children: [
         {
           path: "",
