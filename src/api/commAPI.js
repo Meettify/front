@@ -137,3 +137,14 @@ export const getAllCommunityPosts = async (page = 1, size = 10, sort = 'desc') =
     }
 };
 
+// 조회수 TOP10개 가져오기
+export const getTopCommunityPosts = async () => {
+  try {
+    const response = await request.get({ url: `${BASE_URL}/top` });
+    return response.data;
+  } catch (error) {
+    console.error("Top 커뮤니티 조회 실패:", error);
+    throw error;
+  }
+};
+

@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { getItemList, createItem, deleteItem, getItemDetail } from '../api/adminAPI';
+import { getItemList, createItem, deleteItem, getItemDetail, getTopItems } from '../api/adminAPI';
+import axios from 'axios';
 
 const useAdminStore = create((set) => ({
     itemList: [],
     memberList: [], // 초기값을 빈 배열로 설정
+    topItems: [],
     loading: false,
     error: null,
 
@@ -109,7 +111,26 @@ const useAdminStore = create((set) => ({
         console.error('Error fetching search list:', error);
         set({ error: error.message, loading: false });
     }
-},
+    },
+    
+    // 상품 TOP 10
+    fetchTopItems: async () => {
+        try {
+            const items = await getTopItems();
+            
+            const sellItems = items.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
+            console.log('Filtered SELL items with available stock:', sellItems); // Debugging console log
+
+            // 원하는 정렬이 있다면 추가 (옵션)
+            const sortedItems = sellItems; // 혹은 sort 적용
+            console.log('Sorted items:', sortedItems); // Debugging console log
+    
+            set({ topItems: sortedItems });
+        } catch (error) {
+            console.error("인기 상품 조회 실패:", error);
+            set({ error: error.message, loading: false });
+        }
+    }
 }));
 
 export default useAdminStore;

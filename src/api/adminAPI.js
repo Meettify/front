@@ -173,3 +173,20 @@ export const confirmItem = async (itemId) => {
         throw error;
     }
   };
+
+// 상품 TOP 10 조회
+export const getTopItems = async () => {
+  try {
+    const response = await request.get({
+      url: `${BASE_URL}/top`
+    });
+        // 로그로 실제 응답 확인
+    console.log("TOP 아이템 응답 데이터:", response.data);
+
+    // items가 없으면 빈 배열 반환
+    return Array.isArray(response.data.items) ? response.data.items : [];
+  } catch (error) {
+    console.error("상품 TOP 10 조회중 오류 발생 : ", error)
+    throw error;
+    }
+  }

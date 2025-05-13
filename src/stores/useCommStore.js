@@ -7,16 +7,18 @@ import {
   updateCommunityPost,
   deleteCommunityPost,
   searchCommunityPosts,
+  getTopCommunityPosts
 } from '../api/commAPI';
 import { getComments, deleteComment } from '../api/commentAPI';
 
 const useCommStore = create((set) => ({
+  topPosts: [],
   posts: [], 
   postDetail: null, 
   loading: false,
   error: null,
 
-  fetchPosts: async (page = 0, size = 1, sort = 'desc') => {
+  fetchPosts: async (page = 0, size = 10, sort = 'desc') => {
     set({ loading: true, posts: [] });
     try {
         const response = await getAllCommunityPosts(page, size, sort);
@@ -144,7 +146,17 @@ searchPosts: async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
   } catch (error) {
     set({ error, loading: false });
   }
-},
+  },
+
+  // 커뮤니티 조회수 TOP 10개 가져오기
+    fetchTopPosts: async () => {
+      try {
+      const topPosts = await getTopCommunityPosts();
+      set({ topPosts });
+    } catch (error) {
+      console.error("Top 커뮤니티 게시글 가져오기 실패:", error);
+    }
+  },
 
 }));
 
