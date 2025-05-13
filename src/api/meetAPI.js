@@ -6,7 +6,7 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 const getAuthToken = () => {
-  const token = sessionStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
   return token ? `Bearer ${token}` : null;
 };
 
@@ -18,7 +18,8 @@ export const postMeetInsert = async (data) => {
       url: `${BASE_URL}/meets`,
       data,
       headers: {
-        Authorization: token,
+          Authorization: token,
+          "Content-Type": "application/json",
       },
     });
     return response;
@@ -221,7 +222,7 @@ export const searchMeets = async (totalKeyword) => {
 };
 
 // 모임 게시판 리스트 API (axios 사용)
-export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') => {
+export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'postDate,desc') => {
     try {
         if (!meetId || isNaN(meetId)) {
             throw new Error('Invalid meetId');
@@ -287,140 +288,109 @@ export const MeetBoardList = async (meetId, page = 0, size = 10, sort = 'desc') 
 };
 
 // 소모임 게시판 상세 조회 API
-export const getMeetBoardDetail = async (meetBoardId) => {
-    if (!meetBoardId) {
-        console.error('유효하지 않은 meetBoardId입니다.');
-        return { status: 400, message: '유효하지 않은 게시글 ID' };
+export const getMeetBoardDetail = async (meetBoardId, page = 1, size = 10) => {
+  try {
+    const token = getAuthToken();
+    const response = await request.get({
+      url: `${BASE_URL}/meetBoards/${meetBoardId}?page=${page}&size=${size}`,
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("게시물 상세 조회 오류:", error);
+    if (error.response) {
+      console.error("서버 오류 메시지:", error.response.data?.message);
+      console.error("서버 오류 상세:", error.response.data?.detail || "에러 발생");
+      return error.response.data;
+    } else {
+      return {
+        status: 500,
+        message: "서버에 연결할 수 없습니다.",
+      };
     }
-    try {
-        const token = getAuthToken(); 
-        // URL 경로에 meetBoardId를 포함하여 요청 보내기
-        const response = await axios.get(`${BASE_URL}/meetBoards/${meetBoardId}`, {//야기 meetId로 들어옴
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'accept': '*/*',
-                "Content-Type": "application/json",
-            }
-        });
-
-        // 응답 데이터에서 meetBoardDetailsDTO와 meetBoardPermissionDTO를 추출
-        const { meetBoardDetailsDTO, meetBoardPermissionDTO } = response.data;
-        // 댓글 정보가 meetBoardDetailsDTO에 포함되어 있는지 확인
-        if (!meetBoardDetailsDTO) {
-            console.error('게시물 상세 정보가 없습니다.');
-            return { status: 404, message: '게시물 정보를 찾을 수 없습니다.' };
-        }
-        // 댓글 정보가 없다면 빈 배열로 기본 설정
-        const comments = meetBoardDetailsDTO.comments || [];
-        // 댓글을 포함하여 반환
-        return {
-            meetBoardDetailsDTO: {
-                ...meetBoardDetailsDTO,
-                comments,  // 댓글 정보를 추가
-            },
-            meetBoardPermissionDTO, // 게시물 권한 정보
-        };
-    } catch (err) {
-        console.error('소모임 게시판 상세 조회 오류:', err);
-
-        // 서버 오류 메시지 처리
-        if (err.response) {
-            const { message, error } = err.response.data;
-            console.error('서버 오류 메시지:', message);
-            console.error('서버 오류 상세:', error);
-            return {
-                status: err.response.status,
-                message: message || '서버 오류 발생',
-                error: error || '알 수 없는 오류 발생',
-            };
-        } else if (err.request) {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        } else {
-            return {
-                status: 500,
-                message: err.message || '알 수 없는 오류가 발생했습니다.',
-            };
-        }
-    }
+  }
 };
+
 
 
 //모임 게시판 글 작성 API
-export const postMeetBoardInsert = async (formData, meetId) => {
-    try {
-        formData.append('meetId', meetId);  // meetId 추가
-        const token = getAuthToken(); 
-        if (!token) {
-            throw new Error('토큰이 존재하지 않습니다.');
-        }
+export const postMeetBoardInsert = async ( formData, meetId , images = []) => {
+  try {
+    const token = getAuthToken();
+    if (!token) throw new Error("토큰이 존재하지 않습니다.");
 
-        const headers = {
-            'Authorization': `Bearer ${token}`,  // 토큰만 추가
-        };
 
-        // API 호출
-        const response = await axios.post(`${BASE_URL}/meetBoards`, formData, { headers });
+    const headers = {
+      Authorization: `${token}`,
+      // ❗ multipart/form-data는 생략해야 브라우저가 boundary 자동 생성
+    };
 
-        console.log('Response:', response.data); // 응답 데이터 확인
+    const response = await axios.post(`${BASE_URL}/meetBoards`, formData, { headers });
 
-        // 응답의 내용 확인
-        if (response.data && response.data.meetBoardId) {
-            return {
-                success: true,
-                data: response.data,  // 성공 시 데이터 반환
-            };
-        } else {
-            // 응답이 이상할 경우 처리
-            throw new Error('응답에서 게시글 정보를 찾을 수 없습니다.');
-        }
+    console.log("Response:", response.data);
 
-    } catch (error) {
-        console.error('게시글 작성 오류:', error);
-        return {
-            success: false,
-            message: error.message || '게시글 작성 중 오류가 발생했습니다.',
-        };  // 에러 발생 시 실패 상태 반환
+    if (response.data && response.data.meetBoardId) {
+      return {
+        success: true,
+        data: response.data,
+      };
+    } else {
+      throw new Error("응답에서 게시글 정보를 찾을 수 없습니다.");
     }
+  } catch (error) {
+    console.error("게시글 작성 오류:", error);
+    return {
+      success: false,
+      message: error.message || "게시글 작성 중 오류가 발생했습니다.",
+    };
+  }
 };
 
 
+
 // 게시글 수정 API 함수
-export const updateMeetBoard = async (meetBoardId, title, content, images, imagesUrl, meetId) => {
-    try {
-        const formData = new FormData();
-        const token = getAuthToken(); // 인증 토큰 확인
-        
-        // JSON 형태로 updateBoard 정보 추가 (주석에서 보면 imagesUrl도 포함해야 함)
-        const updateBoardData = {
-            meetBoardId: meetBoardId,
-            meetBoardTitle: title,
-            meetBoardContent: content,
-            imagesUrl: imagesUrl, // 기존 이미지 URL 추가
-        };
-        
-        formData.append('updateBoard', new Blob([JSON.stringify(updateBoardData)], { type: 'application/json' }));
+export const updateMeetBoard = async (meetBoardId, title, content, remainImgId, newFiles) => {
+  try {
+    const formData = new FormData();
+    const token = getAuthToken();
 
-        // 파일 업로드 처리 (이미지 배열)
-        images.forEach((image) => {
-            formData.append('images', image); // 각 이미지 추가
-        });
+    // ✅ 1. DTO 형태와 정확히 일치하는 JSON 생성
+    const updateBoardData = {
+      meetBoardId: meetBoardId,        // 필수
+      meetBoardTitle: title,           // 제목
+      meetBoardContent: content,       // 내용
+      imagesUrl: remainImgId || [],      // 기존 이미지 파일명 배열
+    };
 
-        // 요청 보내기
-        const response = await axios.put(`${BASE_URL}/meetBoards/${meetBoardId}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data', // multipart/form-data로 설정
-                'Authorization': `Bearer ${token}`,   // 인증 토큰 추가
-            },
-        });
+    // ✅ 2. JSON을 Blob으로 감싸고 'updateBoard' 키로 추가
+    formData.append(
+      'updateBoard',
+      new Blob([JSON.stringify(updateBoardData)], { type: 'application/json' })
+    );
 
-        return response.data; // 성공적인 응답 처리
-    } catch (error) {
-        console.error('게시글 수정 중 오류 발생:', error);
-        throw error; // 에러 던지기
+    // ✅ 3. 새로 업로드한 이미지 파일들 추가
+    if (Array.isArray(newFiles)) {
+      newFiles.forEach((image) => {
+        formData.append('images', image);
+      });
     }
+
+    // ✅ 4. 요청 전송 (Content-Type은 생략해야 함!)
+    const response = await axios.put(`${BASE_URL}/meetBoards/${meetBoardId}`, formData, {
+      headers: {
+        'Authorization': `${token}`,
+        // 'Content-Type': 'multipart/form-data' ❌ 생략! 브라우저가 boundary 자동 설정
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('게시글 수정 중 오류 발생:', error);
+    throw error;
+  }
 };
 
 
@@ -442,7 +412,7 @@ export const deleteMeetBoard = async (meetId, meetBoardId) => {
         console.log(`Deleting board at: ${url}`); 
         const response = await axios.delete(url, { 
             headers: { 
-                'Authorization': `Bearer ${token}`, 
+                'Authorization': `${token}`, 
                 'accept': '*/*', } 
             });
              if (response.status === 200) { 
@@ -475,7 +445,7 @@ export const getRecommendedItems = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/items/recommend-items`, {
             headers: {
-                'Authorization': `Bearer ${token}`,  // Authorization 헤더에 토큰 포함
+                'Authorization': `${token}`,  // Authorization 헤더에 토큰 포함
                 'Accept': '*/*',  // Accept 헤더 추가
             },
         });
