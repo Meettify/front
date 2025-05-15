@@ -1,199 +1,223 @@
-import { Link, Outlet, Navigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
-import useCommChartData from '../../utils/useCommChartData';
-import CommBarChart from '../../components/admin/CommBarChart';
-import MemberBarChart from '../../components/admin/MemberBarChart';
-import useMemberChartData from '../../utils/useMemberChartData';
-import useAdminMainStore from '../../stores/useAdminMainStore';
-import useNavigation from '../../hooks/useNavigation';
-import { useAdminMain } from '../../hooks/useAdminMain';
+import { Link, Outlet, Navigate, useLocation } from "react-router-dom";
+import useAuthStore from "../../stores/useAuthStore";
+import useCommChartData from "../../utils/useCommChartData";
+import CommBarChart from "../../components/admin/CommBarChart";
+import MemberBarChart from "../../components/admin/MemberBarChart";
+import useMemberChartData from "../../utils/useMemberChartData";
+import useAdminMainStore from "../../stores/useAdminMainStore";
+import useNavigation from "../../hooks/useNavigation";
+import { useAdminMain } from "../../hooks/useAdminMain";
 
 const AdminPage = () => {
-    const { user } = useAuthStore(); // user 정보를 가져옴
-    const location = useLocation();
-    const chartData = useCommChartData();
-    const memberChartData = useMemberChartData();
+  const { user } = useAuthStore(); // user 정보
+  const location = useLocation(); // 현재 경로
+  const chartData = useCommChartData();
+  const memberChartData = useMemberChartData();
+  const { goToComm } = useNavigation();
 
-    const {todayPostsCount, allCommunityPostsCount, allMembersCount, todayMemberCount} = useAdminMainStore();
-    const {totalQuestions, completedReplies, pendingReplies, } = useAdminMain();
+  const {
+    todayPostsCount,
+    allCommunityPostsCount,
+    allMembersCount,
+    todayMemberCount,
+  } = useAdminMainStore();
+  const { totalQuestions, completedReplies, pendingReplies } = useAdminMain();
 
-    const {
-        goToComm,
-    } = useNavigation();
-    
-    // user.role이 "ADMIN"이 아니면 리디렉션
-    if (user && user.memberRole !== 'ADMIN') {
-        return <Navigate to="/" replace />;
-    }
+  // 관리자 권한 아니면 리디렉션
+  if (user && user.role !== "ADMIN") {
+    return <Navigate to="/" replace />;
+  }
 
-    return (
-        <div className="flex justify-center items-start min-h-screen p-10">
-            {/* 왼쪽 메뉴 영역 */}
-            <aside className="w-1/5 p-6 border-r border-gray-300">
-                <h1 className="text-3xl font-bold mb-8 text-left">
-                    <Link to="/admin">관리자 설정</Link>
-                </h1>
+  // 정확히 /admin일 때만 dashboard 보여주기
+  const isDashboardPage = location.pathname === "/admin";
 
-                <section className="mb-6">
-                    <h2 className="font-semibold mb-3 text-left text-xl">회원 관리</h2>
-                    <ul className="space-y-2 text-left">
-                        <li><Link to="memList">회원 조회</Link></li>
-                    </ul>
-                </section>
+  return (
+    <div className="flex flex-col lg:flex-row min-h-screen">
+      {/* 사이드바 메뉴 */}
+      <aside className="w-full lg:w-1/5 p-6 border-b lg:border-b-0 lg:border-r border-gray-300">
+        <h1 className="text-3xl font-bold mb-8 text-left">
+          <Link to="/admin">관리자 설정</Link>
+        </h1>
 
-                <section className="mb-6">
-                    <h2 className="font-semibold mb-3 text-left text-xl">상품 관리</h2>
-                    <ul className="space-y-2 text-left">
-                        <li><Link to="itemList">상품 조회</Link></li>
-                        <li><Link to="itemAdd">상품 등록</Link></li>
-                        <li><Link to="itemConfirm">상품 컨펌 </Link></li>
-                    </ul>
-                </section>
+        <section className="mb-6">
+          <h2 className="font-semibold mb-3 text-left text-xl">회원 관리</h2>
+          <ul className="space-y-2 text-left">
+            <li>
+              <Link to="memList">회원 조회</Link>
+            </li>
+          </ul>
+        </section>
 
-                <section>
-                    <h2 className="font-semibold mb-3 text-left text-xl">고객센터 관리</h2>
-                    <ul className="space-y-2 text-left">
-                        <li><Link to="notice">공지사항 등록</Link></li>
-                        <li><Link to="questionsList">전체 문의 내역</Link></li>
-                    </ul>
-                </section>
-            </aside>
+        <section className="mb-6">
+          <h2 className="font-semibold mb-3 text-left text-xl">상품 관리</h2>
+          <ul className="space-y-2 text-left">
+            <li>
+              <Link to="itemList">상품 조회</Link>
+            </li>
+            <li>
+              <Link to="itemAdd">상품 등록</Link>
+            </li>
+            <li>
+              <Link to="itemConfirm">상품 컨펌</Link>
+            </li>
+          </ul>
+        </section>
 
-            {/* 오른쪽 콘텐츠 영역 */}
-            <main className="w-1/2 max-w-[1050px] p-5">
-                <div className={`${location.pathname === '/admin' ? '' : 'hidden'}`}>
-                    <p className='text-[26px] text-left'>DashBoard</p>
-                    <hr className='border-gray-300 border-1 mb-10 mt-2'/>
-                    <div className='flex gap-3 justify-center'>
-                        <div className="flex-1 border max-w-[330px] h-[170px] border-gray-300 rounded-md">
-                            <p className='flex justify-between text-left h-10 bg-purple-600 opacity-75 rounded-t-md'>
-                                <span className='flex items-center ml-2 text-white text-[16px]'>회원 현황</span>
-                                <span className='ml-auto mr-2 text-white text-[16px] flex items-center
-                                transition-colors duration-200 hover:text-gray-700 cursor-pointer'>
-                                    <Link to='memList'>+</Link></span>
-                            </p>
-                            <hr className='border-gray-300 border-1 mb-2'/>
-                            <div className='p-4'>
-                                <p className='flex text-left mb-5'>
-                                    <span>전체회원 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{allMembersCount}</span>명
-                                </p>
-                                <p className='flex text-left mb-5 mt-2'>
-                                    <span>오늘 가입한 회원 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{todayMemberCount}</span>명
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex-1 border max-w-[330px] border-gray-300 rounded-md">
-                            <p className='flex justify-between text-left h-10 bg-indigo-600 opacity-75 rounded-t-md'>
-                                <span className='flex items-center ml-2 text-white text-[16px]'>상품 현황</span>
-                                <span className='ml-auto mr-2 text-white text-[16px] flex items-center
-                                transition-colors duration-200 hover:text-gray-700 cursor-pointer'>
-                                    <Link to='itemList'>+</Link></span>
-                            </p>
-                            <hr className='border-gray-300 border-1 mb-4'/>
-                            <p className='flex text-left mb-5 mt-[30px] p-4'>
-                                <span>전체상품 수</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>개</p>
-                        </div>
-                        <div className="flex-1 border max-w-[330px] border-gray-300 rounded-md">
-                            <p className='flex justify-between text-left h-10 bg-sky-600 opacity-75 rounded-t-md'>
-                                <span className='flex items-center ml-2 text-white text-[16px]'>주문 현황</span>
-                                <span className='ml-auto mr-2 text-white text-[16px] flex items-center
-                                transition-colors duration-200 hover:text-gray-700 cursor-pointer'>
-                                    <Link to=''>+</Link></span>
-                            </p>
-                            <hr className='border-gray-300 border-1 mb-4'/>
-                            <p className='flex text-left mb-5 mt-[30px] p-4'>
-                                <span>전체주문 수</span>
-                                <span className='ml-auto mr-1 font-bold text-[16px]'>0</span>개</p>
-                        </div>
-                    </div>
+        <section>
+          <h2 className="font-semibold mb-3 text-left text-xl">
+            고객센터 관리
+          </h2>
+          <ul className="space-y-2 text-left">
+            <li>
+              <Link to="notice">공지사항 등록</Link>
+            </li>
+            <li>
+              <Link to="questionsList">전체 문의 내역</Link>
+            </li>
+          </ul>
+        </section>
+      </aside>
 
-                    <div className='flex-1 mt-10 w-full'>
-                            <h2 className='flex text-left ml-10 mb-2 text-[16px] from-neutral-800'>회원가입 날짜별 통계</h2>
-                            <div className='flex justify-center items-center'>
-                                {chartData.length > 0 ? (
-                                    <MemberBarChart chartData={memberChartData} />
-                                ) : (
-                                    <p>데이터가 없습니다.</p>
-                                )}
-                            </div>
-                    </div>
-
-                    <hr className='border-gray-300 border-1 mb-4 mt-10'/>
-                    <p className='flex text-left text-[20px] mt-10 mb-2'>커뮤니티</p>
-                    <div className='bg-zinc-50 p-4 rounded-md'>
-                        <div className='flex mt-5 justify-center items-center'>
-                            <div className="flex-1 border max-w-[500px] max-h-[300px] border-gray-300 rounded-md bg-white">
-                                <p className='flex justify-between text-left h-10 bg-red-600 opacity-75 rounded-t-md'>
-                                    <span className='flex items-center ml-2 text-white text-[16px]'>커뮤니티 현황</span>
-                                    <span className='ml-auto mr-2 text-white text-[16px] flex items-center
-                                    transition-colors duration-200 hover:text-gray-700 cursor-pointer'>
-                                        <Link to=''>+</Link></span>
-                                </p>
-                                <hr className='border-gray-300 border-1 mb-4'/>
-                                <p className='flex text-left mb-0 mt-[5px] p-4'>
-                                    <span>오늘 게시글 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{todayPostsCount}</span>개
-                                </p>
-                                <p className='flex text-left mb-0 mt-[5px] p-4'>
-                                    <span>전체 게시글 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{allCommunityPostsCount}</span>개
-                                </p>
-                                <button
-                                className='w-4/5 mt-5 mb-5 p-2 text-gray-500 border border-gray-400 transition-colors duration-200 hover:bg-gray-600 hover:text-gray-300'
-                                onClick={() => goToComm()}
-                                >
-                                커뮤니티 바로가기
-                                </button>
-                            </div>
-                        </div>
-                        <div className='flex-1 mt-10 w-full'>
-                            <h2 className='flex text-left ml-10 mb-2 text-[16px] from-neutral-800'>게시물 날짜별 통계</h2>
-                                <div className='flex justify-center items-center'>
-                                    {chartData.length > 0 ? (
-                                        <CommBarChart chartData={chartData} />
-                                    ) : (
-                                        <p>데이터가 없습니다.</p>
-                                    )}
-
-                                </div>
-                        </div>
-
-                    </div>
-                    <hr className='border-gray-300 border-1 mb-4 mt-10'/>
-                    <p className='flex text-left text-[20px] mt-10 mb-2'>문의</p>
-                    <div className='bg-zinc-50 p-8 rounded-md'>
-                        <div className='flex justify-center items-center'>
-                            <div className="flex-1 border max-w-[500px] max-h-[300px] border-gray-300 rounded-md bg-white">
-                                <p className='flex justify-between text-left h-10 bg-emerald-600 opacity-75 rounded-t-md'>
-                                    <span className='flex items-center ml-2 text-white text-[16px]'>문의 현황</span>
-                                    <span className='ml-auto mr-2 text-white text-[16px] flex items-center
-                                    transition-colors duration-200 hover:text-gray-700 cursor-pointer'>
-                                        <Link to='inquiry-list'>+</Link></span>
-                                </p>
-                                <hr className='border-gray-300 border-1 mb-4'/>
-                                <p className='flex text-left mb-0 mt-[5px] p-4'>
-                                    <span>전체 문의글 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{totalQuestions}</span>개
-                                </p>
-                                <p className='flex text-left mb-0 mt-[5px] p-4'>
-                                    <span>답글 완료 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{completedReplies}</span>개
-                                </p>
-                                <p className='flex text-left mb-0 mt-[5px] p-4'>
-                                    <span>답글 미완료 수</span>
-                                    <span className='ml-auto mr-1 font-bold text-[16px]'>{pendingReplies}</span>개
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="flex-1 p-6">
+        {isDashboardPage ? (
+          <>
+            {/* ✅ 대시보드 UI - /admin 에서만 보임 */}
+            <p className="text-2xl font-semibold mb-6">DashBoard</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              {/* 회원 현황 */}
+              <div className="border border-gray-300 rounded-md">
+                <div className="flex justify-between items-center h-10 px-2 bg-purple-600 text-white text-sm rounded-t-md">
+                  <span>회원 현황</span>
+                  <Link to="memList">+</Link>
                 </div>
-                <Outlet /> {/* 여기서 ItemList가 렌더링됩니다 */}
-            </main>
-        </div>
-    );
+                <div className="p-4">
+                  <p className="flex justify-between text-sm mb-3">
+                    <span>전체회원 수</span>
+                    <span className="font-bold">{allMembersCount}명</span>
+                  </p>
+                  <p className="flex justify-between text-sm">
+                    <span>오늘 가입 수</span>
+                    <span className="font-bold">{todayMemberCount}명</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* 상품 현황 */}
+              <div className="border border-gray-300 rounded-md">
+                <div className="flex justify-between items-center h-10 px-2 bg-indigo-600 text-white text-sm rounded-t-md">
+                  <span>상품 현황</span>
+                  <Link to="itemList">+</Link>
+                </div>
+                <div className="p-4">
+                  <p className="flex justify-between text-sm mt-6">
+                    <span>전체상품 수</span>
+                    <span className="font-bold">0개</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* 주문 현황 */}
+              <div className="border border-gray-300 rounded-md">
+                <div className="flex justify-between items-center h-10 px-2 bg-sky-600 text-white text-sm rounded-t-md">
+                  <span>주문 현황</span>
+                  <span className="text-white">+</span>
+                </div>
+                <div className="p-4">
+                  <p className="flex justify-between text-sm mt-6">
+                    <span>전체주문 수</span>
+                    <span className="font-bold">0개</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 회원 통계 */}
+            <div className="mb-10">
+              <h2 className="text-lg font-semibold mb-2">
+                회원가입 날짜별 통계
+              </h2>
+              <div className="flex justify-center items-center">
+                {chartData.length > 0 ? (
+                  <MemberBarChart chartData={memberChartData} />
+                ) : (
+                  <p>데이터가 없습니다.</p>
+                )}
+              </div>
+            </div>
+
+            {/* 커뮤니티 현황 */}
+            <div className="mb-10">
+              <h2 className="text-lg font-semibold mb-2">커뮤니티</h2>
+              <div className="border border-gray-300 rounded-md bg-white p-4 max-w-[500px] mx-auto">
+                <div className="flex justify-between bg-red-600 text-white px-2 rounded-t-md h-10 items-center">
+                  <span>커뮤니티 현황</span>
+                  <span>+</span>
+                </div>
+                <div className="p-4">
+                  <p className="flex justify-between text-sm mb-2">
+                    <span>오늘 게시글 수</span>
+                    <span className="font-bold">{todayPostsCount}개</span>
+                  </p>
+                  <p className="flex justify-between text-sm">
+                    <span>전체 게시글 수</span>
+                    <span className="font-bold">
+                      {allCommunityPostsCount}개
+                    </span>
+                  </p>
+                  <button
+                    onClick={goToComm}
+                    className="mt-4 w-full py-2 border text-sm text-gray-600 hover:bg-gray-600 hover:text-white"
+                  >
+                    커뮤니티 바로가기
+                  </button>
+                </div>
+              </div>
+              <div className="mt-6">
+                <h2 className="text-lg font-semibold mb-2">
+                  게시물 날짜별 통계
+                </h2>
+                <div className="flex justify-center items-center">
+                  {chartData.length > 0 ? (
+                    <CommBarChart chartData={chartData} />
+                  ) : (
+                    <p>데이터가 없습니다.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 문의 현황 */}
+            <div>
+              <h2 className="text-lg font-semibold mb-2">문의</h2>
+              <div className="border border-gray-300 rounded-md bg-white p-4 max-w-[500px] mx-auto">
+                <div className="flex justify-between bg-emerald-600 text-white px-2 rounded-t-md h-10 items-center">
+                  <span>문의 현황</span>
+                  <Link to="inquiry-list">+</Link>
+                </div>
+                <div className="p-4">
+                  <p className="flex justify-between text-sm mb-2">
+                    <span>전체 문의글 수</span>
+                    <span className="font-bold">{totalQuestions}개</span>
+                  </p>
+                  <p className="flex justify-between text-sm mb-2">
+                    <span>답글 완료 수</span>
+                    <span className="font-bold">{completedReplies}개</span>
+                  </p>
+                  <p className="flex justify-between text-sm">
+                    <span>답글 미완료 수</span>
+                    <span className="font-bold">{pendingReplies}개</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <Outlet />
+        )}
+      </main>
+    </div>
+  );
 };
 
 export default AdminPage;
