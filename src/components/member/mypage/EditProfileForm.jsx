@@ -13,12 +13,18 @@ const EditProfileForm = () => {
   const [formData, setFormData] = useState({
     nickname: user?.nickName ?? "",
     postalCode: user?.memberAddr?.memberZipCode ?? "",
-    address: user?.memberAddr?.memberAddr ?? "",
+    address: user?.memberAddr?.memberAddrInfo ?? "",
     addressDetail: user?.memberAddr?.memberAddrDetail ?? "",
     originalMemberPw: "",
     updateMemberPw: "",
     confirmUpdatePw: "",
   });
+
+  console.log("user.memberAddr :", user.memberAddr);
+  console.log(
+    "user.memberAddr.memberAddrInfo :",
+    user?.memberAddr?.memberAddrInfo
+  );
 
   const [validationErrors, setValidationErrors] = useState({
     nickname: "",

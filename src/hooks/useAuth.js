@@ -25,7 +25,7 @@ export const useAuth = () => {
               memberName: userData.memberName,
               memberAddr: {
                 memberZipCode: userData.memberZipCode,
-                memberAddr: userData.memberAddr,
+                memberAddrInfo: userData.memberAddr,
                 memberAddrDetail: userData.memberAddrDetail,
               }
           });
