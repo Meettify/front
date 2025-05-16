@@ -41,10 +41,6 @@ const MemberMypage = () => {
     slidesToScroll: 5,
   };
 
-  if (user?.role === "ADMIN") {
-    return <Navigate to="/admin" replace />;
-  }
-
   const handleDetailClick = (category, meetId) => {
     goToMeetDetail(meetId, category);
   };
