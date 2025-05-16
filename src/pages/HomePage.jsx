@@ -1,30 +1,22 @@
 import React from "react";
-import HomeSection from "../components/home/HomeSection";
-import homeImg01 from "../assets/images/homeImg01.jpg";
-import homeImg02 from "../assets/images/homeImg02.jpg";
+import HomeSection from "../components/home/HomeSectionTop";
+import homePageTop from "../assets/images/homepage.avif";
+import HomeSectionUnder from "../components/home/HomeSectionUnder";
 
 const HomePage = () => {
-    return (
-        <div>
-            <HomeSection
-                imageUrl={homeImg01}
-                buttonText="커뮤니티 바로가기"
-                linkTo="/comm"
-            />
+  return (
+    <div>
+      <HomeSection
+        imageUrl={homePageTop}
+        heading="나와 같은 사람들과 연결되는 공간"
+        subText="커뮤니티, 모임, 쇼핑까지 Meettify에서 시작하세요"
+        buttonText="지금 시작하기"
+        linkTo="/main"
+      />
 
-            <HomeSection
-                imageUrl={homeImg02}
-                buttonText="모임 바로가기"
-                linkTo="/meet"
-            />
-
-            <HomeSection
-                imageUrl={homeImg01}
-                buttonText="쇼핑 바로가기"
-                linkTo="/shop"
-            />
-        </div>
-    );
+      <HomeSectionUnder />
+    </div>
+  );
 };
 
 export default HomePage;
