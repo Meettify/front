@@ -1,5 +1,5 @@
 import request from './request';
-import { getItemDetail } from './adminAPI';
+import { getItemDetail } from './shopAPI';
 
 const BASE_URL = '/carts';
 
