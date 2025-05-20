@@ -66,35 +66,22 @@ export const deleteMeet = async (meetId) => {
 };
 
 // 소모임 리스트 조회 API
-export const getMeetList = async (page = 0, size = 10, sort = "meetName", category = "") => {
-    try {
-        const token = getAuthToken();
-        const response = await request.get({
-            url: `${BASE_URL}/meets`,
-            headers: {
-                Authorization: token,
-            },
-            params: {
-                page,
-                size,
-                sort,
-                name: '',  // name을 빈 문자열로 설정
-                category: category || undefined, // category가 비어있지 않을 경우 전달
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('소모임 리스트 조회 오류:', error);
-        if (error.response) {
-            return error.response.data;
-        } else {
-            return {
-                status: 500,
-                message: '서버에 연결할 수 없습니다.',
-            };
-        }
-    }
+export const getMeetList = async (page = 1, size = 12, category = "", name = "") => {
+  const token = getAuthToken();
+ console.log("name type:", typeof name, "value:", name);
+  const response = await request.get({
+    url: `${BASE_URL}/meets`,
+    headers: { Authorization: token },
+    params: {
+      page,
+      size,
+      ...(category && { category }),
+      ...(name && { name }),
+    },
+  });
+  return response.data;
 };
+
 
 // 소모임 상세 조회 API
 export const getMeetingDetail = async (meetId) => {
@@ -107,6 +94,7 @@ export const getMeetingDetail = async (meetId) => {
                 "Content-Type": "application/json",
             }
         });
+      console.log("반환 값 확인 : ", response.data)
         return response.data;
     } catch (error) {
         console.error('소모임 상세 조회 오류:', error);
