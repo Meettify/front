@@ -19,10 +19,7 @@ const MeetCard = ({
   };
 
   return (
-    <div
-      className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col h-full cursor-pointer"
-      onClick={onCardClick} // ✅ 카드 전체 클릭
-    >
+    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col h-full cursor-pointer">
       {/* 이미지 */}
       <div className="h-40 md:h-48 w-full overflow-hidden">
         {imgError || !imageUrl ? (
@@ -35,13 +32,19 @@ const MeetCard = ({
             alt={title}
             className="object-cover w-full h-full"
             onError={handleImgError}
+            onClick={onCardClick}
           />
         )}
       </div>
 
       {/* 텍스트 내용 */}
       <div className="p-4 flex flex-col flex-1 justify-between">
-        <h3 className="font-bold text-lg text-gray-800 text-center">{title}</h3>
+        <h3
+          className="font-bold text-lg text-gray-800 text-center"
+          onClick={onCardClick}
+        >
+          {title}
+        </h3>
 
         {tags.length > 0 && (
           <div className="flex flex-wrap justify-center gap-1 text-gray-400 text-xs">
@@ -63,6 +66,7 @@ const MeetCard = ({
                 meetId={meetId}
                 onSubmit={() => console.log("가입 신청 완료")}
                 className="w-full"
+                onClick={(e) => e.stopPropagation()}
               />
             )}
           </div>
