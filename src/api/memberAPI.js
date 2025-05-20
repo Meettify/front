@@ -20,6 +20,19 @@ export const postLogin = async (data) => {
     }
 }
 
+// ✅ 로그아웃 API 요청 함수
+export const postLogout = async () => {
+  try {
+    const response = await request.post({
+      url: `${BASE_URL}/members/logout`,
+    });
+    return response;
+  } catch (error) {
+    console.error('로그아웃 요청 실패:', error);
+    throw error;
+  }
+};
+
 // 회원가입 response : 200, ResponseMemberDTO
 export const postSignup = async (data) => {
     try {

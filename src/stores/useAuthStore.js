@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { postLogout } from '../api/memberAPI'; // 🔁 logout API import
+
 
 const useAuthStore = create(persist((set) => ({
   user: {
@@ -40,14 +42,20 @@ const useAuthStore = create(persist((set) => ({
     localStorage.removeItem('undefined');
   },
   
-  logout: () => {
-    sessionStorage.removeItem('accessToken'); // 세션 스토리지에서 토큰 삭제
-    localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
-    localStorage.removeItem('memberId');
-    set({ user: null, isAuthenticated: false, memberId: null });
-    localStorage.removeItem('undefined');
-    window.location.href = '/';
-  },
+logout: async () => {
+  try {
+    await postLogout(); // ✅ 서버에 블랙리스트 등록 요청
+  } catch (e) {
+    console.warn('백엔드 로그아웃 실패 (이미 만료되었을 수 있음)', e);
+  }
+
+  sessionStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('memberId');
+
+  set({ user: null, isAuthenticated: false, id: null });
+  window.location.href = '/';
+}
 })));
 
 export default useAuthStore;
