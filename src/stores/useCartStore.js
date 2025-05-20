@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as cartAPI from '../api/cartAPI';
-import * as shopAPI from '../api/adminAPI';
+import * as shopAPI from '../api/shopAPI';
 
 const useCartStore = create((set, get) => ({
   shopItems: [], // 상점 상품 데이터

@@ -1,110 +1,118 @@
-
-import React, { useEffect, useState, createContext, useContext} from 'react';
-import { getItemDetail } from '../../api/adminAPI';
-import "./CartItem.css";
-import {CartTotalPriceContext} from "../../pages/cart/CartPage"
-
-import categories from '../../stores/shopCategory';
-import ItemCountArea from './ItemCountArea'
+// ✅ CartItem.jsx — Tailwind 기반 무한 스크롤 대응 버전
+import React, { useEffect, useState, createContext, useContext } from "react";
+import { getItemDetail } from "../../api/shopAPI";
+import { CartTotalPriceContext } from "../../pages/cart/CartPage";
+import categories from "../../stores/shopCategory";
+import ItemCountArea from "./ItemCountArea";
 
 export const ItemTotalPriceContext = createContext();
 
-const CartItem = React.memo(({itemId, itemCount, cartId}) => {
-    const {changeItemPrice, cartCheckList, changeCheckList} = useContext(CartTotalPriceContext);
+const CartItem = React.memo(({ itemId, itemCount, cartId }) => {
+  const { changeItemPrice, cartCheckList, changeCheckList } = useContext(
+    CartTotalPriceContext
+  );
+  const [itemDetail, setItemDetail] = useState(null);
+  const [category, setCategory] = useState(null);
+  const [itemTotalPrice, setItemTotalPrice] = useState(0);
 
-    const [itemDetail, setItemDetail] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [category, setCategory] = useState(null);
-    const [itemTotalPrice,setItemTotalPrice] = useState(0);
-    
-    const handleCheck = (e) => {
-        changeCheckList(itemId, !cartCheckList.get(itemId));
+  useEffect(() => {
+    const fetchItem = async () => {
+      const item = await getItemDetail(itemId);
+      setItemDetail(item);
+    };
+    fetchItem();
+  }, [itemId]);
+
+  useEffect(() => {
+    if (itemDetail) {
+      const foundCategory = categories.find(
+        (cat) => cat.id.toUpperCase() === itemDetail.itemCategory.toUpperCase()
+      );
+      setCategory(foundCategory);
     }
+  }, [itemDetail]);
 
-    useEffect(() => {
-        const fetchItem = async () => {
-            try {
-                const item = await getItemDetail(itemId); // 상품 상세 정보 가져오기
-                setItemDetail(item);
-            } catch (error) {
-                setError('상품 정보를 불러오는 중 오류가 발생했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    if (cartCheckList.get(itemId)) {
+      changeItemPrice(itemId, itemTotalPrice);
+    } else {
+      changeItemPrice(itemId, 0);
+    }
+  }, [itemId, itemTotalPrice, cartCheckList]);
 
-        fetchItem();
-    }, [itemId]);
+  useEffect(() => {
+    changeCheckList(itemId, true);
+  }, [itemId]);
 
-    useEffect(() => {
-        const foundCategory = categories.find(cat => 
-            cat.id.toUpperCase() === itemDetail?.itemCategory.toUpperCase()
-        );
-        setCategory(foundCategory);
-        console.log("데이터", itemDetail);
-    }, [itemDetail]);
+  const handleCheck = () => {
+    changeCheckList(itemId, !cartCheckList.get(itemId));
+  };
 
-    useEffect(() => {
-        if(cartCheckList.get(itemId)){
-            changeItemPrice(itemId, itemTotalPrice);
-        }else{
-            changeItemPrice(itemId, 0);
-        }
-        console.log(cartCheckList.get(itemId), itemTotalPrice);
-    }, [itemId, itemTotalPrice, cartCheckList]);
+  return (
+    <ItemTotalPriceContext.Provider
+      value={{ itemTotalPrice, setItemTotalPrice }}
+    >
+      <div className="flex flex-col lg:flex-row items-center gap-4 p-4 border rounded-xl shadow-sm bg-white">
+        {/* 체크박스 + 이미지 */}
+        <div className="flex items-center gap-3 w-full lg:w-auto">
+          <input
+            type="checkbox"
+            checked={cartCheckList.get(itemId)}
+            onChange={handleCheck}
+            className="w-5 h-5 text-blue-600 border-gray-300 rounded"
+          />
+          <img
+            src={itemDetail?.images[0]}
+            alt="상품 이미지"
+            className="w-24 h-24 rounded-lg object-cover border"
+          />
+        </div>
 
-    //처음 셋팅
-    useEffect(() => {
-        changeCheckList(itemId, true);
-    }, [itemId]);
+        {/* 상품 정보 */}
+        <div className="flex flex-col gap-2 flex-1">
+          <div className="flex gap-2 text-xs">
+            <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
+              {itemDetail?.itemCategory}
+            </span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-white ${
+                itemDetail?.itemStatus === "WAIT"
+                  ? "bg-gray-700"
+                  : itemDetail?.itemStatus === "SOLD_OUT"
+                  ? "bg-gray-400"
+                  : "bg-green-500"
+              }`}
+            >
+              {itemDetail?.itemStatus}
+            </span>
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">
+              {itemDetail?.itemName}
+            </h2>
+            <p className="text-sm text-gray-600">
+              가격: {Number(itemDetail?.itemPrice).toLocaleString()}원
+            </p>
+            <p className="text-sm text-gray-400">
+              남은 수량: {itemDetail?.itemCount}
+            </p>
+          </div>
+          <ItemCountArea
+            itemMaxCount={itemDetail?.itemCount}
+            itemCount={itemCount}
+            itemPrice={itemDetail?.itemPrice}
+            cartId={cartId}
+            itemId={itemDetail?.itemId}
+          />
+        </div>
 
-    
-
-    return (
-        <>
-        <ItemTotalPriceContext.Provider value={{itemTotalPrice,setItemTotalPrice}}>
-            <div className={`CartItem category-${category?.id.toLowerCase()}-wrap`}>
-                <div className="custom-check-wrap circle-check-wrap all-check-wrap">
-                    <input 
-                    type="checkbox" 
-                    name="" 
-                    id={`check${itemId}`}
-                    checked={cartCheckList.get(itemId)}
-                    onChange={handleCheck}
-                    />
-                    <label htmlFor={`check${itemId}`}></label>
-                </div>
-                <span className="img-wrap">
-                    <img
-                        src={`${itemDetail?.images[0]}`}
-                        alt={''}
-                    />
-                </span>
-                <span className='item-info-area'>
-                    <div className='label-area'>
-                        <div className={`label category`}>
-                            <span className="icon-wrap">{category?.icon()}</span>
-                            <span className='category-name'>{itemDetail?.itemCategory}</span>
-                        </div>
-                        <p className={`label status ${itemDetail?.itemStatus === 'WAIT' ? 'status-wait' : itemDetail?.itemStatus === 'SOLD_OUT' ? 'status-sold-out' : ''}`}>
-                            {itemDetail?.itemStatus}
-                        </p>
-                    </div>
-                    <div className="text-area">
-                        <span className="item-status"></span>
-                        <span className="item-name">{`${itemDetail?.itemName}`}</span>
-                        <span className="item-price">{`${Number(itemDetail?.itemPrice).toLocaleString()}원`}</span>
-                        <span className="item-store-count">{`남은수량 ${itemDetail?.itemCount}`}</span>
-                        <ItemCountArea itemMaxCount={itemDetail?.itemCount} itemCount={itemCount} itemPrice={itemDetail?.itemPrice} cartId={cartId} itemId={itemDetail?.itemId}/>
-                    </div>
-                </span>
-                <div className="item-total-price">
-                    {`${itemTotalPrice.toLocaleString()}원`}
-                </div>
-            </div>
-        </ItemTotalPriceContext.Provider>
-        </>
-    )
+        {/* 금액 */}
+        <div className="text-lg font-bold text-blue-600 min-w-[100px] text-right lg:text-left">
+          {itemTotalPrice.toLocaleString()}원
+        </div>
+      </div>
+    </ItemTotalPriceContext.Provider>
+  );
 });
 
 export default CartItem;

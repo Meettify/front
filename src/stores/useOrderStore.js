@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as cartAPI from '../api/cartAPI';
-import * as adminAPI from '../api/adminAPI';
+import * as shopAPI from '../api/shopAPI';
 import { createTempOrder } from '../api/orderAPI';
 
 const useOrderStore = create((set) => ({
