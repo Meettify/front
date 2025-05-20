@@ -5,42 +5,39 @@ const BASE_URL = '/community'; // 공통 경로
 export const createCommunityPost = async (title, content, files = []) => {
   try {
     const requestBody = new FormData();
+
     const communityData = JSON.stringify({ title, content });
     requestBody.append('community', new Blob([communityData], { type: 'application/json' }));
 
-    if (files.length > 0) {
-      files.forEach(file => requestBody.append('files', file));
-    } else {
-      requestBody.append('files', new Blob([]));
+    // ✅ 파일이 있을 경우에만 추가
+    if (files && files.length > 0) {
+      files.forEach(file => {
+        requestBody.append('files', file);
+      });
     }
 
-    console.log('FormData 내용:', Array.from(requestBody.entries()));
+    console.log('📦 FormData 내용:', Array.from(requestBody.entries()));
 
     const response = await request.post({
       url: `/community`,
       data: requestBody,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
     return response.data;
   } catch (error) {
-    console.error('글 생성 중 오류 발생:', error);
+    console.error('❌ 글 생성 중 오류 발생:', error.response?.data || error.message);
     throw error;
   }
 };
 
-export const updateCommunityPost = async (communityId, title, content, remainImgId, files) => {
+export const updateCommunityPost = async (communityId, title, content, remainImgId = [], files = []) => {
   try {
-
-    // FormData 구성
     const formData = new FormData();
 
-    const requestDto = {
-      title,
-      content,
-      remainImgId
-    };
-      console.log("remainImgId 확인:", requestDto.remainImgId);
+    const requestDto = { title, content, remainImgId };
 
     const jsonBlob = new Blob([JSON.stringify(requestDto)], {
       type: "application/json",
@@ -48,32 +45,30 @@ export const updateCommunityPost = async (communityId, title, content, remainImg
     formData.append("community", jsonBlob); // @RequestPart("community")
 
     if (files.length > 0) {
-      files.forEach((file) => formData.append("files", file)); // @RequestPart("files")
-    } else {
-      // 빈 파일이 아님을 명시적으로 보내고 싶다면 이 방식 가능
-      formData.append("files", new Blob([]));
+      files.forEach((file) => formData.append("files", file));
     }
 
-    // 요청 로그 확인 
+    // 디버깅 출력
     for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+      console.log("🧾 FormData Entry:", key, value);
     }
 
     const response = await request.put({
       url: `${BASE_URL}/${communityId}`,
       data: formData,
       headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` // 필요 시
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('게시글 수정 중 오류 발생:', error.response?.data || error.message);
+    console.error("게시글 수정 중 오류 발생:", error.response?.data || error.message);
     throw error;
   }
 };
+
 
 
 export const deleteCommunityPost = async (communityId) => {
@@ -107,6 +102,7 @@ export const getCommunityPost = async (communityId) => {
   }
 };
 
+// 커뮤니티 검색
 export const searchCommunityPosts = async (page = 1, size = 10, sort = 'desc', searchQuery = '') => {
   try {
     const response = await request.get({
