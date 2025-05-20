@@ -1,7 +1,5 @@
-// 개선된 MeetUpdate 컴포넌트 (MeetInsert와 UI/UX 일치)
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import RoundedButton from "../../components/button/RoundedButton";
 import useMeetStore from "../../stores/useMeetStore";
 import MeetSideMenu from "../../components/meet/MeetSideMenu";
 import { updateMeet, getMeetingDetail } from "../../api/meetAPI";
@@ -31,45 +29,43 @@ const koreaRegions = [
   "제주",
 ];
 
+const categoryList = [
+  { label: "스포츠", value: "SPORTS" },
+  { label: "여행", value: "TRAVEL" },
+  { label: "음악", value: "MUSIC" },
+  { label: "예술", value: "ART" },
+  { label: "독서", value: "READING" },
+  { label: "건강", value: "HEALTH" },
+  { label: "패션/뷰티", value: "FASHION_BEAUTY" },
+  { label: "반려동물", value: "PET_LOVERS" },
+];
+
 const MeetUpdate = () => {
   const { meetId } = useParams();
   const navigate = useNavigate();
+  const { tags, description, setTags, setDescription } = useMeetStore();
 
-  const {
-    image,
-    tags,
-    description,
-    details,
-    setImage,
-    setTags,
-    setDescription,
-    setDetails,
-  } = useMeetStore();
-
-  const [newImages, setNewImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [originalData, setOriginalData] = useState(null);
+  const [meetName, setMeetName] = useState("");
   const [meetMaximum, setMeetMaximum] = useState(30);
+  const [category, setCategory] = useState("");
   const [regionPopupOpen, setRegionPopupOpen] = useState(false);
-  const [category, setCategory] = useState(null);
+
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   useEffect(() => {
     const fetchMeetingDetail = async () => {
       try {
         const fetched = await getMeetingDetail(meetId);
         const dto = fetched.meetDetailDTO;
-        console.log("meetMaximum from API:", dto.meetMaximum);
-
-        if (dto) {
-          setImage(dto.images[0] || null);
-          setImagePreviews(dto.images || []);
-          setTags([dto.meetName, dto.meetLocation]);
-          setDescription(dto.meetDescription);
-          setDetails(fetched.details || "");
-          setMeetMaximum(dto.meetMaximum);
-          setCategory(dto.category);
-          setOriginalData(dto);
-        }
+        setMeetName(dto.meetName);
+        setMeetMaximum(dto.meetMaximum);
+        setDescription(dto.meetDescription);
+        setTags([dto.meetLocation, dto.category]);
+        setCategory(dto.category);
+        setImagePreviews(dto.images || []);
+        setExistingImages(dto.images || []);
       } catch (err) {
         console.error("모임 정보 오류:", err);
       }
@@ -80,25 +76,44 @@ const MeetUpdate = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const previews = files.map((file) => URL.createObjectURL(file));
-    setNewImages(files);
-    setImagePreviews(previews);
+    setNewImages((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [...prev, ...previews]);
+  };
+
+  const handleDeleteImage = (index) => {
+    const updatedPreviews = [...imagePreviews];
+    const removed = updatedPreviews.splice(index, 1)[0];
+    setImagePreviews(updatedPreviews);
+
+    if (typeof removed === "string") {
+      setExistingImages((prev) => prev.filter((url) => url !== removed));
+    } else {
+      setNewImages((prev) => {
+        const newArr = [...prev];
+        newArr.splice(index - existingImages.length, 1);
+        return newArr;
+      });
+    }
   };
 
   const handleSave = async () => {
     const dto = {
-      meetName: tags[0],
+      meetName,
       meetDescription: description,
       meetMaximum: parseInt(meetMaximum, 10),
-      meetLocation: tags[1],
-      category,
-      exigistingImages: image ? [image] : [],
+      meetLocation: tags[0] || "서울",
+      category: category || "SPORTS",
+      existingImages,
     };
+
     try {
       const res = await updateMeet(meetId, dto, newImages);
       if (res.status === 200 || res.status === 201) {
         alert("수정 완료");
         navigate(`/meet/detail/${meetId}`);
-      } else alert("수정 실패: " + res.status);
+      } else {
+        alert("수정 실패: " + res.status);
+      }
     } catch (err) {
       console.error(err);
       alert("서버 오류");
@@ -106,17 +121,33 @@ const MeetUpdate = () => {
   };
 
   const handleRegionSelect = (region) => {
-    setTags([tags[0], region]);
+    setTags([region, category]);
     setRegionPopupOpen(false);
   };
 
+  const handleCategorySelect = (value) => {
+    setCategory(value);
+    setTags([tags[0], value]);
+  };
+
   return (
-    <div className="bg-gray-100 min-h-screen py-20">
-      <div className="container mx-auto flex gap-6 justify-center">
-        <div className="w-full max-w-4xl p-4">
-          <h1 className="text-2xl font-bold mb-6 text-center">
-            소모임 정보 수정
-          </h1>
+    <div className="bg-gray-50 min-h-screen py-16 px-4">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="col-span-2 bg-white rounded-2xl shadow-lg p-8">
+          <h1 className="text-3xl font-bold mb-8 text-center">소모임 수정</h1>
+
+          <label className="flex justify-center items-center w-full h-48 border-2 border-dashed border-blue-300 rounded-lg mb-6 cursor-pointer bg-blue-50 hover:bg-blue-100 transition">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            <span className="text-blue-600 font-semibold">
+              이미지를 클릭 또는 드래그하여 업로드
+            </span>
+          </label>
 
           <Swiper
             modules={[Navigation, Pagination]}
@@ -128,97 +159,123 @@ const MeetUpdate = () => {
           >
             {imagePreviews.map((url, i) => (
               <SwiperSlide key={i}>
-                <img
-                  src={url}
-                  alt={`image-${i}`}
-                  className="w-full aspect-video object-cover rounded-lg"
-                />
+                <div className="relative">
+                  <img
+                    src={url}
+                    alt={`image-${i}`}
+                    className="w-full aspect-video object-cover rounded-lg"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <button
+                      onClick={() => handleDeleteImage(i)}
+                      className="bg-red-500 text-white text-xs px-2 py-1 rounded"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
 
-          <label className="flex justify-center mb-6">
+          <div className="mb-6">
+            <label className="block font-semibold mb-2">모임 이름</label>
             <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageChange}
-              className="hidden"
-              id="fileInput"
+              type="text"
+              value={meetName}
+              onChange={(e) => setMeetName(e.target.value)}
+              className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <span className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-              이미지 업로드
-            </span>
-          </label>
+          </div>
 
-          <label className="block font-semibold mb-1">모임 이름</label>
-          <input
-            value={tags[0]}
-            onChange={(e) => setTags([e.target.value, tags[1]])}
-            className="bg-white border border-gray-300 rounded px-4 py-2 w-full mb-4"
-          />
+          <div className="mb-6">
+            <label className="block font-semibold mb-2">지역 선택</label>
+            <button
+              onClick={() => setRegionPopupOpen(!regionPopupOpen)}
+              className="px-4 py-2 rounded-full border bg-blue-100 text-blue-800"
+            >
+              {tags[0] || "활동 지역 선택"}
+            </button>
+            {regionPopupOpen && (
+              <div className="grid grid-cols-4 gap-2 mt-4 bg-white border p-4 rounded-xl shadow">
+                {koreaRegions.map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => handleRegionSelect(r)}
+                    className={`px-3 py-1 text-sm rounded-full border ${
+                      tags[0] === r
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <label className="block font-semibold mb-1">지역 선택</label>
-          <button
-            onClick={() => setRegionPopupOpen((prev) => !prev)}
-            className="mb-2 px-4 py-1 rounded-full border bg-blue-100 text-blue-800"
-          >
-            {tags[1] || "활동 지역 선택"}
-          </button>
-          {regionPopupOpen && (
-            <div className="grid grid-cols-4 gap-2 mb-4 bg-white border p-4 rounded shadow">
-              {koreaRegions.map((r) => (
+          <div className="mb-6">
+            <label className="block font-semibold mb-2 text-center">
+              카테고리
+            </label>
+            <div className="flex flex-wrap justify-center gap-2">
+              {categoryList.map((cat) => (
                 <button
-                  key={r}
-                  onClick={() => handleRegionSelect(r)}
+                  key={cat.value}
+                  onClick={() => handleCategorySelect(cat.value)}
                   className={`px-3 py-1 text-sm rounded-full border ${
-                    tags[1] === r
-                      ? "bg-blue-500 text-white"
+                    tags[1] === cat.value
+                      ? "bg-indigo-500 text-white"
                       : "bg-gray-200 text-gray-700"
                   }`}
                 >
-                  {r}
+                  {cat.label}
                 </button>
               ))}
             </div>
-          )}
+          </div>
 
-          <label className="block font-semibold mb-1">모임 설명</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={10}
-            className="bg-white border border-gray-300 rounded px-4 py-2 w-full mb-4 resize-none"
-            placeholder="모임 설명을 입력하세요"
-          />
+          <div className="mb-6">
+            <label className="block font-semibold mb-2">모임 설명</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={6}
+              className="w-full px-4 py-2 rounded-xl border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="모임 설명을 입력하세요"
+            />
+          </div>
 
-          <label className="block font-semibold mb-1">모임 최대 인원</label>
-          <input
-            type="number"
-            value={meetMaximum}
-            onChange={(e) => setMeetMaximum(e.target.value)}
-            min={2}
-            max={30}
-            className="bg-white border border-gray-300 rounded px-2 py-1 w-24 mb-8 text-center"
-          />
+          <div className="mb-8">
+            <label className="block font-semibold mb-2">모임 최대 인원</label>
+            <input
+              type="number"
+              value={meetMaximum}
+              onChange={(e) => setMeetMaximum(e.target.value)}
+              min={2}
+              max={30}
+              className="px-4 py-2 rounded-xl border border-gray-300 w-28 text-center"
+            />
+          </div>
 
-          <div className="flex justify-center gap-x-4">
-            <button
-              onClick={handleSave}
-              className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-2 rounded"
-            >
-              수정하기
-            </button>
+          <div className="flex justify-center gap-4">
             <button
               onClick={() => navigate(`/meet/detail/${meetId}`)}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-8 py-2 rounded"
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-xl shadow"
             >
-              취소하기
+              취소
+            </button>
+            <button
+              onClick={handleSave}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow"
+            >
+              저장
             </button>
           </div>
         </div>
 
-        <div className="w-1/3 pr-4">
+        <div className="col-span-1">
           <div className="sticky top-24">
             <MeetSideMenu />
           </div>
