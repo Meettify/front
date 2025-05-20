@@ -6,10 +6,9 @@ import { useAuth } from "../../hooks/useAuth";
 import RoundedButton from "../../components/button/RoundedButton";
 import RoundedCancelButton from "../../components/button/RoundedCancelButton";
 import RoundedDeleteButton from "../../components/button/RoundedDeleteButton";
-import { CiRead } from "react-icons/ci";
+import { BiReplyAll, BiMessageDetail } from "react-icons/bi";
 import { LiaEdit } from "react-icons/lia";
 import { TiDelete } from "react-icons/ti";
-import { BiReplyAll } from "react-icons/bi";
 
 const CommDetail = () => {
   const { id: communityId } = useParams();
@@ -33,24 +32,11 @@ const CommDetail = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const isFirstLoad = useRef(true);
 
-  console.log("id 체크 :", user.id);
-  console.log("user 전체 구조:", user);
-  console.log("boardId 체크 : " + communityId);
-
-  useEffect(() => {
-    if (postDetail) {
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "auto" });
-      }, 10);
-    }
-  }, [postDetail, comments]);
-
   useEffect(() => {
     const fetchDetail = async () => {
       await fetchPostDetail(communityId);
       await fetchComments(communityId, currentPage);
     };
-
     if (communityId && isFirstLoad.current) {
       fetchDetail();
       isFirstLoad.current = false;
@@ -66,7 +52,6 @@ const CommDetail = () => {
       await deletePost(boardId);
       navigate("/comm");
     } catch (error) {
-      console.error("게시글 삭제 실패:", error);
       alert("게시글 삭제에 실패했습니다.");
     }
   };
@@ -94,8 +79,8 @@ const CommDetail = () => {
   };
 
   const handleDeleteComment = async (commentId) => {
-    await deleteComment(boardId, commentId);
-    fetchComments(boardId, currentPage);
+    await deleteComment(communityId, commentId);
+    fetchComments(communityId, currentPage);
   };
 
   const renderComment = (comment, depth = 0) => {
@@ -106,32 +91,42 @@ const CommDetail = () => {
     return (
       <div
         key={comment.commentId}
-        className={`mt-4 p-4 rounded border ${
-          depth > 0 ? "ml-4 bg-gray-50 border-l-4 border-gray-200" : "bg-white"
+        className={`p-4 rounded-xl border bg-white shadow-sm transition hover:shadow-md ${
+          depth > 0 ? "ml-6 border-l-4 border-blue-200" : ""
         }`}
       >
-        <div className="flex justify-between">
+        <div className="flex justify-between items-start">
           <div>
-            <strong>{comment.nickName}</strong>
-            <div className="text-sm text-gray-500">
+            <p className="font-medium text-gray-800">{comment.nickName}</p>
+            <p className="text-xs text-gray-500">
               {new Date(comment.createdAt).toLocaleString()}
-            </div>
+            </p>
           </div>
           {isAuthor && !isEditing && (
-            <div className="flex gap-2 text-sm">
-              <button onClick={() => setReplyingCommentId(comment.commentId)}>
-                <BiReplyAll /> 답글
+            <div className="flex gap-2 text-sm text-gray-600">
+              <button
+                className="hover:text-blue-600"
+                onClick={() => setReplyingCommentId(comment.commentId)}
+              >
+                <BiReplyAll />
+                답글
               </button>
               <button
+                className="hover:text-green-600"
                 onClick={() => {
                   setEditingCommentId(comment.commentId);
                   setEditingContent(comment.comment);
                 }}
               >
-                <LiaEdit /> 수정
+                <LiaEdit />
+                수정
               </button>
-              <button onClick={() => handleDeleteComment(comment.commentId)}>
-                <TiDelete /> 삭제
+              <button
+                className="hover:text-red-500"
+                onClick={() => handleDeleteComment(comment.commentId)}
+              >
+                <TiDelete />
+                삭제
               </button>
             </div>
           )}
@@ -140,7 +135,6 @@ const CommDetail = () => {
         {isEditing ? (
           <div className="mt-2">
             <textarea
-              autoFocus={false}
               className="w-full p-2 border rounded"
               value={editingContent}
               onChange={(e) => setEditingContent(e.target.value)}
@@ -153,7 +147,9 @@ const CommDetail = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-2 text-left">{comment.comment}</div>
+          <p className="mt-2 text-sm text-gray-800 whitespace-pre-line text-left">
+            {comment.comment}
+          </p>
         )}
 
         {isReplying && (
@@ -163,7 +159,6 @@ const CommDetail = () => {
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="답글 입력"
               className="w-full p-2 border rounded"
-              autoFocus={false}
             />
             <div className="flex justify-end mt-2 gap-2">
               <RoundedCancelButton onClick={() => setReplyingCommentId(null)}>
@@ -186,7 +181,6 @@ const CommDetail = () => {
   const renderPagination = () => {
     const totalPage = pagination?.totalPage || 1;
     if (totalPage <= 1) return null;
-
     const pages = Array.from({ length: totalPage }, (_, i) => i + 1);
 
     return (
@@ -225,96 +219,99 @@ const CommDetail = () => {
   if (!postDetail) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      {/* 제목 */}
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        {postDetail.title}
-      </h1>
-
-      <div className="flex justify-between items-start mb-4 mt-10">
-        {/* 왼쪽: 닉네임 + 날짜 + 조회수 */}
-        <div>
-          <p className="text-lg font-semibold text-gray-800">
-            {postDetail.nickName}
-          </p>
-          <div className="flex items-center text-sm text-gray-500 gap-2 mt-1">
-            <span>{new Date(postDetail.regTime).toLocaleDateString()}</span>
-            <span className="text-gray-400">·</span>
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      {/* 제목 + 작성자 정보 */}
+      <div className="border-b pb-4 mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">{postDetail.title}</h1>
+        <div className="flex items-center justify-between text-sm text-gray-500 mt-2">
+          <div className="flex gap-2">
+            <span>{postDetail.nickName}</span>
+            <span>· {new Date(postDetail.regTime).toLocaleDateString()}</span>
             <span>
+              ·{" "}
               {new Date(postDetail.regTime).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
             </span>
-            <span className="text-gray-400">·</span>
-            <span>조회수 {postDetail.viewCount ?? 0}</span>
+            <span>· 조회수 {postDetail.viewCount ?? 0}</span>
           </div>
+          {user?.nickName === postDetail.nickName && (
+            <div className="flex gap-2">
+              <RoundedButton
+                onClick={() => navigate(`/comm/edit/${communityId}`)}
+              >
+                수정
+              </RoundedButton>
+              <RoundedDeleteButton onClick={() => deleteComm(communityId)}>
+                삭제
+              </RoundedDeleteButton>
+            </div>
+          )}
         </div>
-
-        {/* 오른쪽: 수정/삭제 버튼 */}
-        {user?.nickName === postDetail.nickName && (
-          <div className="flex gap-2">
-            <RoundedButton
-              onClick={() => navigate(`/comm/edit/${communityId}`)}
-            >
-              수정
-            </RoundedButton>
-            <RoundedDeleteButton onClick={() => deleteComm(communityId)}>
-              삭제
-            </RoundedDeleteButton>
-          </div>
-        )}
       </div>
 
+      {/* 본문 */}
       <div
-        className="mb-6 mt-20"
+        className="prose prose-lg text-gray-800 mb-12"
         dangerouslySetInnerHTML={{ __html: postDetail.content }}
       />
 
-      {postDetail.images && postDetail.images.length > 0 && (
-        <div className="mb-6">
-          {postDetail.images
-            .filter((img) => img.uploadImgUrl && img.originalImgName !== "blob")
-            .map((img, index) => (
-              <img
-                key={index}
-                src={img.uploadImgUrl}
-                alt="첨부 이미지"
-                className="mb-4 w-full rounded"
-              />
-            ))}
-        </div>
-      )}
+      {/* 첨부 이미지 */}
+      {postDetail.images &&
+        postDetail.images.filter(
+          (img) =>
+            typeof img.uploadImgUrl === "string" &&
+            img.uploadImgUrl.trim() !== ""
+        ).length > 0 && (
+          <div className="my-6">
+            {postDetail.images
+              .filter(
+                (img) =>
+                  typeof img.uploadImgUrl === "string" &&
+                  img.uploadImgUrl.trim() !== ""
+              )
+              .map((img, index) => (
+                <img
+                  key={index}
+                  src={img.uploadImgUrl}
+                  alt="첨부 이미지"
+                  className="w-full rounded-xl mb-4 max-h-[400px] object-contain"
+                />
+              ))}
+          </div>
+        )}
 
       {/* 댓글 입력 */}
-      <div className="border-t pt-4 mt-6">
-        <textarea
-          className="w-full border p-2 rounded mb-2"
-          autoFocus={false}
-          placeholder="댓글 입력"
-          value={commentContent}
-          onChange={(e) => setCommentContent(e.target.value)}
-        />
-        <RoundedButton
-          onClick={handleCommentSubmit}
-          disabled={!commentContent.trim()}
-        >
-          댓글 등록
-        </RoundedButton>
+      <div className="border-t pt-6 mt-10">
+        <h2 className="text-2xl font-bold flex items-center gap-2 mb-3">
+          <BiMessageDetail className="text-blue-500" /> 댓글 ({comments.length})
+        </h2>
+        <div className="flex gap-2 items-start">
+          <textarea
+            className="flex-1 border rounded p-2 resize-none min-h-[80px]"
+            placeholder="댓글을 입력하세요"
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
+          />
+          <RoundedButton
+            onClick={handleCommentSubmit}
+            disabled={!commentContent.trim()}
+            className="whitespace-nowrap px-4 py-2"
+          >
+            등록
+          </RoundedButton>
+        </div>
       </div>
 
       {/* 댓글 목록 */}
-      <div className="mt-6 mb-32">
-        <h2 className="text-xl font-semibold mb-4 text-left">
-          댓글 ({comments.length})
-        </h2>
-
+      <div className="mt-8 space-y-4">
         {comments.length > 0 ? (
-          <ul className="space-y-4 min-h-[200px]">
-            {comments.map((comment) => renderComment(comment))}
-          </ul>
+          comments.map((comment) => renderComment(comment))
         ) : (
-          <p className="text-gray-500 min-h-[200px]">댓글이 없습니다.</p>
+          <p className="text-gray-400 text-center py-8">
+            아직 댓글이 없습니다.
+          </p>
         )}
       </div>
 
