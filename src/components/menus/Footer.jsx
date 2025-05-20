@@ -87,7 +87,7 @@ const Footer = () => {
           <Link to="/my-questions" className="img-link img-link-return">
             <span className="button-name">
               나의 문의 목록 확인
-              <span class="icon-allow">
+              <span className="icon-allow">
                 <BsChevronRight />
               </span>
             </span>
@@ -96,7 +96,7 @@ const Footer = () => {
           <Link to="/mypage/orderList" className="img-link img-link-product">
             <span className="button-name">
               주문 내역 확인
-              <span class="icon-allow">
+              <span className="icon-allow">
                 <BsChevronRight />
               </span>
             </span>
