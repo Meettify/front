@@ -14,8 +14,6 @@ const InfoModal = ({ buttonPosition, onClose }) => {
   const { goToMyPage, goToCart } = useNavigation();
   const nav = useNavigate();
 
-  console.log("권한 확인 : ", user.role);
-
   const handleLoginClick = () => {
     closeModal("info");
     setTimeout(() => {
@@ -25,6 +23,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
 
   const handleMyifoClick = () => {
     closeModal("info");
+    console.log("권한 확인 : ", user.role);
     if (user?.role === "ADMIN") {
       nav("/admin"); // 관리자면 관리자 페이지로
     } else {
@@ -51,7 +50,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
     onClose(); // 배경 클릭 시 InfoModal 닫기
   };
 
-  const handleCartClick = () => {
+  const handleChatClick = () => {
     closeModal("info");
     nav("/chat");
   };
@@ -108,7 +107,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
                                     ${
                                       user.memberRole !== "ADMIN" ? "mb-3" : ""
                                     }`}
-                onClick={handleCartClick}
+                onClick={handleChatClick}
               >
                 <BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
               </button>
