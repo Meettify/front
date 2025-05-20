@@ -216,7 +216,7 @@ const Chat = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-screen">
       <div className="w-1/4 bg-white border-r p-4 flex flex-col">
         <h2 className="text-xl font-bold mb-4">채팅방 목록</h2>
         <ul className="space-y-2 overflow-y-auto flex-1">
@@ -236,49 +236,48 @@ const Chat = () => {
         </ul>
       </div>
 
-      {/* 중간 메인 부분 제목 & 나가기 버튼 */}
-      <div className="flex-1 flex flex-col bg-white border-r h-screen">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h3 className="text-lg font-bold">
-            {currentRoom ? currentRoom.roomName : `채팅방 ${roomId}`}
-          </h3>
-          <button
-            onClick={leaveRoom}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            나가기
-          </button>
-        </div>
-
-        {/* 중간 메인 부분 채팅 내용 부분 */}
-        <div className="flex-1 min-h-0  max-h-[1350px]  overflow-y-auto p-4 space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.sender === currentUser ? "justify-end" : "justify-start"
-              }`}
+      {roomId ? (
+        <div className="flex flex-col flex-1 h-screen overflow-hidden">
+          <div className="p-4 border-b flex justify-between items-center">
+            <h3 className="text-lg font-bold">
+              {currentRoom ? currentRoom.roomName : `채팅방 ${roomId}`}
+            </h3>
+            <button
+              onClick={leaveRoom}
+              className="bg-red-500 text-white px-4 py-2 rounded"
             >
-              <div className="max-w-xs">
-                {msg.sender !== currentUser && (
-                  <div className="text-xs text-gray-500 mb-1 text-left">
-                    {msg.sender}
-                  </div>
-                )}
+              나가기
+            </button>
+          </div>
 
-                <div
-                  className={`p-3 rounded-lg shadow-md whitespace-pre-wrap break-words ${
-                    msg.sender === currentUser
-                      ? "bg-blue-500 text-white rounded-br-none"
-                      : "bg-gray-200 text-black rounded-bl-none"
-                  }`}
-                >
-                  {msg.type === "PLACE" && msg.place ? (
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => window.open(msg.place.mapUrl, "_blank")}
-                    >
-                      {/* <img
+          <div className="flex-1 min-h-0  max-h-[1350px]  overflow-y-auto p-4 space-y-4">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  msg.sender === currentUser ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div className="max-w-xs">
+                  {msg.sender !== currentUser && (
+                    <div className="text-xs text-gray-500 mb-1 text-left">
+                      {msg.sender}
+                    </div>
+                  )}
+
+                  <div
+                    className={`p-3 rounded-lg shadow-md whitespace-pre-wrap break-words ${
+                      msg.sender === currentUser
+                        ? "bg-blue-500 text-white rounded-br-none"
+                        : "bg-gray-200 text-black rounded-bl-none"
+                    }`}
+                  >
+                    {msg.type === "PLACE" && msg.place ? (
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => window.open(msg.place.mapUrl, "_blank")}
+                      >
+                        {/* <img
                         src={`https://dapi.kakao.com/v2/maps/staticmap?appkey=${KAKAO_API_KEY}&center=${msg.place.lng},${msg.place.lat}&level=3&size=400x200&markers=color:red|label:P|${msg.place.lat},${msg.place.lng}`}
                         alt="지도 미리보기"
                         className="rounded w-full h-auto mb-2"
@@ -286,100 +285,104 @@ const Chat = () => {
                           e.target.src = "/fallback-map.png";
                         }}
                       /> */}
-                      <div>
-                        <strong>{msg.place.title}</strong>
-                        <p className="text-sm text-gray-600">
-                          {msg.place.address}
-                        </p>
+                        <div>
+                          <strong>{msg.place.title}</strong>
+                          <p className="text-sm text-gray-600">
+                            {msg.place.address}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <p>{msg.message}</p>
-                  )}
-                </div>
+                    ) : (
+                      <p>{msg.message}</p>
+                    )}
+                  </div>
 
-                <div
-                  className={`text-xs mt-1 ${
-                    msg.sender === currentUser
-                      ? "text-right text-gray-300"
-                      : "text-left text-gray-500"
-                  }`}
-                >
-                  {msg.writeTime && !isNaN(Date.parse(msg.writeTime))
-                    ? new Date(msg.writeTime).toLocaleTimeString("ko-KR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "시간 오류"}
+                  <div
+                    className={`text-xs mt-1 ${
+                      msg.sender === currentUser
+                        ? "text-right text-gray-300"
+                        : "text-left text-gray-500"
+                    }`}
+                  >
+                    {msg.writeTime && !isNaN(Date.parse(msg.writeTime))
+                      ? new Date(msg.writeTime).toLocaleTimeString("ko-KR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "시간 오류"}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 채팅 입력창 줄 */}
-        <div className="flex-none p-4 border-t flex items-center gap-2 overflow-hidden">
-          <input
-            type="text"
-            value={newMessage}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage(newMessage);
-            }}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="메시지를 입력하세요"
-            className="flex-grow p-2 border rounded min-w-0 max-w-[70%]"
-          />
-
-          {/* ✅ 여기 주소 공유 버튼 넣기 */}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex-shrink-0 bg-gray-500 text-white px-4 py-2 rounded whitespace-nowrap"
-          >
-            주소 공유
-          </button>
-
-          <button
-            onClick={() => sendMessage(newMessage)}
-            className="flex-shrink-0 bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
-          >
-            전송
-          </button>
-        </div>
-
-        {/* 🗺️ 지도 공유 모달 */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white w-4/5 h-4/5 rounded-lg shadow-lg overflow-hidden relative">
-              <button
-                className="absolute top-2 right-2 text-xl"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ✖
-              </button>
-              <MapSearch
-                onSelectPlace={sharePlace}
-                onClose={() => setIsModalOpen(false)}
-              />
-            </div>
+            ))}
           </div>
-        )}
-      </div>
 
-      <div className="w-[180px] bg-white border-l p-4 flex flex-col">
-        <h2 className="text-lg font-bold mb-4">접속 인원</h2>
-        <ul className="space-y-2 overflow-y-auto flex-1">
-          {roomMembers.map((member) => (
-            <li
-              key={member.nickName}
-              className={`p-2 rounded ${
-                member.isOnline ? "bg-green-100" : "bg-gray-200 text-gray-500"
-              }`}
+          <div className="flex-none p-4 border-t flex items-center gap-2 overflow-hidden">
+            <input
+              type="text"
+              value={newMessage}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendMessage(newMessage);
+              }}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="메시지를 입력하세요"
+              className="flex-grow p-2 border rounded min-w-0 max-w-[70%]"
+            />
+
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex-shrink-0 bg-gray-500 text-white px-4 py-2 rounded whitespace-nowrap"
             >
-              {member.nickName}
-            </li>
-          ))}
-        </ul>
-      </div>
+              주소 공유
+            </button>
+
+            <button
+              onClick={() => sendMessage(newMessage)}
+              className="flex-shrink-0 bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
+            >
+              전송
+            </button>
+          </div>
+
+          {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white w-4/5 h-4/5 rounded-lg shadow-lg overflow-hidden relative">
+                <button
+                  className="absolute top-2 right-2 text-xl"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ✖
+                </button>
+                <MapSearch
+                  onSelectPlace={sharePlace}
+                  onClose={() => setIsModalOpen(false)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center text-gray-400 text-xl">
+          채팅방을 선택해주세요
+        </div>
+      )}
+
+      {roomId ? (
+        <div className="w-[180px] bg-white border-l p-4 flex flex-col">
+          <h2 className="text-lg font-bold mb-4">접속 인원</h2>
+          <ul className="space-y-2 overflow-y-auto flex-1">
+            {roomMembers.map((member) => (
+              <li
+                key={member.nickName}
+                className={`p-2 rounded ${
+                  member.isOnline ? "bg-green-100" : "bg-gray-200 text-gray-500"
+                }`}
+              >
+                {member.nickName}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 };
