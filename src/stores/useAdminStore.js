@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getItemList, createItem, deleteItem, getItemDetail, getTopItems } from '../api/adminAPI';
+import { getItemList, createItem, deleteItem, getItemDetail, getTopItems } from '../api/shopAPI';
 import axios from 'axios';
 
 const useAdminStore = create((set) => ({
