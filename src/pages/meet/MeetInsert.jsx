@@ -53,9 +53,11 @@ const MeetInsert = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setImage(null);
-    setTags(["", ""]);
-    setDescription("");
+    setImage(null); // 이미지 초기화
+    setTags(["", ""]); // 태그 초기화
+    setDescription(""); // 상세설명 초기화
+    setRegion(""); // 지역 초기화
+    setCategory(""); // 카테고리 초기화
   }, []);
 
   const handleImageChange = (e) => {
