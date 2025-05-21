@@ -1,45 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import RoundedButton from "../../components/button/RoundedButton";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { LuList, LuSearch } from "react-icons/lu";
 import useCommStore from "../../stores/useCommStore";
 
 const CommPage = () => {
-  const { posts, fetchPosts, searchPosts, loading, error } = useCommStore();
+  const { posts, fetchPosts, searchPosts, loading, error, totalPage } =
+    useCommStore();
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("최신순");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const totalKeyword = searchParams.get("totalKeyword");
+  const [showRules, setShowRules] = useState(false);
 
   const goToCommAdd = () => {
-    console.log("글쓰기 페이지로 이동합니다.");
     navigate("/comm/add");
   };
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      if (totalKeyword) {
+        setSearchQuery(totalKeyword);
+        setCurrentPage(1);
+        const response = await searchPosts(
+          1,
+          10,
+          sortOrder === "최신순" ? "desc" : "asc",
+          totalKeyword.trim()
+        );
+        setTotalPage(response.totalPage);
+        setPosts(response.communities); // 꼭 추가!
+      }
+    };
+    fetchInitial();
+  }, [totalKeyword]);
 
   useEffect(() => {
     const fetchPageData = async () => {
       try {
         const sort = sortOrder === "최신순" ? "desc" : "asc";
-        const total = searchQuery
+        const response = searchQuery
           ? await searchPosts(currentPage, 10, sort, searchQuery)
           : await fetchPosts(currentPage, 10, sort);
-        setTotalPage(total);
 
-        const sortedPosts = [...posts].sort((a, b) => {
-          if (sort === "desc") {
-            return new Date(b.regTime) - new Date(a.regTime);
-          } else {
-            return new Date(a.regTime) - new Date(b.regTime);
-          }
-        });
-        console.log("Sorted posts on client:", sortedPosts);
+        setTotalPage(response.totalPage);
+        setPosts(response.communities); // 꼭 추가!
       } catch (error) {
         console.error("페이지 데이터 가져오기 실패:", error);
       }
     };
-
     fetchPageData();
   }, [currentPage, sortOrder]);
 
@@ -58,19 +70,22 @@ const CommPage = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = async (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (searchQuery.trim()) {
-        searchPosts(
-          currentPage,
-          10,
-          sortOrder === "최신순" ? "desc" : "asc",
-          searchQuery
-        );
+      const query = searchQuery.trim();
+      setCurrentPage(1);
+
+      const sort = sortOrder === "최신순" ? "desc" : "asc";
+
+      if (query) {
+        const response = await searchPosts(1, 10, sort, query);
+        setTotalPage(response.totalPage);
+        setPosts(response.communities); // 꼭 추가!
       } else {
-        setSearchQuery("");
-        fetchPosts(currentPage, 10, sortOrder === "최신순" ? "desc" : "asc");
+        const response = await fetchPosts(1, 10, sort);
+        setTotalPage(response.totalPage);
+        setPosts(response.communities); // 꼭 추가!
       }
     }
   };
@@ -80,24 +95,45 @@ const CommPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {" "}
-      {/* 전체 높이 확보 */}
       <div className="flex-grow w-full px-10 mt-12 min-h-[600px]">
-        {" "}
-        {/* 넓게 사용 + 최소 높이 */}
         <div className="text-3xl font-semibold mb-4 text-left">
           커뮤니티 둘러보기.
         </div>
-        <div className="bg-gray-100 p-4 rounded-md mb-4 text-left">
-          <p className="text-base mb-1">
-            유용한 답변을 공유하고 싶으신가요? 추천 기능을 이용해 보세요!
+        {/* 커뮤니티 안내 및 규칙 */}
+        <div className="bg-blue-50 border border-blue-300 p-4 rounded-md mb-6 shadow-sm">
+          <p className="text-base font-semibold text-blue-800">
+            소통하고 싶은 이야기를 자유롭게 공유해보세요.
           </p>
-          <p className="text-sm text-gray-600">
-            문제 해결에 도움이 된 답변에 추천을 눌러보세요.
-            <a href="#" className="text-blue-500 ml-1">
-              Meettify 커뮤니티 더 알아보기
-            </a>
-          </p>
+
+          <div
+            className={`transition-all duration-300 mt-3 text-sm text-gray-700 ${
+              showRules ? "max-h-[500px]" : "max-h-[60px] overflow-hidden"
+            }`}
+          >
+            <div className="mt-2">
+              <p className="font-semibold text-gray-800">
+                📌 커뮤니티 이용 규칙
+              </p>
+              <ol className="list-decimal list-inside mt-1 space-y-1">
+                <li>욕설, 비방, 혐오 표현은 금지됩니다.</li>
+                <li>음란물 또는 부적절한 콘텐츠는 허용되지 않습니다.</li>
+                <li>
+                  타인의 개인정보(이름, 연락처, 주소 등)를 공유하지 마세요.
+                </li>
+                <li>광고, 홍보성 게시물은 관리자 승인 없이 금지됩니다.</li>
+                <li>
+                  반복적인 도배나 무의미한 댓글 작성은 제한될 수 있습니다.
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <button
+            className="text-blue-500 mt-2 text-sm hover:underline"
+            onClick={() => setShowRules(!showRules)}
+          >
+            {showRules ? "간략히 보기 ▲" : "전체 규칙 보기 ▼"}
+          </button>
         </div>
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center space-x-2">
@@ -189,6 +225,18 @@ const CommPage = () => {
 };
 
 const Pagination = ({ currentPage, totalPage, onPageChange }) => {
+  const getPageNumbers = (current, total) => {
+    const blockSize = 5;
+    const blockStart = Math.floor((current - 1) / blockSize) * blockSize + 1;
+    const blockEnd = Math.min(blockStart + blockSize - 1, total);
+    return Array.from(
+      { length: blockEnd - blockStart + 1 },
+      (_, i) => blockStart + i
+    );
+  };
+
+  const pageNumbers = getPageNumbers(currentPage, totalPage);
+
   return (
     <nav className="flex justify-center mt-10 mb-10">
       <ul className="inline-flex items-center space-x-1">
@@ -196,26 +244,24 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`w-6 h-6 border rounded-sm flex items-center justify-center
-              ${
-                currentPage === 1
-                  ? "border-gray-300 text-gray-300"
-                  : "border-gray-300 text-blue-500"
-              }`}
+            className={`w-6 h-6 border rounded-sm flex items-center justify-center ${
+              currentPage === 1
+                ? "border-gray-300 text-gray-300"
+                : "border-gray-300 text-blue-500"
+            }`}
           >
             <MdKeyboardArrowLeft />
           </button>
         </li>
-        {Array.from({ length: totalPage }, (_, i) => i + 1).map((number) => (
+        {pageNumbers.map((number) => (
           <li key={number}>
             <button
               onClick={() => onPageChange(number)}
-              className={`w-6 h-6 flex items-center justify-center text-sm
-                ${
-                  currentPage === number
-                    ? "text-black font-bold"
-                    : "text-gray-500"
-                }`}
+              className={`w-6 h-6 flex items-center justify-center text-sm ${
+                currentPage === number
+                  ? "text-black font-bold"
+                  : "text-gray-500"
+              }`}
             >
               {number}
             </button>
@@ -225,12 +271,11 @@ const Pagination = ({ currentPage, totalPage, onPageChange }) => {
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPage}
-            className={`w-6 h-6 border rounded-sm flex items-center justify-center
-              ${
-                currentPage === totalPage
-                  ? "border-gray-300 text-gray-300"
-                  : "border-gray-300 text-blue-500"
-              }`}
+            className={`w-6 h-6 border rounded-sm flex items-center justify-center ${
+              currentPage === totalPage
+                ? "border-gray-300 text-gray-300"
+                : "border-gray-300 text-blue-500"
+            }`}
           >
             <MdKeyboardArrowRight />
           </button>

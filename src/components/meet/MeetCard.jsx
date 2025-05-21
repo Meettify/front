@@ -9,52 +9,42 @@ const MeetCard = ({
   tags = [],
   isMeetPage = false,
   isMember = false,
-  onCardClick, // ✅ 클릭 이벤트는 여기로 받음
+  onCardClick,
 }) => {
   const [imgError, setImgError] = useState(false);
   const imageUrl = imageUrls.length > 0 ? imageUrls[0] : null;
 
-  const handleImgError = () => {
-    setImgError(true);
-  };
-
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col h-full cursor-pointer">
-      {/* 이미지 */}
-      <div className="h-40 md:h-48 w-full overflow-hidden">
+    <div
+      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer flex flex-col h-full"
+      onClick={onCardClick}
+    >
+      <div className="h-40 md:h-48 w-full overflow-hidden bg-gray-200 flex items-center justify-center">
         {imgError || !imageUrl ? (
-          <div className="bg-gray-300 w-full h-full flex items-center justify-center">
-            이미지 없음
-          </div>
+          <span className="text-gray-500">이미지 없음</span>
         ) : (
           <img
             src={imageUrl}
             alt={title}
             className="object-cover w-full h-full"
-            onError={handleImgError}
-            onClick={onCardClick}
+            onError={() => setImgError(true)}
           />
         )}
       </div>
 
-      {/* 텍스트 내용 */}
       <div className="p-4 flex flex-col flex-1 justify-between">
-        <h3
-          className="font-bold text-lg text-gray-800 text-center"
-          onClick={onCardClick}
-        >
+        <h3 className="font-bold text-lg text-gray-800 text-center line-clamp-1">
           {title}
         </h3>
 
         {tags.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-1 text-gray-400 text-xs">
+          <div className="flex flex-wrap justify-center gap-1 text-gray-400 text-xs mt-2">
             {tags.map((tag, index) => (
               <span key={index}>#{tag}</span>
             ))}
           </div>
         )}
 
-        {/* 가입신청 버튼 */}
         {!isMeetPage && (
           <div className="mt-4">
             {isMember ? (
