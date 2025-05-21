@@ -128,6 +128,12 @@ const MeetDetail = () => {
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-3xl shadow-2xl p-10">
             <div className="flex justify-end gap-3 mb-4">
+              <RoundedButton
+                onClick={() => navigate(`/meet/list?category=${meetCategory}`)}
+                className="bg-gray-200 hover:bg-gray-300"
+              >
+                목록으로
+              </RoundedButton>
               {meetPermissionDTO.canEdit && (
                 <RoundedButton
                   onClick={() => navigate(`/meet/update/${meetId}`)}
