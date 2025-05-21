@@ -34,7 +34,7 @@ const MeetList = () => {
       setLoading(true);
       try {
         console.log("현재 페이지 : ", currentPage);
-        const data = await getMeetList(currentPage, 12, category, searchTerm);
+        const data = await getMeetList(currentPage, 9, category, searchTerm);
         if (!data) throw new Error("데이터가 없습니다");
 
         setMeetData(data.meets || []);
