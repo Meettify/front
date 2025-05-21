@@ -7,14 +7,20 @@ const useChatStore = create((set) => ({
   chatRoomExists: false,
   setRoomId: (roomId) => set({ roomId }),
   setChatRoomExists: (exists) => set({ chatRoomExists: exists }),
+  setMeetCategory: (category) => set({ meetCategory: category }), // ✅ setter 추가
+
+  meetCategory: null,
 
   fetchData: async (meetId, setMeeting, setLoading) => {
     try {
-      const { setRoomId, setChatRoomExists } = useChatStore.getState();
+      const { setRoomId, setChatRoomExists, setMeetCategory } = useChatStore.getState();
 
       const fetchedMeeting = await getMeetingDetail(meetId);
       setMeeting(fetchedMeeting);
 
+            // ✅ 카테고리 상태 저장
+      const category = fetchedMeeting?.meetDetailDTO?.category || null;
+      setMeetCategory(category);
 
       const roomName = fetchedMeeting.meetDetailDTO.meetName;
       console.log(`[DEBUG] Room Name: ${roomName}`);
