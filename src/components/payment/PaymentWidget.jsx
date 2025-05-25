@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { loadPaymentWidget, ANONYMOUS } from '@tosspayments/payment-widget-sdk'; // 새로 import
-import { useAuth } from '../../hooks/useAuth'; // 사용자 정보 훅
-import { getItemDetail } from '../../api/adminAPI';
-import { useParams } from 'react-router-dom'; // React Router의 useParams 훅 추가
+import React, { useState, useEffect } from "react";
+import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk"; // 새로 import
+import { useAuth } from "../../hooks/useAuth"; // 사용자 정보 훅
+import { getItemDetail } from "../../api/shopAPI";
+import { useParams } from "react-router-dom"; // React Router의 useParams 훅 추가
 
 const PaymentWidget = () => {
   const { user } = useAuth(); // 사용자 정보 가져오기
@@ -18,8 +18,8 @@ const PaymentWidget = () => {
         const fetchedItem = await getItemDetail(itemId);
         setItem(fetchedItem);
       } catch (error) {
-        console.error('상품 정보를 가져오는 중 오류 발생:', error);
-        setError('상품 정보를 불러오는 데 문제가 발생했습니다.');
+        console.error("상품 정보를 가져오는 중 오류 발생:", error);
+        setError("상품 정보를 불러오는 데 문제가 발생했습니다.");
       }
     };
 
@@ -40,7 +40,7 @@ const PaymentWidget = () => {
 
   const loadTossPayments = async () => {
     if (!item) {
-      console.error('상품 정보가 없습니다.');
+      console.error("상품 정보가 없습니다.");
       return;
     }
 
@@ -60,11 +60,11 @@ const PaymentWidget = () => {
         failUrl: `${window.location.origin}/fail`, // 실패 시 리디렉션 URL
       });
 
-      console.log('결제 위젯 호출 성공');
+      console.log("결제 위젯 호출 성공");
       setPaymentReady(true);
     } catch (error) {
-      console.error('결제 위젯 호출 실패', error);
-      alert('결제 실패: ' + error.message); // 오류 메시지 표시
+      console.error("결제 위젯 호출 실패", error);
+      alert("결제 실패: " + error.message); // 오류 메시지 표시
     } finally {
       setPaymentLoading(false);
     }
@@ -76,17 +76,16 @@ const PaymentWidget = () => {
 
   return (
     <div>
-      {error && <p>{error}</p>}  {/* 에러 메시지 표시 */}
-      <h1>{item ? item.itemName : '상품을 불러오는 중...'}</h1>
-      <p>{item ? `가격: ${item.itemPrice}원` : ''}</p>
-
+      {error && <p>{error}</p>} {/* 에러 메시지 표시 */}
+      <h1>{item ? item.itemName : "상품을 불러오는 중..."}</h1>
+      <p>{item ? `가격: ${item.itemPrice}원` : ""}</p>
       {/* 결제 진행 중 표시 */}
       {paymentLoading && <p>결제 진행 중...</p>}
-
       {/* 결제 완료 표시 */}
       {paymentReady && <div>결제가 완료되었습니다!</div>}
-
-      <button onClick={loadTossPayments} disabled={paymentLoading}>결제하기</button>
+      <button onClick={loadTossPayments} disabled={paymentLoading}>
+        결제하기
+      </button>
     </div>
   );
 };

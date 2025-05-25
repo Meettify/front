@@ -11,38 +11,28 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
     e.preventDefault();
 
     const cartItem = cartItems.find((item) => item.itemId === itemId);
-
-    if (isFavorite(itemId)) {
-      try {
-        if (cartItem) {
-          await removeFromCart(cartItem.cartItemId);
-          console.log(`아이템 ${itemId} 제거 완료`);
-        } else {
-          console.error(`장바구니에 ${itemId}가 없습니다.`);
-        }
-      } catch (error) {
-        console.error("장바구니에서 상품 제거 중 오류 발생:", error);
-      }
-    } else {
-      try {
+    try {
+      if (isFavorite(itemId)) {
+        if (cartItem) await removeFromCart(cartItem.cartItemId);
+      } else {
         await addToCart(itemId, 1);
-        console.log(`아이템 ${itemId} 추가 완료`);
-      } catch (error) {
-        console.error("장바구니 추가 중 오류 발생:", error);
       }
+    } catch (error) {
+      console.error("즐겨찾기 처리 중 오류:", error);
     }
   };
 
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer p-5 transition duration-300 hover:bg-gray-100"
+      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-md transition duration-300 flex flex-col h-full"
     >
-      <div className="relative h-[200px] bg-gray-100 rounded-2xl overflow-hidden">
+      <div className="relative w-full h-48 bg-gray-100 rounded-t-2xl overflow-hidden">
         <img
           src={imageUrl}
           alt={title}
-          className="object-cover w-full h-full rounded-md transition-transform duration-300 group-hover:scale-110"
+          className="object-cover w-full h-full"
+          onError={(e) => (e.target.style.display = "none")}
         />
         <button
           type="button"
@@ -53,12 +43,12 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
         </button>
       </div>
 
-      <div className="pt-4 text-left">
-        <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
+      <div className="p-4 flex flex-col justify-between flex-1">
+        <h3 className="text-base font-semibold text-gray-800 line-clamp-1">
           {title}
         </h3>
-        <p className="text-sm text-gray-500 line-clamp-2">{description}</p>
-        <p className="mt-2 font-bold text-indigo-600 text-lg">{price}</p>
+        <p className="text-sm text-gray-500 line-clamp-2 mt-1">{description}</p>
+        <p className="mt-3 font-bold text-indigo-600 text-base">{price}</p>
       </div>
     </div>
   );
