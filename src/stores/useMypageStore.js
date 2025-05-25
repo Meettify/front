@@ -48,7 +48,15 @@ const useMypageStore = create((set) => ({
     setTotalInquiryCount: (totalInquiryCount) => set({totalInquiryCount}),
     setTotalInquiryOkCount: (totalInquiryOkCount) => set({totalInquiryOkCount}),
 
-    setMyOrderList: (orders) => set({myOrderList: orders}),
+    setMyOrderList: (updater) =>
+  set((state) => ({
+    myOrderList:
+      typeof updater === 'function'
+        ? updater(state.myOrderList)
+        : Array.isArray(updater)
+        ? updater
+        : [],
+  })),
     setMyOrdertotalPages: (myOrdertotalPages) => set({myOrdertotalPages}),
     setMyOrderCurrentPage: (myOrderCurrentPage) => set({myOrderCurrentPage}),
     setMyOrderListCount: (myOrderListCount) => set({myOrderListCount}),

@@ -171,7 +171,7 @@ const fetchMyMeetList = async (page = 1) => {
                 setMyOrderList([]);
                 return;
             } else{
-                setMyOrderList(response.contents);
+                setMyOrderList((prev) => [...prev, ...response.contents]);
                 setMyOrdertotalPages(response.totalPage);
             }
             
