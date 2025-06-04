@@ -148,7 +148,7 @@ const CommDetail = () => {
           </div>
         ) : (
           <p className="mt-2 text-sm text-gray-800 whitespace-pre-line text-left">
-            {comment.comment}
+            {comment?.isDeleted ? "삭제된 댓글입니다." : comment.comment}
           </p>
         )}
 

@@ -19,34 +19,30 @@ const useCommStore = create((set) => ({
   loading: false,
   error: null,
 
-  fetchPosts: async (page = 0, size = 10, sort = 'desc') => {
-    set({ loading: true, posts: [] });
-    try {
-        const response = await getAllCommunityPosts(page, size, sort);
-        const { communities, totalPage } = response;
+setTotalPage: (page) => set({ totalPage: page }),
+setPosts: (posts) => set({ posts }),
 
-        console.log('API Response:', response);
+fetchPosts: async (page = 0, size = 10, sort = 'desc') => {
+  set({ loading: true, posts: [] });
+  try {
+    const response = await getAllCommunityPosts(page, size, sort);
+    const { communities, totalPage } = response;
 
-        // 클라이언트 정렬
-        const sortedPosts = [...communities].sort((a, b) => {
-            if (sort === 'desc') {
-                return new Date(b.regTime) - new Date(a.regTime);
-            } else {
-                return new Date(a.regTime) - new Date(b.regTime);
-            }
-        });
+    const sortedPosts = [...communities].sort((a, b) => {
+      return sort === 'desc'
+        ? new Date(b.regTime) - new Date(a.regTime)
+        : new Date(a.regTime) - new Date(b.regTime);
+    });
 
-        set({
-            posts: sortedPosts, // 정렬된 데이터를 상태에 설정
-            loading: false,
-        });
-
-        return totalPage;
-    } catch (error) {
-        console.error('페이지 데이터 가져오기 실패:', error);
-        set({ error, loading: false });
-        throw error;
-    }
+    set({
+      posts: sortedPosts,
+      totalPage, // ✅ 여기서 상태에 저장
+      loading: false,
+    });
+  } catch (error) {
+    console.error('페이지 데이터 가져오기 실패:', error);
+    set({ error, loading: false });
+  }
 },
 
 // 게시물 상세 조회
