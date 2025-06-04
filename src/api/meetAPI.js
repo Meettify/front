@@ -66,7 +66,7 @@ export const deleteMeet = async (meetId) => {
 };
 
 // 소모임 리스트 조회 API
-export const getMeetList = async (page = 1, size = 12, category = "", name = "") => {
+export const getMeetList = async (page = 1, size = 9, category = "", name = "") => {
   const token = getAuthToken();
  console.log("name type:", typeof name, "value:", name);
   const response = await request.get({
@@ -424,12 +424,8 @@ export const deleteMeetBoard = async (meetId, meetBoardId) => {
     
 // 추천 상품을 가져오는 함수
 export const getRecommendedItems = async () => {
-    const token = `${sessionStorage.getItem('accessToken')}`;  // 인증 토큰 가져오기
-    if (!token) {
-        console.error('인증 토큰이 없습니다. 로그인 후 다시 시도해 주세요.');
-        //window.location.href = '/login';  // 로그인 페이지로 리다이렉트 (경로는 실제 로그인 경로에 맞게 수정)
-        return;
-    }
+  const token = getAuthToken();
+  console.log("token : " + token)
     try {
         const response = await axios.get(`${BASE_URL}/items/recommend-items`, {
             headers: {
