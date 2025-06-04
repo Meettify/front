@@ -14,20 +14,19 @@ export const useAuth = () => {
       // 토큰이 있으면 로그인 상태를 복구
       const fetchData = async () => {
         const userData = await getMember(storedMemberId);
+        console.log("userData : ", userData)
         
         if(userData){
             login({
-              id: userData.memberId,
-              email: userData.memberEmail,
-              nickName: userData.nickName,
-              role: userData.memberRole, 
-              createdAt: userData.createdAt,
-              memberName: userData.memberName,
-              memberAddr: {
-                memberZipCode: userData.memberZipCode,
-                memberAddrInfo: userData.memberAddr,
-                memberAddrDetail: userData.memberAddrDetail,
-              }
+              id: userData?.memberId,
+              email: userData?.memberEmail,
+              nickName: userData?.nickName,
+              role: userData?.memberRole, 
+              createdAt: userData?.createdAt,
+              memberName: userData?.memberName,
+              memberZipCode: userData?.memberAddr?.memberZipCode,
+              memberAddrInfo: userData?.memberAddr?.memberAddr,
+              memberAddrDetail: userData?.memberAddr?.memberAddrDetail,
           });
         }
       };
