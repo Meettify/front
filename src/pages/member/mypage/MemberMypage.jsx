@@ -21,9 +21,6 @@ const MemberMypage = () => {
   const { goToCart, goToMeetDetail, goToComm, goToShop, goToSupport } =
     useNavigation();
   const { user, isAuthenticated, logout } = useAuth();
-  console.log("이메일 : ", user.email); // ✅ 정상
-  console.log("가입일 : ", user.createdAt); // ✅ 정상
-  console.log("닉네임 : ", user.nickName); // ✅ 정상
   const { meetJoinList } = useMyPage();
   const cartCnt = useCartStore((state) => state.cartItems).length;
   const {
