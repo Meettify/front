@@ -167,11 +167,19 @@ const fetchMyMeetList = async (page = 1) => {
         try {
             const response = await getMyOrderList(page, size, sortOrder);
 
+            console.log("주문 정보 확인 : ", response)
+
             if (!response || !Array.isArray(response.contents)) {
                 setMyOrderList([]);
                 return;
             } else{
-                setMyOrderList((prev) => [...prev, ...response.contents]);
+                setMyOrderList((prev) => {
+                        const existingOrderIds = new Set(prev.map((order) => order.orderId));
+                        const newOrders = response.contents.filter(
+                                    (order) => !existingOrderIds.has(order.orderId)
+                                );
+                            return [...prev, ...newOrders];
+                        });
                 setMyOrdertotalPages(response.totalPage);
             }
             
