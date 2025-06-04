@@ -11,7 +11,7 @@ const MeetBoard = lazy(() => import("../pages/meet/MeetBoard"));
 const MeetBoardDetail = lazy(() => import("../pages/meet/MeetBoardDetail"));
 const MeetBoardAdd = lazy(() => import("../pages/meet/MeetBoardAdd"));
 const MeetBoardEdit = lazy(() => import("../pages/meet/MeetBoardEdit"));
-const ChatRoom = lazy(() => import("../components/meet/ChatRoom"));
+const ChatRoom = lazy(() => import("../pages/chat/Chat"));
 
 const meetRouter = () => {
   return [

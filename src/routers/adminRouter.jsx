@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 const Loading = () => <div>Loading..</div>;
 const AdminPage = lazy(() => import("../pages/admin/AdminPage"));
 const ItemConfirm = lazy(() => import("../pages/admin/ItemConfirm"));
-const ItemDetail = lazy(() => import("../pages/admin/ItemDetail"));
+const ItemDetail = lazy(() => import("../pages/shop/ShopDetail"));
 const ItemList = lazy(() => import("../pages/admin/ItemList"));
 const ItemModify = lazy(() => import("../pages/admin/ItemModify"));
 const ItemAdd = lazy(() => import("../pages/admin/ItemAdd"));
