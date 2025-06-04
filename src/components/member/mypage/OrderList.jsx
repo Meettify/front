@@ -68,49 +68,53 @@ const OrderList = () => {
         myOrderList.length === 0 ? (
           <p className="text-gray-500">주문한 상품이 없습니다.</p>
         ) : (
-          myOrderList.map((order) =>
-            order.orderItems.map((orderItem) => (
-              <div
-                key={`${order.orderUid}-${orderItem.orderItemId}`}
-                className={`border rounded-md border-gray-300 p-4 mb-4 max-w-[700px] 
-                  hover:shadow-inner hover:border-gray-400 transition-all duration-200 
-                  ${order.payStatus === "결제 완료" ? "" : "bg-gray-100"}`}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <span className="font-semibold">
-                      {formatDate(order.orderTime)}
-                      <span className="text-zinc-300 ml-2 mr-2">/</span>
-                    </span>
-                    <span className="text-gray-400">{order.orderUid}</span>
-                  </div>
-                  <button
-                    onClick={() => openModal(order)}
-                    className="text-gray-400 hover:text-gray-500 underline"
+          myOrderList.map((order) => (
+            <div
+              key={order.orderUid}
+              className={`border rounded-md border-gray-300 p-4 mb-4 max-w-[700px]
+                hover:shadow-inner hover:border-gray-400 transition-all duration-200 
+                ${order.payStatus === "PAY_O" ? "" : "bg-gray-100"}`}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <span className="font-semibold">
+                    {formatDate(order.orderTime)}
+                    <span className="text-zinc-300 ml-2 mr-2">/</span>
+                  </span>
+                  <span className="text-gray-400">{order.orderUid}</span>
+                </div>
+                <button
+                  onClick={() => openModal(order)}
+                  className="text-gray-400 hover:text-gray-500 underline"
+                >
+                  상세주문내역
+                </button>
+              </div>
+
+              <hr className="mt-2 mb-2" />
+
+              <div className="flex mb-2">
+                <p>
+                  <span
+                    className={
+                      order?.payStatus === "PAY_O"
+                        ? "text-blue-500"
+                        : "text-red-500"
+                    }
                   >
-                    상세주문내역
-                  </button>
-                </div>
+                    {order?.payStatus === "PAY_O"
+                      ? "구매 완료"
+                      : "결제 취소 완료"}
+                  </span>
+                </p>
+              </div>
 
-                <hr className="mt-2 mb-2" />
-
-                <div className="flex mb-2">
-                  <p>
-                    <span
-                      className={
-                        order.payStatus === "결제 완료"
-                          ? "text-blue-500"
-                          : "text-red-500"
-                      }
-                    >
-                      {order.payStatus === "결제 완료"
-                        ? "구매 완료"
-                        : "결제 취소 완료"}
-                    </span>
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center">
+              {/* ✅ 상품 목록 출력 */}
+              {order.orderItems.map((orderItem) => (
+                <div
+                  key={orderItem.orderItemId}
+                  className="flex justify-between items-center mb-4"
+                >
                   <div className="flex">
                     <img
                       src={
@@ -143,9 +147,9 @@ const OrderList = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-            ))
-          )
+              ))}
+            </div>
+          ))
         )
       ) : (
         <p className="text-red-400">주문 목록을 불러오는 데 실패했습니다.</p>

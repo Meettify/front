@@ -40,8 +40,9 @@ function SectionCheckout() {
   }, []);
 
   useEffect(() => {
-    //주문했던 상품 불러오기
-    setOrderTemp(JSON.parse(sessionStorage.getItem("orderTemp")));
+    const temp = JSON.parse(sessionStorage.getItem("orderTemp"));
+    console.log("✅ 직접 확인:", temp);
+    setOrderTemp(temp);
   }, []);
 
   //S: toss
@@ -81,19 +82,23 @@ function SectionCheckout() {
 
   useEffect(() => {
     async function renderPaymentWidgets() {
-      if (widgets == null) {
+      if (!widgets || !orderTemp?.orderTotalPrice) {
+        console.warn(
+          "⚠️ Toss 위젯 렌더링 시점에 orderTotalPrice가 정의되지 않았습니다."
+        );
         return;
       }
-      // ------ 주문의 결제 금액 설정 ------
-      await widgets.setAmount(amount);
+
+      await widgets.setAmount({
+        currency: "KRW",
+        value: orderTemp.orderTotalPrice,
+      });
 
       await Promise.all([
-        // ------  결제 UI 렌더링 ------
         widgets.renderPaymentMethods({
           selector: "#payment-method",
           variantKey: "DEFAULT",
         }),
-        // ------  이용약관 UI 렌더링 ------
         widgets.renderAgreement({
           selector: "#agreement",
           variantKey: "AGREEMENT",
@@ -104,7 +109,7 @@ function SectionCheckout() {
     }
 
     renderPaymentWidgets();
-  }, [widgets]);
+  }, [widgets, orderTemp]);
 
   useEffect(() => {
     if (widgets == null) {
@@ -135,6 +140,9 @@ function SectionCheckout() {
 
   const handlePayment = async (e) => {
     try {
+      // 최신 orderTemp 저장 (안정성 확보)
+      sessionStorage.setItem("orderTemp", JSON.stringify(orderTemp));
+
       //결제 정보 전달
       const requestBody = {
         orderId: orderTemp?.orderUid,
