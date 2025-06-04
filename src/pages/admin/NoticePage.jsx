@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom"; // ✅ Outlet 추가
 import useNoticeStore from "../../stores/useNoticeStore";
 import RoundedButton from "../../components/button/RoundedButton";
 
@@ -12,51 +12,63 @@ const NoticePage = () => {
     setPage,
     pageSize,
     totalPage,
-    hasNextPage,
-    hasPreviousPage,
     nowPageNumber,
-    isFirstPage,
-    isLastPage,
+    fetchNoticeDetails,
+    deleteNotice,
   } = useNoticeStore();
 
+  const [selectedNoticeId, setSelectedNoticeId] = useState(null);
+  const [selectedNotice, setSelectedNotice] = useState(null);
   const navigate = useNavigate();
 
-  // 페이지 범위 계산
-  const getPageNumbers = (nowPageNumber, totalPage, blockSize = 5) => {
-    const currentBlock = Math.floor((nowPageNumber - 1) / blockSize);
-    const start = currentBlock * blockSize + 1;
-    const end = Math.min(start + blockSize - 1, totalPage);
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  const pageNumbers = Array.from({ length: totalPage }, (_, i) => i + 1);
+
+  const handleClickNotice = async (noticeId) => {
+    if (selectedNoticeId === noticeId) {
+      setSelectedNoticeId(null);
+      setSelectedNotice(null);
+    } else {
+      try {
+        const detail = await fetchNoticeDetails(noticeId);
+        setSelectedNoticeId(noticeId);
+        setSelectedNotice(detail);
+      } catch (e) {
+        console.error("상세 조회 실패", e);
+      }
+    }
   };
 
-  const pageNumbers = getPageNumbers(nowPageNumber, totalPage); // 계산된 페이지 리스트
-
-  // 공지사항 클릭 시 디테일 페이지로 이동
-  const goToNoticeDetail = (noticeId) => {
-    console.log("클릭된 noticeId:", noticeId); // noticeId 디버깅 로그
-    if (noticeId) {
-      navigate(`/notice/${noticeId}`); // noticeId가 존재할 때만 경로로 이동
-    } else {
-      console.error("Invalid noticeId:", noticeId); // noticeId가 없으면 오류 로그 출력
+  const handleDelete = async () => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await deleteNotice(selectedNoticeId);
+      setSelectedNoticeId(null);
+      setSelectedNotice(null);
+      fetchNotices();
     }
   };
 
   useEffect(() => {
     fetchNotices();
-    console.log("공지사항 목록:", notices); // fetch 이후 데이터 확인
   }, [page]);
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto pb-20">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">공지사항 관리</h1>
+        <RoundedButton
+          onClick={() => navigate("add")}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          + 공지사항 등록
+        </RoundedButton>
       </div>
 
-      <div>
+      {/* 목록 */}
+      <div className="overflow-x-auto">
         {loading ? (
           <p>로딩 중...</p>
         ) : (
-          <table className="w-full table-fixed border-t border-gray-300 text-sm">
+          <table className="w-full table-auto border-t border-gray-300 text-sm">
             <thead className="bg-gray-50">
               <tr>
                 <th className="p-2 text-center">번호</th>
@@ -65,28 +77,61 @@ const NoticePage = () => {
               </tr>
             </thead>
             <tbody>
-              {(notices || []).map((notice, index) => (
-                <tr
-                  key={notice.noticeId || index}
-                  className="hover:bg-gray-100"
-                >
-                  <td className="p-2 text-center">
-                    {(page - 1) * pageSize + index + 1}
+              {notices.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-6 text-center text-gray-400">
+                    등록된 공지사항이 없습니다.
                   </td>
-                  <td
-                    className="p-2 text-center text-blue-500 cursor-pointer"
-                    onClick={() => goToNoticeDetail(notice.noticeId)}
-                  >
-                    {notice.title}
-                  </td>
-                  <td className="p-2 text-center">{notice.content}</td>
                 </tr>
-              ))}
+              ) : (
+                notices.map((notice, index) => (
+                  <tr
+                    key={notice.noticeId}
+                    onClick={() => handleClickNotice(notice.noticeId)}
+                    className="hover:bg-gray-100 cursor-pointer"
+                  >
+                    <td className="p-2 text-center">
+                      {(page - 1) * pageSize + index + 1}
+                    </td>
+                    <td className="p-2 text-center text-blue-500">
+                      {notice.title}
+                    </td>
+                    <td className="p-2 text-center">{notice.content}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* 상세 내용 */}
+      {selectedNotice && (
+        <div className="mt-10 bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto border">
+          <div className="flex justify-between items-center mb-4 border-b pb-2">
+            <h2 className="text-xl font-bold">{selectedNotice.title}</h2>
+            <span className="text-sm text-gray-500">
+              작성일:{" "}
+              {new Date(selectedNotice.regTime).toLocaleDateString("ko-KR")}
+            </span>
+          </div>
+          <p className="text-gray-800 whitespace-pre-wrap text-left mb-6">
+            {selectedNotice.content}
+          </p>
+          <div className="flex justify-end">
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              삭제
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 페이지네이션 */}
+      {notices.length > 0 && (
         <div className="flex justify-center items-center gap-1 mt-6">
-          {/* << 처음 */}
           <button
             onClick={() => setPage(1)}
             disabled={page === 1}
@@ -94,17 +139,13 @@ const NoticePage = () => {
           >
             ≪
           </button>
-
-          {/* < 이전 블록의 마지막 페이지 */}
           <button
-            onClick={() => setPage(Math.max(1, pageNumbers[0] - 1))}
-            disabled={pageNumbers[0] === 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
             className="px-2 py-1 rounded bg-gray-200 disabled:opacity-50"
           >
             &lt;
           </button>
-
-          {/* 페이지 번호들 */}
           {pageNumbers.map((p) => (
             <button
               key={p}
@@ -116,21 +157,13 @@ const NoticePage = () => {
               {p}
             </button>
           ))}
-
-          {/* > 다음 블록의 첫 페이지 */}
           <button
-            onClick={() =>
-              setPage(
-                Math.min(totalPage, pageNumbers[pageNumbers.length - 1] + 1)
-              )
-            }
-            disabled={pageNumbers[pageNumbers.length - 1] === totalPage}
+            onClick={() => setPage(Math.min(totalPage, page + 1))}
+            disabled={page === totalPage}
             className="px-2 py-1 rounded bg-gray-200 disabled:opacity-50"
           >
             &gt;
           </button>
-
-          {/* >> 마지막 페이지 */}
           <button
             onClick={() => setPage(totalPage)}
             disabled={page === totalPage}
@@ -139,7 +172,10 @@ const NoticePage = () => {
             ≫
           </button>
         </div>
-      </div>
+      )}
+
+      {/* ✅ 하위 라우트 렌더링 영역 */}
+      <Outlet />
     </div>
   );
 };
