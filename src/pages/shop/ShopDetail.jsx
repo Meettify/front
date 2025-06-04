@@ -154,9 +154,10 @@ const ShopDetail = () => {
             </p>
           </div>
 
-          <p className="text-base md:text-lg text-black/80 mb-4 leading-relaxed break-words whitespace-pre-line">
-            {itemDetail.itemDetails}
-          </p>
+          <div
+            className="text-base md:text-lg text-black/80 mb-4 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: itemDetail.itemDetails }}
+          />
 
           <ItemBuyCard itemDetail={itemDetail} itemId={itemId} />
 

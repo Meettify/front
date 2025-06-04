@@ -13,6 +13,7 @@ const ItemAdd = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isAdmin)
     return (
@@ -27,6 +28,9 @@ const ItemAdd = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // ⛔ 중복 방지
+    setIsSubmitting(true); // 🔒 잠금
+
     const fileArray = Array.isArray(files) ? files : [];
 
     try {
@@ -50,6 +54,8 @@ const ItemAdd = () => {
     } catch (error) {
       console.error("상품 등록 실패:", error);
       alert("상품 등록에 실패했습니다.");
+    } finally {
+      setIsSubmitting(false); // 🔓 다시 활성화
     }
   };
 
@@ -141,9 +147,12 @@ const ItemAdd = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            className="w-1/2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isSubmitting}
+            className={`w-1/2 ${
+              isSubmitting ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+            } text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
-            등록
+            {isSubmitting ? "등록 중..." : "등록"}
           </button>
         </div>
       </form>

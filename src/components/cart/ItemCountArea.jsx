@@ -1,24 +1,29 @@
-// ItemCountArea.jsx
 import React, { useContext, useEffect, useState } from "react";
 import { ItemTotalPriceContext } from "./CartItem";
 import axios from "axios";
 
 const ItemCountArea = React.memo(
-  ({ itemMaxCount, itemCount, itemPrice, cartId, itemId }) => {
+  ({ itemMaxCount = 10, itemCount = 1, itemPrice = 0, cartItemId, itemId }) => {
     const { setItemTotalPrice } = useContext(ItemTotalPriceContext);
     const [currentItemCount, setCurrentItemCount] = useState(itemCount);
+    const cartId = localStorage.getItem("cartId");
 
-    const setItemCountDB = (count) => {
-      if (cartId === 0) return;
+    // ✅ 초기값이 바뀌었을 때만 반영
+    useEffect(() => {
+      if (itemCount !== currentItemCount) {
+        setCurrentItemCount(itemCount);
+      }
+    }, [itemCount]);
+
+    const updateItemTotalPrice = (count, price) => {
+      setItemTotalPrice(count * price);
+    };
+
+    const setItemCountDB = async (count) => {
       try {
-        axios.put(
-          `http://localhost:8080/api/v1/carts/${cartId}`,
-          [
-            {
-              itemId,
-              itemCount: count,
-            },
-          ],
+        await axios.put(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/carts/${cartId}`,
+          [{ itemId, itemCount: count }],
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -31,15 +36,11 @@ const ItemCountArea = React.memo(
       }
     };
 
-    const updateItemTotalPrice = (count, price) => {
-      setItemTotalPrice(count * price);
-    };
-
     const handleInputChange = (e) => {
       const value = Number(e.target.value);
-      if (value > itemMaxCount) setCurrentItemCount(itemMaxCount);
-      else if (value < 1) setCurrentItemCount(1);
-      else setCurrentItemCount(value);
+      if (!value || isNaN(value)) return;
+      const clamped = Math.max(1, Math.min(itemMaxCount, value));
+      setCurrentItemCount(clamped);
     };
 
     const increaseCount = () => {
@@ -52,15 +53,8 @@ const ItemCountArea = React.memo(
     };
 
     useEffect(() => {
-      setCurrentItemCount(itemCount);
-    }, [itemCount]);
-
-    useEffect(() => {
-      setItemCountDB(currentItemCount);
-    }, [currentItemCount]);
-
-    useEffect(() => {
       updateItemTotalPrice(currentItemCount, itemPrice);
+      setItemCountDB(currentItemCount);
     }, [currentItemCount, itemPrice]);
 
     return (
