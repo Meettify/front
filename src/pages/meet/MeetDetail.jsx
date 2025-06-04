@@ -192,10 +192,15 @@ const MeetDetail = () => {
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   모임 소개
                 </h3>
-                <div className="pr-2">
-                  <p className="text-gray-700 whitespace-pre-line leading-[1.8] break-words text-base">
-                    {meetDescription}
-                  </p>
+                <div className="pr-2 max-h-[300px] overflow-y-auto space-y-2 text-left">
+                  {meetDescription.split("\n").map((line, index) => (
+                    <p
+                      key={index}
+                      className="text-gray-700 leading-[1.8] break-words text-base"
+                    >
+                      {line}
+                    </p>
+                  ))}
                 </div>
               </div>
 
