@@ -13,32 +13,34 @@ const useAdminStore = create((set) => ({
     error: null,
   setItemList: (items) => set({ itemList: items }),
 
-    fetchItemList: async (page = 1, size = 10, sort = 'desc', sortBy = 'itemId') => {
-        set({ loading: true });
-        try {
-            const items = await getItemList(page, size);
-            console.log('Fetched items:', items); // Debugging console log
-    
-            const sellItems = items.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
-            console.log('Filtered SELL items with available stock:', sellItems); // Debugging console log
-    
-            const sortedItems = [...sellItems].sort((a, b) => {
-                if (sortBy === 'itemId') {
-                    return sort === 'desc' ? b.itemId - a.itemId : a.itemId - b.itemId;
-                } else if (sortBy === 'createdAt') {
-                    return sort === 'desc'
-                        ? new Date(b.createdAt) - new Date(a.createdAt)
-                        : new Date(a.createdAt) - new Date(b.createdAt);
-                }
-            });
-            console.log('Sorted items:', sortedItems); // Debugging console log
-    
-            set({ itemList: sortedItems, loading: false });
-        } catch (error) {
-            console.error('Error fetching item list:', error);
-            set({ error: error.message, loading: false });
-        }
-    },
+   fetchItemList: async (page = 1, size = 10, sort = 'desc', sortBy = 'itemId') => {
+  set({ loading: true });
+  try {
+    const response = await getItemList(page, size);
+    console.log('Fetched items:', response);
+
+    // 🟡 실제 배열만 추출
+    const rawItems = response.items || response.data?.items || []; // 안전하게 추출
+
+    const sellItems = rawItems.filter(item => item.itemStatus === 'SELL' && item.itemCount > 0);
+
+    const sortedItems = [...sellItems].sort((a, b) => {
+      if (sortBy === 'itemId') {
+        return sort === 'desc' ? b.itemId - a.itemId : a.itemId - b.itemId;
+      } else if (sortBy === 'createdAt') {
+        return sort === 'desc'
+          ? new Date(b.createdAt) - new Date(a.createdAt)
+          : new Date(a.createdAt) - new Date(b.createdAt);
+      }
+    });
+
+    set({ itemList: sortedItems, loading: false });
+  } catch (error) {
+    console.error('Error fetching item list:', error);
+    set({ error: error.message, loading: false });
+  }
+},
+
     
     // 상품 상세 조회 함수
      fetchItemDetail: async (itemId) => {
@@ -46,7 +48,8 @@ const useAdminStore = create((set) => ({
         try {
             const detail = await getItemDetail(itemId);
             console.log("상품 상세 페이지 : ", detail)
-            set({ itemDetail: detail, loading: false });
+          set({ itemDetail: detail, loading: false });
+          console.log("데이터 체크 : ", get().itemDetail.images)
         } catch (error) {
             set({ error: error.message, loading: false });
         }
@@ -67,16 +70,18 @@ const useAdminStore = create((set) => ({
     },
 
     // 상품 수정
-      updateItem: async (itemId, formData) => {
+  updateItem: async (itemId, formData) => {
+    set({ loading: true, error: null });
     try {
-      const response = await updateItemAPI(itemId, formData); // API 호출
-      set({ itemDetail: response }); // 필요 시 최신 데이터 저장
-      return response;
+      const updated = await updateItemAPI(itemId, formData);
+      set({ itemDetail: updated, loading: false });
+      return updated;
     } catch (error) {
-      console.error('상품 수정 실패:', error);
+      set({ error: error.message, loading: false });
       throw error;
     }
   },
+
 
     // **상품 삭제 함수**
     removeItem: async (itemId) => {
