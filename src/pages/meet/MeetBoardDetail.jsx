@@ -198,7 +198,7 @@ const MeetBoardDetail = () => {
             </>
           ) : (
             <div className="text-gray-800 text-sm whitespace-pre-wrap text-left">
-              {comment.content}
+              {comment.isDeleted ? "삭제된 댓글입니다." : comment.comment}
             </div>
           )}
 
