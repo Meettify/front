@@ -6,8 +6,14 @@ import { LuList, LuSearch } from "react-icons/lu";
 import useCommStore from "../../stores/useCommStore";
 
 const CommPage = () => {
-  const { posts, fetchPosts, searchPosts, loading, error, totalPage } =
-    useCommStore();
+  const {
+    posts = [],
+    fetchPosts,
+    searchPosts,
+    loading,
+    error,
+    totalPage,
+  } = useCommStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("최신순");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,8 +37,6 @@ const CommPage = () => {
           sortOrder === "최신순" ? "desc" : "asc",
           totalKeyword.trim()
         );
-        setTotalPage(response.totalPage);
-        setPosts(response.communities); // 꼭 추가!
       }
     };
     fetchInitial();
@@ -45,9 +49,6 @@ const CommPage = () => {
         const response = searchQuery
           ? await searchPosts(currentPage, 10, sort, searchQuery)
           : await fetchPosts(currentPage, 10, sort);
-
-        setTotalPage(response.totalPage);
-        setPosts(response.communities); // 꼭 추가!
       } catch (error) {
         console.error("페이지 데이터 가져오기 실패:", error);
       }
@@ -80,12 +81,8 @@ const CommPage = () => {
 
       if (query) {
         const response = await searchPosts(1, 10, sort, query);
-        setTotalPage(response.totalPage);
-        setPosts(response.communities); // 꼭 추가!
       } else {
         const response = await fetchPosts(1, 10, sort);
-        setTotalPage(response.totalPage);
-        setPosts(response.communities); // 꼭 추가!
       }
     }
   };
@@ -181,7 +178,7 @@ const CommPage = () => {
             </tr>
           </thead>
           <tbody>
-            {posts.length === 0 ? (
+            {Array.isArray(posts) && posts.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center p-10 text-gray-500">
                   게시글이 없습니다.
