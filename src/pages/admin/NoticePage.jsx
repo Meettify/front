@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Outlet } from "react-router-dom"; // ✅ Outlet 추가
+import React, { useEffect } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
 import useNoticeStore from "../../stores/useNoticeStore";
 import RoundedButton from "../../components/button/RoundedButton";
 
@@ -13,37 +13,24 @@ const NoticePage = () => {
     pageSize,
     totalPage,
     nowPageNumber,
-    fetchNoticeDetails,
-    deleteNotice,
   } = useNoticeStore();
 
-  const [selectedNoticeId, setSelectedNoticeId] = useState(null);
-  const [selectedNotice, setSelectedNotice] = useState(null);
   const navigate = useNavigate();
 
-  const pageNumbers = Array.from({ length: totalPage }, (_, i) => i + 1);
-
-  const handleClickNotice = async (noticeId) => {
-    if (selectedNoticeId === noticeId) {
-      setSelectedNoticeId(null);
-      setSelectedNotice(null);
-    } else {
-      try {
-        const detail = await fetchNoticeDetails(noticeId);
-        setSelectedNoticeId(noticeId);
-        setSelectedNotice(detail);
-      } catch (e) {
-        console.error("상세 조회 실패", e);
-      }
-    }
+  // 페이지 버튼 생성
+  const getPageNumbers = (nowPageNumber, totalPage, blockSize = 5) => {
+    const currentBlock = Math.floor((nowPageNumber - 1) / blockSize);
+    const start = currentBlock * blockSize + 1;
+    const end = Math.min(start + blockSize - 1, totalPage);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      await deleteNotice(selectedNoticeId);
-      setSelectedNoticeId(null);
-      setSelectedNotice(null);
-      fetchNotices();
+  const pageNumbers = getPageNumbers(nowPageNumber, totalPage);
+
+  // 공지사항 클릭 → 상세 페이지로 이동
+  const goToNoticeDetail = (noticeId) => {
+    if (noticeId) {
+      navigate(`/notice/${noticeId}`);
     }
   };
 
@@ -63,7 +50,6 @@ const NoticePage = () => {
         </RoundedButton>
       </div>
 
-      {/* 목록 */}
       <div className="overflow-x-auto">
         {loading ? (
           <p>로딩 중...</p>
@@ -87,7 +73,7 @@ const NoticePage = () => {
                 notices.map((notice, index) => (
                   <tr
                     key={notice.noticeId}
-                    onClick={() => handleClickNotice(notice.noticeId)}
+                    onClick={() => goToNoticeDetail(notice.noticeId)}
                     className="hover:bg-gray-100 cursor-pointer"
                   >
                     <td className="p-2 text-center">
@@ -104,30 +90,6 @@ const NoticePage = () => {
           </table>
         )}
       </div>
-
-      {/* 상세 내용 */}
-      {selectedNotice && (
-        <div className="mt-10 bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto border">
-          <div className="flex justify-between items-center mb-4 border-b pb-2">
-            <h2 className="text-xl font-bold">{selectedNotice.title}</h2>
-            <span className="text-sm text-gray-500">
-              작성일:{" "}
-              {new Date(selectedNotice.regTime).toLocaleDateString("ko-KR")}
-            </span>
-          </div>
-          <p className="text-gray-800 whitespace-pre-wrap text-left mb-6">
-            {selectedNotice.content}
-          </p>
-          <div className="flex justify-end">
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              삭제
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 페이지네이션 */}
       {notices.length > 0 && (
@@ -174,7 +136,7 @@ const NoticePage = () => {
         </div>
       )}
 
-      {/* ✅ 하위 라우트 렌더링 영역 */}
+      {/* ✅ 상세 라우트용 렌더링 영역 */}
       <Outlet />
     </div>
   );

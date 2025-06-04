@@ -25,15 +25,20 @@ const InfoModal = ({ buttonPosition, onClose }) => {
     closeModal("info");
     console.log("권한 확인 : ", user.role);
     if (user?.role === "ADMIN") {
-      nav("/admin"); // 관리자면 관리자 페이지로
+      nav("/admin");
     } else {
-      goToMyPage(); // 일반 유저면 마이페이지
+      goToMyPage();
     }
   };
 
   const handleCart = () => {
     closeModal("info");
     goToCart();
+  };
+
+  const handleChatClick = () => {
+    closeModal("info");
+    nav("/chat");
   };
 
   const handleAdmin = () => {
@@ -47,12 +52,7 @@ const InfoModal = ({ buttonPosition, onClose }) => {
   };
 
   const handleBackgroundClick = () => {
-    onClose(); // 배경 클릭 시 InfoModal 닫기
-  };
-
-  const handleChatClick = () => {
-    closeModal("info");
-    nav("/chat");
+    onClose();
   };
 
   return (
@@ -77,55 +77,55 @@ const InfoModal = ({ buttonPosition, onClose }) => {
           <>
             <div className="ml-2 text-left text-md">
               <h2 className="text-zinc-800 ">{user.nickName}</h2>
-              <h2 className="text-zinc-500 mb-3">{user.email}</h2>
+              <h2 className="text-zinc-500 mb-3">
+                {user.email || user.memberEmail}
+              </h2>
             </div>
 
             <hr className="border-blue-300" />
             <div className="text-center">
               {user && user.role !== "ADMIN" && (
-                <button
-                  className="flex mt-3 p-2 w-32 text-center h-10 text-gray-400 transition-colors duration-200 hover:text-gray-700"
-                  onClick={handleMyifoClick}
-                >
-                  <HiUserCircle size={26} />
-                  <p className="ml-2">내 정보</p>
-                </button>
+                <>
+                  <button
+                    className="flex mt-3 p-2 w-32 text-center h-10 text-gray-400 transition-colors duration-200 hover:text-gray-700"
+                    onClick={handleMyifoClick}
+                  >
+                    <HiUserCircle size={26} />
+                    <p className="ml-2">내 정보</p>
+                  </button>
+
+                  <button
+                    className="flex ml-[2px] mb-1 p-2 w-32 text-center h-10 text-gray-400 transition-colors duration-200 hover:text-gray-700"
+                    onClick={handleCart}
+                  >
+                    <BsCart3 size={24} /> <p className="ml-2">장바구니</p>
+                  </button>
+                </>
               )}
-              {user && user.role !== "ADMIN" && (
-                <button
-                  className="flex ml-[2px] mb-1 p-2 w-32 text-center h-10
-                                text-gray-400 
-                                transition-colors duration-200 hover:text-gray-700"
-                  onClick={handleCart}
-                >
-                  <BsCart3 size={24} /> <p className="ml-2">장바구니</p>
-                </button>
-              )}
+
               <button
                 className={`flex ml-3 w-24 text-center h-10 items-center 
-                                    text-gray-400 transition-colors duration-200 hover:text-gray-700
-                                    ${
-                                      user.memberRole !== "ADMIN" ? "mb-3" : ""
-                                    }`}
+                  text-gray-400 transition-colors duration-200 hover:text-gray-700
+                  ${user.memberRole !== "ADMIN" ? "mb-3" : ""}`}
                 onClick={handleChatClick}
               >
                 <BsChatSquareText size={22} /> <p className="ml-2">채팅</p>
               </button>
-              {user && user.role === "ADMIN" ? (
+
+              {user && user.role === "ADMIN" && (
                 <button
                   className="flex ml-[11px] mt-2 mb-3 w-32 text-center
-                                text-gray-400 transition-colors duration-200 hover:text-gray-700"
+                    text-gray-400 transition-colors duration-200 hover:text-gray-700"
                   onClick={handleAdmin}
                 >
                   <RiAdminLine size={25} />{" "}
                   <p className="ml-[6px]">관리자페이지</p>
                 </button>
-              ) : null}
+              )}
 
               <p
                 onClick={logout}
-                className="flex text-[14px] ml-3 w-16 text-gray-400
-                             transition-colors duration-200 hover:text-gray-700 hover: cursor-pointer "
+                className="flex text-[14px] ml-3 w-16 text-gray-400 transition-colors duration-200 hover:text-gray-700 hover: cursor-pointer "
               >
                 로그아웃
               </p>

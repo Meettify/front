@@ -69,7 +69,7 @@ const AdminPage = () => {
           </h2>
           <ul className="space-y-2 text-left">
             <li>
-              <Link to="/admin/notice">공지사항 등록</Link>
+              <Link to="notice">공지사항 등록</Link>
             </li>
             <li>
               <Link to="questionsList">전체 문의 내역</Link>
