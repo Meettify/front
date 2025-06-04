@@ -141,33 +141,15 @@ export const getPendingItems = async (lastItemId, size, sort) => {
 
 
 // 상품 수정
-export const updateItem = async (itemId, itemData, remainImgId = [], files = []) => {
+export const updateItem = async (itemId, formData) => {
   try {
-    if (parseInt(itemData.itemCount, 10) <= 0) {
-      throw new Error("상품 수량은 1개 이상이어야 합니다.");
-    }
-
-    const formData = new FormData();
-    const itemBlob = new Blob([JSON.stringify(itemData)], { type: "application/json" });
-    formData.append("item", itemBlob);
-
-    // ✅ 이미지 ID는 반드시 반복문으로 추가
-    console.log("remainImgId : ", re)
-    remainImgId.forEach((id) => formData.append("remainImgId", id));
-
-    // ✅ 새 파일이 있을 때만 추가
-    if (files.length > 0) {
-      files.forEach((file) => formData.append("files", file));
-    }
-
-    console.log("FormData 내용:", Array.from(formData.entries())); // 디버깅
-
     const response = await request.put({
       url: `${BASE_URL}/${itemId}`,
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
-
     return response.data;
   } catch (error) {
     console.error("상품 수정 중 오류 발생:", error.response?.data || error.message);

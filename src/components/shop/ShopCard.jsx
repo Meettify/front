@@ -47,7 +47,12 @@ const ShopCard = ({ itemId, title, description, price, imageUrl, onClick }) => {
         <h3 className="text-base font-semibold text-gray-800 line-clamp-1">
           {title}
         </h3>
-        <p className="text-sm text-gray-500 line-clamp-2 mt-1">{description}</p>
+        <p
+          className="text-sm text-gray-500 line-clamp-2 mt-1"
+          dangerouslySetInnerHTML={{
+            __html: description,
+          }}
+        ></p>
         <p className="mt-3 font-bold text-indigo-600 text-base">{price}</p>
       </div>
     </div>
