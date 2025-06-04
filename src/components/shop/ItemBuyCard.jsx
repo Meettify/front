@@ -1,8 +1,8 @@
 import { useState } from "react";
 import RoundedButton from "../../components/button/RoundedButton";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { addItemToCart } from "../../api/cartAPI"; // ✅ 장바구니 API 함수 사용
 
 const checkItemState = (state) => {
   if (state !== "SELL") {
@@ -19,15 +19,16 @@ const checkItemCount = (itemCount, userCount) => {
 const ItemBuyCard = ({ itemDetail, itemId }) => {
   const nav = useNavigate();
   const [itemCount, setItemCount] = useState(1);
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const handleItemCount = (e) => {
-    if (!checkItemCount(itemDetail.itemCount, itemCount)) {
+    const value = Number(e.target.value);
+    if (!checkItemCount(itemDetail.itemCount, value)) {
       setItemCount(itemDetail.itemCount);
       e.preventDefault();
       return;
     }
-    setItemCount(Number(e.target.value));
+    setItemCount(value);
   };
 
   const handleCountPlus = () => {
@@ -42,7 +43,7 @@ const ItemBuyCard = ({ itemDetail, itemId }) => {
     }
   };
 
-  const handleCartAdd = async (e) => {
+  const handleCartAdd = async () => {
     if (!(isAuthenticated && user)) {
       if (
         confirm(
@@ -61,28 +62,15 @@ const ItemBuyCard = ({ itemDetail, itemId }) => {
       return;
     }
 
-    const requestBody = {
-      itemId,
-      itemCount,
-    };
-
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/carts",
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await addItemToCart(itemId, itemCount); // ✅ 여기에서 API 함수 호출
 
       if (confirm("장바구니에 물품을 추가하였습니다. 장바구니로 이동할까요?")) {
         nav("/cart");
       }
     } catch (err) {
       console.error("장바구니 추가 실패 : ", err);
+      alert("장바구니 추가에 실패했습니다.");
     }
   };
 
@@ -92,9 +80,7 @@ const ItemBuyCard = ({ itemDetail, itemId }) => {
       return;
     }
 
-    const itemPrice = itemDetail.itemPrice;
-    const itemQuantity = itemDetail.itemCount;
-    const totalPrice = itemPrice * itemCount;
+    const totalPrice = itemDetail.itemPrice * itemCount;
 
     if (isNaN(totalPrice) || totalPrice <= 0) {
       alert("결제 금액이 계산되지 않았습니다.");
@@ -103,7 +89,12 @@ const ItemBuyCard = ({ itemDetail, itemId }) => {
 
     nav("/order", {
       state: {
-        selectedCartItems: [itemDetail],
+        selectedCartItems: [
+          {
+            ...itemDetail,
+            itemCount,
+          },
+        ],
         totalPrice,
       },
     });
