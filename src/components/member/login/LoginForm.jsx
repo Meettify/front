@@ -38,6 +38,7 @@ const LoginForm = () => {
       localStorage.setItem("memberId", result.data.memberId);
       localStorage.setItem("nickName", result.data.nickName);
       localStorage.setItem("memberEmail", result.data.memberEmail);
+      localStorage.setItem("cartId", result.data.cartId);
       console.log(`result.data.memberId : ${result.data.memberId}`);
       closeModal("login");
       goToHome();
