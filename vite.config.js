@@ -1,11 +1,12 @@
-// vite.config.js
+// vite.config.mjs
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import lineClamp from '@tailwindcss/line-clamp'; // ✅ import 사용
 
 export default defineConfig({
   plugins: [
     react(),
-    require('@tailwindcss/line-clamp'),
+    lineClamp,
   ],
   define: {
     global: {},
@@ -31,7 +32,7 @@ export default defineConfig({
       '/ws': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        ws: true, // ✅ WebSocket용 설정
+        ws: true,
         secure: false,
       },
     },
